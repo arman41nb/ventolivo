@@ -1,0 +1,252 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --cream: #F5F0E8;
+    --warm: #E8DDD0;
+    --brown: #6B4F3A;
+    --dark: #2C1F14;
+    --olive: #7C8C5E;
+    --text: #3D2B1F;
+    --muted: #9A8878;
+    --border: rgba(107,79,58,0.15);
+  }
+  
+  body { font-family: 'Jost', sans-serif; background: var(--cream); color: var(--text); }
+  
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 2.5rem; background: var(--cream);
+    border-bottom: 0.5px solid var(--border); position: sticky; top: 0; z-index: 10;
+  }
+  nav .logo { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; letter-spacing: 2px; color: var(--brown); }
+  nav .logo span { font-style: italic; }
+  nav .links { display: flex; gap: 2rem; }
+  nav .links a { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); text-decoration: none; }
+  nav .links a:hover { color: var(--brown); }
+  nav .cta { background: var(--brown); color: #fff; border: none; padding: 0.6rem 1.4rem; font-family: 'Jost', sans-serif; font-size: 12px; letter-spacing: 1px; cursor: pointer; }
+
+  .hero {
+    display: grid; grid-template-columns: 1fr 1fr; min-height: 480px;
+  }
+  .hero-left {
+    background: var(--warm); padding: 4rem 3rem; display: flex; flex-direction: column; justify-content: center;
+  }
+  .hero-tag { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--olive); margin-bottom: 1.2rem; }
+  .hero-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; line-height: 1.1; color: var(--dark); margin-bottom: 1.5rem; }
+  .hero-title em { font-style: italic; color: var(--brown); }
+  .hero-desc { font-size: 14px; line-height: 1.8; color: var(--muted); margin-bottom: 2rem; max-width: 360px; }
+  .hero-btns { display: flex; gap: 1rem; align-items: center; }
+  .btn-primary { background: var(--brown); color: #fff; border: none; padding: 0.8rem 2rem; font-family: 'Jost', sans-serif; font-size: 13px; letter-spacing: 1px; cursor: pointer; }
+  .btn-outline { background: transparent; color: var(--brown); border: 0.5px solid var(--brown); padding: 0.8rem 2rem; font-family: 'Jost', sans-serif; font-size: 13px; letter-spacing: 1px; cursor: pointer; }
+
+  .hero-right {
+    background: #D4C5B2; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
+  }
+  .hero-img-placeholder {
+    width: 200px; height: 200px; background: rgba(107,79,58,0.15);
+    display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px;
+  }
+  .soap-visual { position: relative; }
+  .soap-block { width: 70px; height: 70px; background: var(--brown); opacity: 0.7; position: absolute; border-radius: 2px; }
+  .soap-block:nth-child(1) { top: -30px; left: -10px; transform: rotate(-8deg); }
+  .soap-block:nth-child(2) { top: 20px; left: 40px; background: #8B7355; }
+  .soap-block:nth-child(3) { top: -10px; left: 85px; background: #C5B49A; transform: rotate(5deg); }
+  .hero-badge {
+    position: absolute; bottom: 2rem; right: 2rem;
+    background: var(--cream); padding: 0.8rem 1.2rem; text-align: center;
+  }
+  .hero-badge .num { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--brown); }
+  .hero-badge .label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+
+  .strip { background: var(--brown); padding: 0.8rem 2.5rem; display: flex; gap: 3rem; justify-content: center; }
+  .strip span { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.8); }
+  .strip span::before { content: '— '; }
+
+  .section { padding: 4rem 2.5rem; }
+  .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2.5rem; }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; color: var(--dark); }
+  .section-link { font-size: 12px; letter-spacing: 1px; color: var(--brown); text-decoration: none; border-bottom: 0.5px solid var(--brown); }
+
+  .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+  .product-card { cursor: pointer; }
+  .product-img {
+    aspect-ratio: 1; background: var(--warm); margin-bottom: 1rem;
+    display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;
+  }
+  .product-img .soap-thumb {
+    width: 60px; height: 60px; border-radius: 2px;
+  }
+  .product-card:nth-child(1) .soap-thumb { background: #4A3728; }
+  .product-card:nth-child(2) .soap-thumb { background: #6B7FA0; }
+  .product-card:nth-child(3) .soap-thumb { background: #C5B49A; }
+  .product-card:nth-child(4) .soap-thumb { background: #8B7355; }
+  .product-tag { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--olive); margin-bottom: 0.3rem; }
+  .product-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--dark); margin-bottom: 0.3rem; }
+  .product-price { font-size: 13px; color: var(--muted); }
+  .product-action { margin-top: 0.5rem; }
+  .product-action a { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--brown); text-decoration: none; border-bottom: 0.5px solid var(--brown); }
+
+  .about { background: var(--warm); padding: 4rem 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .about-img { aspect-ratio: 4/3; background: #C5B49A; display: flex; align-items: center; justify-content: center; }
+  .about-tag { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--olive); margin-bottom: 1rem; }
+  .about-title { font-family: 'Cormorant Garamond', serif; font-size: 38px; line-height: 1.2; color: var(--dark); margin-bottom: 1.5rem; }
+  .about-text { font-size: 14px; line-height: 1.9; color: var(--muted); margin-bottom: 2rem; }
+
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 0.5px solid var(--border); }
+  .feature { padding: 2.5rem; border-right: 0.5px solid var(--border); }
+  .feature:last-child { border-right: none; }
+  .feature-icon { width: 32px; height: 32px; border: 0.5px solid var(--brown); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+  .feature-icon svg { width: 16px; height: 16px; stroke: var(--brown); fill: none; stroke-width: 1.5; }
+  .feature-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--dark); margin-bottom: 0.5rem; }
+  .feature-text { font-size: 13px; line-height: 1.7; color: var(--muted); }
+
+  .cta-section { background: var(--dark); padding: 4rem 2.5rem; text-align: center; }
+  .cta-title { font-family: 'Cormorant Garamond', serif; font-size: 42px; color: var(--cream); margin-bottom: 1rem; }
+  .cta-title em { font-style: italic; color: #C5B49A; }
+  .cta-sub { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 2rem; letter-spacing: 1px; }
+  .wa-btn { display: inline-flex; align-items: center; gap: 10px; background: #25D366; color: #fff; border: none; padding: 0.9rem 2.2rem; font-family: 'Jost', sans-serif; font-size: 13px; letter-spacing: 1px; cursor: pointer; }
+  .wa-btn svg { width: 18px; height: 18px; fill: #fff; }
+
+  footer { padding: 2rem 2.5rem; display: flex; justify-content: space-between; align-items: center; border-top: 0.5px solid var(--border); }
+  footer .logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--brown); }
+  footer .copy { font-size: 12px; color: var(--muted); }
+  footer .socials { display: flex; gap: 1rem; }
+  footer .socials a { font-size: 11px; letter-spacing: 1px; color: var(--muted); text-decoration: none; text-transform: uppercase; }
+</style>
+
+<nav>
+  <div class="logo">Vento<span>livo</span></div>
+  <div class="links">
+    <a href="#">Products</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+  </div>
+  <button class="cta">Order Now</button>
+</nav>
+
+<div class="hero">
+  <div class="hero-left">
+    <p class="hero-tag">Sabun Atölyesi — Denizli</p>
+    <h1 class="hero-title">Natural soap,<br><em>crafted with</em><br>care.</h1>
+    <p class="hero-desc">Handcrafted artisan soaps made with natural oils and botanicals. Each bar is a small act of self-care.</p>
+    <div class="hero-btns">
+      <button class="btn-primary">Shop Now</button>
+      <button class="btn-outline">Our Story</button>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="soap-visual" style="width:200px;height:120px;position:relative;">
+      <div class="soap-block" style="top:-20px;left:0;transform:rotate(-8deg);"></div>
+      <div class="soap-block" style="top:25px;left:50px;background:#8B7355;"></div>
+      <div class="soap-block" style="top:-5px;left:100px;background:#C5B49A;transform:rotate(5deg);"></div>
+    </div>
+    <div class="hero-badge">
+      <div class="num">100%</div>
+      <div class="label">Natural</div>
+    </div>
+  </div>
+</div>
+
+<div class="strip">
+  <span>Handcrafted</span>
+  <span>Natural Ingredients</span>
+  <span>No Chemicals</span>
+  <span>Made in Denizli</span>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <h2 class="section-title">Our Collection</h2>
+    <a href="#" class="section-link">View all →</a>
+  </div>
+  <div class="products-grid">
+    <div class="product-card">
+      <div class="product-img"><div class="soap-thumb"></div></div>
+      <p class="product-tag">Detox</p>
+      <p class="product-name">Activated Charcoal</p>
+      <p class="product-price">₺180</p>
+      <div class="product-action"><a href="#">Order via WhatsApp →</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-img"><div class="soap-thumb"></div></div>
+      <p class="product-tag">Calming</p>
+      <p class="product-name">Lavender & Clay</p>
+      <p class="product-price">₺160</p>
+      <div class="product-action"><a href="#">Order via WhatsApp →</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-img"><div class="soap-thumb"></div></div>
+      <p class="product-tag">Gentle</p>
+      <p class="product-name">Goat Milk & Honey</p>
+      <p class="product-price">₺170</p>
+      <div class="product-action"><a href="#">Order via WhatsApp →</a></div>
+    </div>
+    <div class="product-card">
+      <div class="product-img"><div class="soap-thumb"></div></div>
+      <p class="product-tag">Exfoliating</p>
+      <p class="product-name">Coffee & Olive Oil</p>
+      <p class="product-price">₺165</p>
+      <div class="product-action"><a href="#">Order via WhatsApp →</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="about">
+  <div class="about-img">
+    <div style="text-align:center;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--brown);opacity:0.6;">Product photo here</div>
+    </div>
+  </div>
+  <div>
+    <p class="about-tag">Our Story</p>
+    <h2 class="about-title">Made by hand,<br>made with love.</h2>
+    <p class="about-text">Every Ventolivo soap is crafted in small batches using cold-process methods and the finest natural ingredients. No shortcuts, no chemicals — just pure, honest skincare.</p>
+    <button class="btn-outline">Learn More</button>
+  </div>
+</div>
+
+<div class="features" style="padding:0 2.5rem;">
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg>
+    </div>
+    <p class="feature-title">Cold Process</p>
+    <p class="feature-text">Traditional cold-process method preserving all natural glycerin and nutrients.</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+    </div>
+    <p class="feature-title">Small Batches</p>
+    <p class="feature-text">Each batch is made in small quantities to ensure maximum quality and freshness.</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+    </div>
+    <p class="feature-title">100% Natural</p>
+    <p class="feature-text">Only plant-based oils, butters, and botanicals. Nothing artificial, ever.</p>
+  </div>
+</div>
+
+<div class="cta-section" style="margin-top:3rem;">
+  <h2 class="cta-title">Ready to order?<br><em>We'd love to hear from you.</em></h2>
+  <p class="cta-sub">Send us a message and we'll get back to you within hours</p>
+  <button class="wa-btn">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Order on WhatsApp
+  </button>
+</div>
+
+<footer>
+  <div class="logo">Ventolivo</div>
+  <div class="copy">© 2026 Ventolivo. All rights reserved.</div>
+  <div class="socials">
+    <a href="#">Instagram</a>
+    <a href="#">WhatsApp</a>
+  </div>
+</footer>
