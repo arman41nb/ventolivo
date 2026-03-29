@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { NAV_LINKS } from "@/lib/constants";
 
 export default function Navbar() {
   return (
@@ -10,24 +11,15 @@ export default function Navbar() {
         Vento<span className="italic">livo</span>
       </Link>
       <div className="flex gap-[2rem]">
-        <Link
-          href="/products"
-          className="text-[12px] tracking-[1.5px] uppercase text-muted no-underline hover:text-brown transition-colors"
-        >
-          Products
-        </Link>
-        <Link
-          href="/#about"
-          className="text-[12px] tracking-[1.5px] uppercase text-muted no-underline hover:text-brown transition-colors"
-        >
-          About
-        </Link>
-        <Link
-          href="/#contact"
-          className="text-[12px] tracking-[1.5px] uppercase text-muted no-underline hover:text-brown transition-colors"
-        >
-          Contact
-        </Link>
+        {NAV_LINKS.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="text-[12px] tracking-[1.5px] uppercase text-muted no-underline hover:text-brown transition-colors"
+          >
+            {link.label}
+          </Link>
+        ))}
       </div>
       <Link
         href="/#contact"

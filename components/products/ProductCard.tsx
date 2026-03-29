@@ -1,10 +1,13 @@
-import type { Product } from "@/data/products";
+import type { Product } from "@/types";
+import { buildWhatsAppLink, buildProductWhatsAppMessage, formatPrice } from "@/lib/utils";
 
-export default function ProductCard({ product }: { product: Product }) {
-  const whatsappMessage = encodeURIComponent(
-    `Hello! I'd like to order: ${product.name} (₺${product.price})`
-  );
-  const whatsappLink = `https://wa.me/?text=${whatsappMessage}`;
+interface ProductCardProps {
+  product: Product;
+}
+
+export default function ProductCard({ product }: ProductCardProps) {
+  const message = buildProductWhatsAppMessage(product.name, product.price);
+  const whatsappLink = buildWhatsAppLink(message);
 
   return (
     <div className="cursor-pointer group">
@@ -20,7 +23,7 @@ export default function ProductCard({ product }: { product: Product }) {
       <p className="font-serif text-[18px] text-dark mb-[0.3rem]">
         {product.name}
       </p>
-      <p className="text-[13px] text-muted">₺{product.price}</p>
+      <p className="text-[13px] text-muted">{formatPrice(product.price)}</p>
       <div className="mt-[0.5rem]">
         <a
           href={whatsappLink}
