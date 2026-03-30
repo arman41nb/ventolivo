@@ -1,0 +1,80 @@
+{
+  "navbar": {
+    "links": {
+      "products": "Ürünler",
+      "about": "Hakkımızda",
+      "contact": "İletişim"
+    },
+    "cta": "Sipariş Ver"
+  },
+  "hero": {
+    "subtitle": "Sabun Atölyesi — Denizli",
+    "title": {
+      "line1": "Doğal sabun,",
+      "line2": "özenle",
+      "line3": "üretilmiş."
+    },
+    "description": "Doğal yağlar ve bitkilerle üretilmiş el yapımı zanaatkâr sabunları. Her bir kalıp, küçük bir kendine bakım ritüeli.",
+    "shopNow": "Alışverişe Başla",
+    "ourStory": "Hikayemiz",
+    "badge": {
+      "value": "100%",
+      "label": "Doğal"
+    }
+  },
+  "stripBanner": {
+    "items": ["El Yapımı", "Doğal İçerikler", "Kimyasal Yok", "Denizli'de Üretilmiş"]
+  },
+  "featuredProducts": {
+    "title": "Koleksiyonumuz",
+    "viewAll": "Tümünü gör →"
+  },
+  "about": {
+    "subtitle": "Hikayemiz",
+    "title": {
+      "line1": "El emeğiyle,",
+      "line2": "sevgiyle üretilmiş."
+    },
+    "description": "Her Ventolivo sabunu, soğuk işlem yöntemi ve en iyi doğal malzemeler kullanılarak küçük partiler halinde üretilir. Kısayol yok, kimyasal yok — sadece saf, dürüst cilt bakımı.",
+    "learnMore": "Daha Fazla"
+  },
+  "features": {
+    "items": {
+      "coldProcess": {
+        "title": "Soğuk İşlem",
+        "text": "Tüm doğal gliserin ve besinleri koruyan geleneksel soğuk işlem yöntemi."
+      },
+      "smallBatches": {
+        "title": "Küçük Partiler",
+        "text": "Her parti, maksimum kalite ve tazeliği sağlamak için küçük miktarlarda üretilir."
+      },
+      "natural": {
+        "title": "100% Doğal",
+        "text": "Sadece bitkisel yağlar, tereyağları ve botanikler. Asla yapay bir şey."
+      }
+    }
+  },
+  "cta": {
+    "title": {
+      "line1": "Sipariş vermeye hazır mısınız?",
+      "line2": "Sizden haber almak isteriz."
+    },
+    "description": "Bize bir mesaj gönderin, saatler içinde size geri dönelim",
+    "button": "WhatsApp'tan Sipariş Ver"
+  },
+  "footer": {
+    "copyright": "Tüm hakları saklıdır."
+  },
+  "products": {
+    "badge": "Tüm Ürünler",
+    "title": "Tüm Ürünler",
+    "card": {
+      "orderVia": "WhatsApp'tan Sipariş Ver →"
+    }
+  },
+  "seo": {
+    "siteName": "Ventolivo",
+    "tagline": "El Yapımı Zanaatkâr Sabunları",
+    "description": "Doğal yağlar ve bitkilerle üretilmiş el yapımı zanaatkâr sabunları. Denizli'de üretilmiş."
+  }
+}

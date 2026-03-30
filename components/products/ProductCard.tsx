@@ -3,9 +3,10 @@ import { buildWhatsAppLink, buildProductWhatsAppMessage, formatPrice } from "@/l
 
 interface ProductCardProps {
   product: Product;
+  orderLabel?: string;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, orderLabel = "Order via WhatsApp →" }: ProductCardProps) {
   const message = buildProductWhatsAppMessage(product.name, product.price);
   const whatsappLink = buildWhatsAppLink(message);
 
@@ -31,7 +32,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           rel="noopener noreferrer"
           className="text-[11px] tracking-[1px] uppercase text-brown no-underline border-b border-brown hover:border-b-2 transition-[border-width]"
         >
-          Order via WhatsApp →
+          {orderLabel}
         </a>
       </div>
     </div>

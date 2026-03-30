@@ -1,0 +1,80 @@
+{
+  "navbar": {
+    "links": {
+      "products": "Produkte",
+      "about": "Über uns",
+      "contact": "Kontakt"
+    },
+    "cta": "Jetzt bestellen"
+  },
+  "hero": {
+    "subtitle": "Sabun Atölyesi — Denizli",
+    "title": {
+      "line1": "Natürliche Seife,",
+      "line2": "mit Sorgfalt",
+      "line3": "hergestellt."
+    },
+    "description": "Handgefertigte Kunsthandwerksseifen aus natürlichen Ölen und Pflanzen. Jeder Riegel ist ein kleiner Akt der Selbstfürsorge.",
+    "shopNow": "Jetzt einkaufen",
+    "ourStory": "Unsere Geschichte",
+    "badge": {
+      "value": "100%",
+      "label": "Natürlich"
+    }
+  },
+  "stripBanner": {
+    "items": ["Handgefertigt", "Natürliche Zutaten", "Keine Chemikalien", "Hergestellt in Denizli"]
+  },
+  "featuredProducts": {
+    "title": "Unsere Kollektion",
+    "viewAll": "Alle ansehen →"
+  },
+  "about": {
+    "subtitle": "Unsere Geschichte",
+    "title": {
+      "line1": "Von Hand gemacht,",
+      "line2": "mit Liebe gefertigt."
+    },
+    "description": "Jede Ventolivo-Seife wird in kleinen Mengen mit Kaltverfahren und den feinsten natürlichen Zutaten hergestellt. Keine Abkürzungen, keine Chemikalien — nur reine, ehrliche Hautpflege.",
+    "learnMore": "Mehr erfahren"
+  },
+  "features": {
+    "items": {
+      "coldProcess": {
+        "title": "Kaltverfahren",
+        "text": "Traditionelles Kaltverfahren, das natürliches Glycerin und Nährstoffe bewahrt."
+      },
+      "smallBatches": {
+        "title": "Kleine Chargen",
+        "text": "Jede Charge wird in kleinen Mengen hergestellt, um höchste Qualität und Frische zu gewährleisten."
+      },
+      "natural": {
+        "title": "100% Natürlich",
+        "text": "Nur pflanzliche Öle, Butter und Pflanzen. Niemals etwas Künstliches."
+      }
+    }
+  },
+  "cta": {
+    "title": {
+      "line1": "Bereit zu bestellen?",
+      "line2": "Wir würden gerne von Ihnen hören."
+    },
+    "description": "Senden Sie uns eine Nachricht und wir melden uns innerhalb weniger Stunden",
+    "button": "Über WhatsApp bestellen"
+  },
+  "footer": {
+    "copyright": "Alle Rechte vorbehalten."
+  },
+  "products": {
+    "badge": "Komplette Auswahl",
+    "title": "Alle Produkte",
+    "card": {
+      "orderVia": "Über WhatsApp bestellen →"
+    }
+  },
+  "seo": {
+    "siteName": "Ventolivo",
+    "tagline": "Handgefertigte Kunsthandwerksseifen",
+    "description": "Handgefertigte Kunsthandwerksseifen aus natürlichen Ölen und Pflanzen. Hergestellt in Denizli."
+  }
+}

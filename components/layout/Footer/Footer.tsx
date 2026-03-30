@@ -1,14 +1,21 @@
 import Link from "next/link";
 import { SITE_NAME, SOCIAL_LINKS } from "@/lib/constants";
+import type { Dictionary } from "@/i18n";
 
-export default function Footer() {
+interface FooterProps {
+  dict?: Dictionary;
+}
+
+export default function Footer({ dict }: FooterProps) {
+  const copyright = dict?.footer.copyright ?? "All rights reserved.";
+
   return (
     <footer className="px-[2.5rem] py-[2rem] flex items-center justify-between border-t border-brown/[0.15]">
       <Link href="/" className="font-serif text-[18px] text-brown no-underline">
         {SITE_NAME}
       </Link>
       <p className="text-[12px] text-muted">
-        &copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
+        &copy; {new Date().getFullYear()} {SITE_NAME}. {copyright}
       </p>
       <div className="flex gap-[1rem]">
         {SOCIAL_LINKS.map((link) => (

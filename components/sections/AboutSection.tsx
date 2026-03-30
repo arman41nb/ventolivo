@@ -1,6 +1,21 @@
 import Button from "@/components/ui/Button";
+import type { Dictionary } from "@/i18n";
 
-export default function AboutSection() {
+interface AboutSectionProps {
+  dict?: Dictionary;
+}
+
+export default function AboutSection({ dict }: AboutSectionProps) {
+  const subtitle = dict?.about.subtitle ?? "Our Story";
+  const title = dict?.about.title ?? {
+    line1: "Made by hand,",
+    line2: "made with love.",
+  };
+  const description =
+    dict?.about.description ??
+    "Every Ventolivo soap is crafted in small batches using cold-process methods and the finest natural ingredients. No shortcuts, no chemicals — just pure, honest skincare.";
+  const learnMore = dict?.about.learnMore ?? "Learn More";
+
   return (
     <section
       id="about"
@@ -13,19 +28,17 @@ export default function AboutSection() {
       </div>
       <div>
         <p className="text-[11px] tracking-[2px] uppercase text-olive mb-[1rem]">
-          Our Story
+          {subtitle}
         </p>
         <h2 className="font-serif text-[38px] leading-[1.2] text-dark mb-[1.5rem]">
-          Made by hand,
+          {title.line1}
           <br />
-          made with love.
+          {title.line2}
         </h2>
         <p className="text-[14px] leading-[1.9] text-muted mb-[2rem]">
-          Every Ventolivo soap is crafted in small batches using cold-process
-          methods and the finest natural ingredients. No shortcuts, no
-          chemicals — just pure, honest skincare.
+          {description}
         </p>
-        <Button variant="secondary">Learn More</Button>
+        <Button variant="secondary">{learnMore}</Button>
       </div>
     </section>
   );

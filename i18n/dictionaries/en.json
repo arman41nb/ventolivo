@@ -1,0 +1,80 @@
+{
+  "navbar": {
+    "links": {
+      "products": "Products",
+      "about": "About",
+      "contact": "Contact"
+    },
+    "cta": "Order Now"
+  },
+  "hero": {
+    "subtitle": "Sabun Atölyesi — Denizli",
+    "title": {
+      "line1": "Natural soap,",
+      "line2": "crafted with",
+      "line3": "care."
+    },
+    "description": "Handcrafted artisan soaps made with natural oils and botanicals. Each bar is a small act of self-care.",
+    "shopNow": "Shop Now",
+    "ourStory": "Our Story",
+    "badge": {
+      "value": "100%",
+      "label": "Natural"
+    }
+  },
+  "stripBanner": {
+    "items": ["Handcrafted", "Natural Ingredients", "No Chemicals", "Made in Denizli"]
+  },
+  "featuredProducts": {
+    "title": "Our Collection",
+    "viewAll": "View all →"
+  },
+  "about": {
+    "subtitle": "Our Story",
+    "title": {
+      "line1": "Made by hand,",
+      "line2": "made with love."
+    },
+    "description": "Every Ventolivo soap is crafted in small batches using cold-process methods and the finest natural ingredients. No shortcuts, no chemicals — just pure, honest skincare.",
+    "learnMore": "Learn More"
+  },
+  "features": {
+    "items": {
+      "coldProcess": {
+        "title": "Cold Process",
+        "text": "Traditional cold-process method preserving all natural glycerin and nutrients."
+      },
+      "smallBatches": {
+        "title": "Small Batches",
+        "text": "Each batch is made in small quantities to ensure maximum quality and freshness."
+      },
+      "natural": {
+        "title": "100% Natural",
+        "text": "Only plant-based oils, butters, and botanicals. Nothing artificial, ever."
+      }
+    }
+  },
+  "cta": {
+    "title": {
+      "line1": "Ready to order?",
+      "line2": "We'd love to hear from you."
+    },
+    "description": "Send us a message and we'll get back to you within hours",
+    "button": "Order on WhatsApp"
+  },
+  "footer": {
+    "copyright": "All rights reserved."
+  },
+  "products": {
+    "badge": "Full Range",
+    "title": "All Products",
+    "card": {
+      "orderVia": "Order via WhatsApp →"
+    }
+  },
+  "seo": {
+    "siteName": "Ventolivo",
+    "tagline": "Handcrafted Artisan Soaps",
+    "description": "Handcrafted artisan soaps made with natural oils and botanicals. Made in Denizli."
+  }
+}

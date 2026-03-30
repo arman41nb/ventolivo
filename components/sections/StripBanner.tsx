@@ -1,9 +1,20 @@
-import { STRIP_ITEMS } from "@/lib/constants";
+import type { Dictionary } from "@/i18n";
 
-export default function StripBanner() {
+interface StripBannerProps {
+  dict?: Dictionary;
+}
+
+export default function StripBanner({ dict }: StripBannerProps) {
+  const items = dict?.stripBanner.items ?? [
+    "Handcrafted",
+    "Natural Ingredients",
+    "No Chemicals",
+    "Made in Denizli",
+  ];
+
   return (
     <div className="bg-brown px-[2.5rem] py-[0.8rem] flex gap-[3rem] justify-center">
-      {STRIP_ITEMS.map((item) => (
+      {items.map((item) => (
         <span
           key={item}
           className="text-[11px] tracking-[1.5px] uppercase text-white/[0.8]"
