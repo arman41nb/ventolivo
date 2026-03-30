@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SITE_NAME, SOCIAL_LINKS } from "@/lib/constants";
+import { siteConfig, socialLinks } from "@/config";
 import type { Dictionary } from "@/i18n";
 
 interface FooterProps {
@@ -10,26 +10,30 @@ export default function Footer({ dict }: FooterProps) {
   const copyright = dict?.footer.copyright ?? "All rights reserved.";
 
   return (
-    <footer className="px-[2.5rem] py-[2rem] flex items-center justify-between border-t border-brown/[0.15]">
-      <Link href="/" className="font-serif text-[18px] text-brown no-underline">
-        {SITE_NAME}
+    <footer
+      className="px-[2.5rem] py-[2rem] flex items-center justify-between border-t border-brown/[0.15]"
+      role="contentinfo"
+    >
+      <Link href="/" className="font-serif text-[18px] text-brown no-underline" aria-label={siteConfig.name}>
+        {siteConfig.name}
       </Link>
       <p className="text-[12px] text-muted">
-        &copy; {new Date().getFullYear()} {SITE_NAME}. {copyright}
+        &copy; {new Date().getFullYear()} {siteConfig.name}. {copyright}
       </p>
-      <div className="flex gap-[1rem]">
-        {SOCIAL_LINKS.map((link) => (
+      <nav className="flex gap-[1rem]" aria-label="Social links">
+        {socialLinks.map((link) => (
           <a
             key={link.label}
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[11px] tracking-[1px] text-muted no-underline uppercase hover:text-brown transition-colors"
+            aria-label={`${link.label} (opens in new tab)`}
           >
             {link.label}
           </a>
         ))}
-      </div>
+      </nav>
     </footer>
   );
 }

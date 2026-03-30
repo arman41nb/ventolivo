@@ -1,12 +1,21 @@
-import { CURRENCY } from "./constants";
+import { twMerge } from "tailwind-merge";
+import { siteConfig } from "@/config";
+
+export function cn(...classes: (string | undefined | false | null)[]): string {
+  return twMerge(classes.filter(Boolean).join(" "));
+}
 
 export function formatPrice(price: number): string {
-  return `${CURRENCY}${price}`;
+  return `${siteConfig.currency}${price}`;
 }
 
 export function buildWhatsAppLink(message: string): string {
   const encoded = encodeURIComponent(message);
-  return `https://wa.me/?text=${encoded}`;
+  const number = siteConfig.whatsapp.number;
+  if (number) {
+    return `${siteConfig.whatsapp.baseUrl}/${number}?text=${encoded}`;
+  }
+  return `${siteConfig.whatsapp.baseUrl}/?text=${encoded}`;
 }
 
 export function buildProductWhatsAppMessage(
@@ -14,10 +23,6 @@ export function buildProductWhatsAppMessage(
   price: number
 ): string {
   return `Hello! I'd like to order: ${productName} (${formatPrice(price)})`;
-}
-
-export function cn(...classes: (string | undefined | false | null)[]): string {
-  return classes.filter(Boolean).join(" ");
 }
 
 export function slugify(text: string): string {

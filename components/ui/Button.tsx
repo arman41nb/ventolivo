@@ -7,6 +7,7 @@ interface ButtonBaseProps {
   variant?: ButtonVariant;
   className?: string;
   children: React.ReactNode;
+  "aria-label"?: string;
 }
 
 interface ButtonAsLink extends ButtonBaseProps {
@@ -42,11 +43,12 @@ export default function Button({
   external,
   onClick,
   type = "button",
+  ...rest
 }: ButtonProps) {
   const baseClasses = cn(
     "inline-flex items-center gap-[10px] border px-[2rem] py-[0.8rem] font-sans text-[13px] tracking-[1px] cursor-pointer transition-colors no-underline",
     variantClasses[variant],
-    className
+    className,
   );
 
   if (href) {
@@ -57,20 +59,21 @@ export default function Button({
           target="_blank"
           rel="noopener noreferrer"
           className={baseClasses}
+          {...rest}
         >
           {children}
         </a>
       );
     }
     return (
-      <Link href={href} className={baseClasses}>
+      <Link href={href} className={baseClasses} {...rest}>
         {children}
       </Link>
     );
   }
 
   return (
-    <button type={type} onClick={onClick} className={baseClasses}>
+    <button type={type} onClick={onClick} className={baseClasses} {...rest}>
       {children}
     </button>
   );

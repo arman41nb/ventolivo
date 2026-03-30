@@ -1,4 +1,4 @@
-import { WHATSAPP_BASE_URL } from "@/lib/constants";
+import { buildWhatsAppLink } from "@/lib/utils";
 import type { Dictionary } from "@/i18n";
 
 interface CTASectionProps {
@@ -14,6 +14,7 @@ export default function CTASection({ dict }: CTASectionProps) {
     dict?.cta.description ??
     "Send us a message and we'll get back to you within hours";
   const button = dict?.cta.button ?? "Order on WhatsApp";
+  const whatsappLink = buildWhatsAppLink("");
 
   return (
     <section
@@ -29,7 +30,7 @@ export default function CTASection({ dict }: CTASectionProps) {
         {description}
       </p>
       <a
-        href={`${WHATSAPP_BASE_URL}/`}
+        href={whatsappLink}
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex items-center gap-[10px] bg-[#25D366] text-white border-none px-[2.2rem] py-[0.9rem] font-sans text-[13px] tracking-[1px] cursor-pointer hover:bg-[#20BD5A] transition-colors no-underline"

@@ -24,6 +24,16 @@ export default function LanguageSwitcher() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape" && isOpen) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
   if (!isValid) return null;
 
   function switchLocale(newLocale: Locale) {
@@ -38,19 +48,27 @@ export default function LanguageSwitcher() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="text-[12px] tracking-[1.5px] uppercase text-muted hover:text-brown transition-colors cursor-pointer bg-transparent border-none flex items-center gap-[4px]"
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        aria-label={`Language: ${localeLabels[currentLocale]}`}
       >
         {localeFlags[currentLocale]} {currentLocale.toUpperCase()}
         <svg
           viewBox="0 0 24 24"
           className={`w-3 h-3 stroke-current fill-none transition-transform ${isOpen ? "rotate-180" : ""}`}
           strokeWidth={2}
+          aria-hidden="true"
         >
           <path d="M6 9l6 6 6-6" />
         </svg>
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-[0.5rem] bg-cream border border-brown/[0.15] shadow-lg min-w-[140px] z-50">
+        <div
+          className="absolute top-full right-0 mt-[0.5rem] bg-cream border border-brown/[0.15] shadow-lg min-w-[140px] z-50"
+          role="listbox"
+          aria-label="Select language"
+        >
           {locales.map((locale) => (
             <button
               key={locale}
@@ -60,6 +78,8 @@ export default function LanguageSwitcher() {
                   ? "bg-brown/[0.1] text-brown"
                   : "bg-transparent text-muted hover:bg-brown/[0.05] hover:text-brown"
               }`}
+              role="option"
+              aria-selected={locale === currentLocale}
             >
               {localeFlags[locale]} {localeLabels[locale]}
             </button>

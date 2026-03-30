@@ -3,6 +3,8 @@ import { getDirection, isValidLocale, locales } from "@/i18n/config";
 import type { Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 import { I18nProvider } from "@/hooks/useI18n";
+import { AppProvider } from "@/stores";
+import { generatePageMetadata } from "@/lib/seo";
 import "../globals.css";
 
 export async function generateStaticParams() {
@@ -18,12 +20,17 @@ export async function generateMetadata({
   if (!isValidLocale(locale)) return {};
 
   const dict = await getDictionary(locale);
+  const baseMetadata = generatePageMetadata({
+    title: `${dict.seo.siteName} — ${dict.seo.tagline}`,
+    description: dict.seo.description,
+  });
+
   return {
+    ...baseMetadata,
     title: {
       default: `${dict.seo.siteName} — ${dict.seo.tagline}`,
       template: `%s | ${dict.seo.siteName}`,
     },
-    description: dict.seo.description,
   };
 }
 
@@ -47,9 +54,11 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={dir} className="h-full antialiased">
       <body className="min-h-full flex flex-col">
-        <I18nProvider dictionary={dictionary} locale={locale}>
-          {children}
-        </I18nProvider>
+        <AppProvider>
+          <I18nProvider dictionary={dictionary} locale={locale}>
+            {children}
+          </I18nProvider>
+        </AppProvider>
       </body>
     </html>
   );

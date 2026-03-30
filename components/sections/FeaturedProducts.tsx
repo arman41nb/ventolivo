@@ -1,5 +1,5 @@
 import Link from "next/link";
-import ProductCard from "@/components/products/ProductCard";
+import ProductGrid from "@/components/products/ProductGrid";
 import type { Product } from "@/types";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
@@ -32,11 +32,7 @@ export default function FeaturedProducts({
           {viewAllLabel}
         </Link>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[1.5rem]">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} orderLabel={orderLabel} />
-        ))}
-      </div>
+      <ProductGrid products={products} orderLabel={orderLabel} />
     </section>
   );
 }

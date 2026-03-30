@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SITE_NAME, SITE_DESCRIPTION, SITE_URL } from "./constants";
+import { siteConfig } from "@/config";
 
 interface PageSEOOptions {
   title?: string;
@@ -10,12 +10,14 @@ interface PageSEOOptions {
 
 export function generatePageMetadata({
   title,
-  description = SITE_DESCRIPTION,
+  description = siteConfig.description,
   path = "",
   image,
 }: PageSEOOptions = {}): Metadata {
-  const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} — ${SITE_DESCRIPTION}`;
-  const url = `${SITE_URL}${path}`;
+  const fullTitle = title
+    ? `${title} | ${siteConfig.name}`
+    : `${siteConfig.name} — ${siteConfig.description}`;
+  const url = `${siteConfig.url}${path}`;
 
   return {
     title: fullTitle,
@@ -24,7 +26,7 @@ export function generatePageMetadata({
       title: fullTitle,
       description,
       url,
-      siteName: SITE_NAME,
+      siteName: siteConfig.name,
       ...(image && { images: [{ url: image }] }),
     },
     twitter: {
