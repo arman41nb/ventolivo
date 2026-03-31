@@ -4,7 +4,8 @@ import ProductGrid from "@/components/products/ProductGrid";
 import Badge from "@/components/ui/Badge";
 import { getAllProducts } from "@/services/products";
 import { getDictionary } from "@/i18n";
-import type { Locale } from "@/i18n/config";
+import { isValidLocale, type Locale } from "@/i18n/config";
+import { notFound } from "next/navigation";
 
 export default async function ProductsPage({
   params,
@@ -12,9 +13,13 @@ export default async function ProductsPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  if (!isValidLocale(locale)) {
+    notFound();
+  }
+
   const currentLocale = locale as Locale;
   const dict = await getDictionary(currentLocale);
-  const products = getAllProducts();
+  const products = await getAllProducts();
 
   return (
     <>

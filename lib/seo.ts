@@ -16,7 +16,7 @@ export function generatePageMetadata({
 }: PageSEOOptions = {}): Metadata {
   const fullTitle = title
     ? `${title} | ${siteConfig.name}`
-    : `${siteConfig.name} — ${siteConfig.description}`;
+    : `${siteConfig.name} - ${siteConfig.description}`;
   const url = `${siteConfig.url}${path}`;
 
   return {

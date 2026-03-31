@@ -5,18 +5,18 @@ export const defaultLocale: Locale = "en";
 
 export const localeLabels: Record<Locale, string> = {
   en: "English",
-  tr: "Türkçe",
+  tr: "Turkce",
   de: "Deutsch",
-  fa: "فارسی",
-  ar: "العربية",
+  fa: "Farsi",
+  ar: "Arabic",
 };
 
 export const localeFlags: Record<Locale, string> = {
-  en: "🇬🇧",
-  tr: "🇹🇷",
-  de: "🇩🇪",
-  fa: "🇮🇷",
-  ar: "🇸🇦",
+  en: "EN",
+  tr: "TR",
+  de: "DE",
+  fa: "FA",
+  ar: "AR",
 };
 
 export const rtlLocales: Locale[] = ["fa", "ar"];

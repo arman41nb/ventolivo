@@ -2,32 +2,32 @@
   "navbar": {
     "links": {
       "products": "Produkte",
-      "about": "Über uns",
+      "about": "Uber uns",
       "contact": "Kontakt"
     },
     "cta": "Jetzt bestellen"
   },
   "hero": {
-    "subtitle": "Sabun Atölyesi — Denizli",
+    "subtitle": "Seifenatelier - Denizli",
     "title": {
-      "line1": "Natürliche Seife,",
-      "line2": "mit Sorgfalt",
+      "line1": "Naturseife,",
+      "line2": "sorgfaltig",
       "line3": "hergestellt."
     },
-    "description": "Handgefertigte Kunsthandwerksseifen aus natürlichen Ölen und Pflanzen. Jeder Riegel ist ein kleiner Akt der Selbstfürsorge.",
+    "description": "Handgefertigte Seifen aus naturlichen Olen und Pflanzen. Jedes Stuck ist ein kleiner Moment der Selbstpflege.",
     "shopNow": "Jetzt einkaufen",
     "ourStory": "Unsere Geschichte",
     "badge": {
       "value": "100%",
-      "label": "Natürlich"
+      "label": "Naturlich"
     }
   },
   "stripBanner": {
-    "items": ["Handgefertigt", "Natürliche Zutaten", "Keine Chemikalien", "Hergestellt in Denizli"]
+    "items": ["Handgefertigt", "Naturliche Zutaten", "Keine Chemikalien", "Hergestellt in Denizli"]
   },
   "featuredProducts": {
     "title": "Unsere Kollektion",
-    "viewAll": "Alle ansehen →"
+    "viewAll": "Alle ansehen ->"
   },
   "about": {
     "subtitle": "Unsere Geschichte",
@@ -35,46 +35,46 @@
       "line1": "Von Hand gemacht,",
       "line2": "mit Liebe gefertigt."
     },
-    "description": "Jede Ventolivo-Seife wird in kleinen Mengen mit Kaltverfahren und den feinsten natürlichen Zutaten hergestellt. Keine Abkürzungen, keine Chemikalien — nur reine, ehrliche Hautpflege.",
+    "description": "Jede Ventolivo-Seife wird in kleinen Chargen mit Kaltverfahren und naturlichen Zutaten hergestellt. Keine Abkurzungen, keine Chemikalien - nur ehrliche Hautpflege.",
     "learnMore": "Mehr erfahren"
   },
   "features": {
     "items": {
       "coldProcess": {
         "title": "Kaltverfahren",
-        "text": "Traditionelles Kaltverfahren, das natürliches Glycerin und Nährstoffe bewahrt."
+        "text": "Traditionelles Kaltverfahren, das naturliches Glycerin und wertvolle Nahrstoffe bewahrt."
       },
       "smallBatches": {
         "title": "Kleine Chargen",
-        "text": "Jede Charge wird in kleinen Mengen hergestellt, um höchste Qualität und Frische zu gewährleisten."
+        "text": "Jede Charge wird in kleinen Mengen gefertigt, um Qualitat und Frische zu sichern."
       },
       "natural": {
-        "title": "100% Natürlich",
-        "text": "Nur pflanzliche Öle, Butter und Pflanzen. Niemals etwas Künstliches."
+        "title": "100% Naturlich",
+        "text": "Nur pflanzliche Ole, Buttern und Botanicals. Nichts Kunstliches."
       }
     }
   },
   "cta": {
     "title": {
       "line1": "Bereit zu bestellen?",
-      "line2": "Wir würden gerne von Ihnen hören."
+      "line2": "Wir freuen uns auf Ihre Nachricht."
     },
     "description": "Senden Sie uns eine Nachricht und wir melden uns innerhalb weniger Stunden",
-    "button": "Über WhatsApp bestellen"
+    "button": "Uber WhatsApp bestellen"
   },
   "footer": {
     "copyright": "Alle Rechte vorbehalten."
   },
   "products": {
-    "badge": "Komplette Auswahl",
+    "badge": "Gesamtes Sortiment",
     "title": "Alle Produkte",
     "card": {
-      "orderVia": "Über WhatsApp bestellen →"
+      "orderVia": "Uber WhatsApp bestellen ->"
     }
   },
   "seo": {
     "siteName": "Ventolivo",
-    "tagline": "Handgefertigte Kunsthandwerksseifen",
-    "description": "Handgefertigte Kunsthandwerksseifen aus natürlichen Ölen und Pflanzen. Hergestellt in Denizli."
+    "tagline": "Handgefertigte Seifen",
+    "description": "Handgefertigte Seifen aus naturlichen Olen und Pflanzen. Hergestellt in Denizli."
   }
 }

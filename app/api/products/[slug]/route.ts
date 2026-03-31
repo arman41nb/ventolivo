@@ -17,7 +17,7 @@ export async function GET(
       );
     }
 
-    const product = getProductBySlug(result.data.slug);
+    const product = await getProductBySlug(result.data.slug);
 
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });

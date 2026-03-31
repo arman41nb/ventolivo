@@ -6,7 +6,7 @@ export const siteConfig = {
   description:
     "Handcrafted artisan soaps made with natural oils and botanicals. Made in Denizli.",
   url: env.NEXT_PUBLIC_SITE_URL,
-  currency: "₺",
+  currency: "TL ",
   whatsapp: {
     number: env.NEXT_PUBLIC_WHATSAPP_NUMBER,
     baseUrl: "https://wa.me",

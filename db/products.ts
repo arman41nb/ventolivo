@@ -1,11 +1,12 @@
 import { prisma } from "./client";
+import { mapDbProductRecord, normalizeProductTag } from "@/modules/products/mappers";
 import type { Product } from "@/types";
 
 export async function dbGetAllProducts(): Promise<Product[]> {
   const products = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
   });
-  return products.map(mapDbProduct);
+  return products.map(mapDbProductRecord);
 }
 
 export async function dbGetFeaturedProducts(count = 4): Promise<Product[]> {
@@ -14,55 +15,31 @@ export async function dbGetFeaturedProducts(count = 4): Promise<Product[]> {
     take: count,
     orderBy: { createdAt: "desc" },
   });
-  return products.map(mapDbProduct);
+  return products.map(mapDbProductRecord);
 }
 
 export async function dbGetProductBySlug(slug: string): Promise<Product | null> {
   const product = await prisma.product.findUnique({
     where: { slug },
   });
-  return product ? mapDbProduct(product) : null;
+  return product ? mapDbProductRecord(product) : null;
 }
 
 export async function dbGetProductById(id: number): Promise<Product | null> {
   const product = await prisma.product.findUnique({
     where: { id },
   });
-  return product ? mapDbProduct(product) : null;
+  return product ? mapDbProductRecord(product) : null;
 }
 
 export async function dbGetProductsByTag(tag: string): Promise<Product[]> {
   const products = await prisma.product.findMany({
-    where: { tag },
     orderBy: { createdAt: "desc" },
   });
-  return products.map(mapDbProduct);
-}
 
-interface DbProduct {
-  id: number;
-  name: string;
-  slug: string;
-  tag: string;
-  price: number;
-  color: string;
-  description: string;
-  ingredients: string | null;
-  weight: string | null;
-  featured: boolean;
-}
+  const normalizedTag = normalizeProductTag(tag);
 
-function mapDbProduct(db: DbProduct): Product {
-  return {
-    id: db.id,
-    name: db.name,
-    slug: db.slug,
-    tag: db.tag,
-    price: db.price,
-    color: db.color,
-    description: db.description,
-    ingredients: db.ingredients ? JSON.parse(db.ingredients) : undefined,
-    weight: db.weight ?? undefined,
-    featured: db.featured,
-  };
+  return products
+    .map(mapDbProductRecord)
+    .filter((product) => normalizeProductTag(product.tag) === normalizedTag);
 }

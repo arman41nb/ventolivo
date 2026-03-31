@@ -1,80 +1,80 @@
 {
   "navbar": {
     "links": {
-      "products": "Ürünler",
-      "about": "Hakkımızda",
-      "contact": "İletişim"
+      "products": "Urunler",
+      "about": "Hakkimizda",
+      "contact": "Iletisim"
     },
-    "cta": "Sipariş Ver"
+    "cta": "Siparis Ver"
   },
   "hero": {
-    "subtitle": "Sabun Atölyesi — Denizli",
+    "subtitle": "Sabun Atolyesi - Denizli",
     "title": {
-      "line1": "Doğal sabun,",
-      "line2": "özenle",
-      "line3": "üretilmiş."
+      "line1": "Dogal sabun,",
+      "line2": "ozenle",
+      "line3": "uretildi."
     },
-    "description": "Doğal yağlar ve bitkilerle üretilmiş el yapımı zanaatkâr sabunları. Her bir kalıp, küçük bir kendine bakım ritüeli.",
-    "shopNow": "Alışverişe Başla",
+    "description": "Dogal yaglar ve bitkilerle uretilen el yapimi sabunlar. Her kalip, kucuk bir oz-bakim rituelidir.",
+    "shopNow": "Simdi Kesfet",
     "ourStory": "Hikayemiz",
     "badge": {
       "value": "100%",
-      "label": "Doğal"
+      "label": "Dogal"
     }
   },
   "stripBanner": {
-    "items": ["El Yapımı", "Doğal İçerikler", "Kimyasal Yok", "Denizli'de Üretilmiş"]
+    "items": ["El Yapimi", "Dogal Icerikler", "Kimyasal Yok", "Denizli'de Uretildi"]
   },
   "featuredProducts": {
     "title": "Koleksiyonumuz",
-    "viewAll": "Tümünü gör →"
+    "viewAll": "Tumunu gor ->"
   },
   "about": {
     "subtitle": "Hikayemiz",
     "title": {
-      "line1": "El emeğiyle,",
-      "line2": "sevgiyle üretilmiş."
+      "line1": "Elde yapildi,",
+      "line2": "sevgiyle hazirlandi."
     },
-    "description": "Her Ventolivo sabunu, soğuk işlem yöntemi ve en iyi doğal malzemeler kullanılarak küçük partiler halinde üretilir. Kısayol yok, kimyasal yok — sadece saf, dürüst cilt bakımı.",
+    "description": "Her Ventolivo sabunu, soguk surec yontemiyle ve secilmis dogal malzemelerle kucuk partiler halinde uretilir. Kisayol yok, kimyasal yok - sadece durust cilt bakimi.",
     "learnMore": "Daha Fazla"
   },
   "features": {
     "items": {
       "coldProcess": {
-        "title": "Soğuk İşlem",
-        "text": "Tüm doğal gliserin ve besinleri koruyan geleneksel soğuk işlem yöntemi."
+        "title": "Soguk Surec",
+        "text": "Dogal gliserin ve besleyici icerikleri koruyan geleneksel yontem."
       },
       "smallBatches": {
-        "title": "Küçük Partiler",
-        "text": "Her parti, maksimum kalite ve tazeliği sağlamak için küçük miktarlarda üretilir."
+        "title": "Kucuk Partiler",
+        "text": "Her seri kalite ve tazelik icin sinirli miktarda uretilir."
       },
       "natural": {
-        "title": "100% Doğal",
-        "text": "Sadece bitkisel yağlar, tereyağları ve botanikler. Asla yapay bir şey."
+        "title": "100% Dogal",
+        "text": "Yalnizca bitkisel yaglar, butters ve botanikler. Yapay icerik yok."
       }
     }
   },
   "cta": {
     "title": {
-      "line1": "Sipariş vermeye hazır mısınız?",
+      "line1": "Siparis vermeye hazir misiniz?",
       "line2": "Sizden haber almak isteriz."
     },
-    "description": "Bize bir mesaj gönderin, saatler içinde size geri dönelim",
-    "button": "WhatsApp'tan Sipariş Ver"
+    "description": "Bize bir mesaj gonderin, kisa surede size donelim",
+    "button": "WhatsApp'tan Siparis Ver"
   },
   "footer": {
-    "copyright": "Tüm hakları saklıdır."
+    "copyright": "Tum haklari saklidir."
   },
   "products": {
-    "badge": "Tüm Ürünler",
-    "title": "Tüm Ürünler",
+    "badge": "Tum Urunler",
+    "title": "Tum Urunler",
     "card": {
-      "orderVia": "WhatsApp'tan Sipariş Ver →"
+      "orderVia": "WhatsApp'tan Siparis Ver ->"
     }
   },
   "seo": {
     "siteName": "Ventolivo",
-    "tagline": "El Yapımı Zanaatkâr Sabunları",
-    "description": "Doğal yağlar ve bitkilerle üretilmiş el yapımı zanaatkâr sabunları. Denizli'de üretilmiş."
+    "tagline": "El Yapimi Sabunlar",
+    "description": "Dogal yaglar ve bitkilerle uretilen el yapimi sabunlar. Denizli'de uretildi."
   }
 }

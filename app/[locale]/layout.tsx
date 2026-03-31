@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getDirection, isValidLocale, locales } from "@/i18n/config";
 import type { Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
@@ -21,14 +22,14 @@ export async function generateMetadata({
 
   const dict = await getDictionary(locale);
   const baseMetadata = generatePageMetadata({
-    title: `${dict.seo.siteName} — ${dict.seo.tagline}`,
+    title: `${dict.seo.siteName} - ${dict.seo.tagline}`,
     description: dict.seo.description,
   });
 
   return {
     ...baseMetadata,
     title: {
-      default: `${dict.seo.siteName} — ${dict.seo.tagline}`,
+      default: `${dict.seo.siteName} - ${dict.seo.tagline}`,
       template: `%s | ${dict.seo.siteName}`,
     },
   };
@@ -44,7 +45,7 @@ export default async function LocaleLayout({
   const { locale: rawLocale } = await params;
 
   if (!isValidLocale(rawLocale)) {
-    return null;
+    notFound();
   }
 
   const locale = rawLocale as Locale;

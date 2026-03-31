@@ -17,10 +17,10 @@ export async function GET(request: Request) {
     }
 
     const { tag, featured, limit } = result.data;
-    let products = tag ? getProductsByTag(tag) : getAllProducts();
+    let products = tag ? await getProductsByTag(tag) : await getAllProducts();
 
     if (featured === "true") {
-      products = products.filter((p) => p.featured);
+      products = products.filter((product) => product.featured);
     }
 
     if (limit) {

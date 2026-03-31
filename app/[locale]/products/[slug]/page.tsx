@@ -4,8 +4,8 @@ import Footer from "@/components/layout/Footer";
 import ProductDetail from "@/components/products/ProductDetail";
 import { getProductBySlug } from "@/services/products";
 import { getDictionary } from "@/i18n";
-import type { Locale } from "@/i18n/config";
 import type { Metadata } from "next";
+import { isValidLocale, type Locale } from "@/i18n/config";
 
 export async function generateMetadata({
   params,
@@ -13,7 +13,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) return {};
 
@@ -29,9 +29,13 @@ export default async function ProductDetailPage({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale: rawLocale, slug } = await params;
+  if (!isValidLocale(rawLocale)) {
+    notFound();
+  }
+
   const currentLocale = rawLocale as Locale;
   const dict = await getDictionary(currentLocale);
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();

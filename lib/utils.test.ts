@@ -17,7 +17,7 @@ describe("cn", () => {
 
 describe("formatPrice", () => {
   it("formats price with currency symbol", () => {
-    expect(formatPrice(180)).toBe("₺180");
+    expect(formatPrice(180)).toBe("TL 180");
   });
 });
 
@@ -43,6 +43,6 @@ describe("buildProductWhatsAppMessage", () => {
   it("creates order message with product name and price", () => {
     const msg = buildProductWhatsAppMessage("Test Soap", 100);
     expect(msg).toContain("Test Soap");
-    expect(msg).toContain("₺100");
+    expect(msg).toContain("TL 100");
   });
 });

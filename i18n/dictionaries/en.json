@@ -8,7 +8,7 @@
     "cta": "Order Now"
   },
   "hero": {
-    "subtitle": "Sabun Atölyesi — Denizli",
+    "subtitle": "Soap Atelier - Denizli",
     "title": {
       "line1": "Natural soap,",
       "line2": "crafted with",
@@ -27,7 +27,7 @@
   },
   "featuredProducts": {
     "title": "Our Collection",
-    "viewAll": "View all →"
+    "viewAll": "View all ->"
   },
   "about": {
     "subtitle": "Our Story",
@@ -35,7 +35,7 @@
       "line1": "Made by hand,",
       "line2": "made with love."
     },
-    "description": "Every Ventolivo soap is crafted in small batches using cold-process methods and the finest natural ingredients. No shortcuts, no chemicals — just pure, honest skincare.",
+    "description": "Every Ventolivo soap is crafted in small batches using cold-process methods and the finest natural ingredients. No shortcuts, no chemicals - just pure, honest skincare.",
     "learnMore": "Learn More"
   },
   "features": {
@@ -69,7 +69,7 @@
     "badge": "Full Range",
     "title": "All Products",
     "card": {
-      "orderVia": "Order via WhatsApp →"
+      "orderVia": "Order via WhatsApp ->"
     }
   },
   "seo": {

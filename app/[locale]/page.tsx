@@ -8,7 +8,8 @@ import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
 import { getFeaturedProducts } from "@/services/products";
 import { getDictionary } from "@/i18n";
-import type { Locale } from "@/i18n/config";
+import { isValidLocale, type Locale } from "@/i18n/config";
+import { notFound } from "next/navigation";
 
 export default async function Home({
   params,
@@ -16,9 +17,13 @@ export default async function Home({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  if (!isValidLocale(locale)) {
+    notFound();
+  }
+
   const currentLocale = locale as Locale;
   const dict = await getDictionary(currentLocale);
-  const featured = getFeaturedProducts(4);
+  const featured = await getFeaturedProducts(4);
 
   return (
     <>
