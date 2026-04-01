@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAllProducts, getProductsByTag } from "@/services/products";
 import { productFilterSchema } from "@/lib/validations";
+import { isValidLocale, type Locale } from "@/i18n/config";
 
 export async function GET(request: Request) {
   try {
@@ -16,8 +17,12 @@ export async function GET(request: Request) {
       );
     }
 
+    const locale = searchParams.get("locale");
+    const resolvedLocale = locale && isValidLocale(locale) ? (locale as Locale) : undefined;
     const { tag, featured, limit } = result.data;
-    let products = tag ? await getProductsByTag(tag) : await getAllProducts();
+    let products = tag
+      ? await getProductsByTag(tag, resolvedLocale)
+      : await getAllProducts(resolvedLocale);
 
     if (featured === "true") {
       products = products.filter((product) => product.featured);

@@ -19,7 +19,7 @@ export default async function ProductsPage({
 
   const currentLocale = locale as Locale;
   const dict = await getDictionary(currentLocale);
-  const products = await getAllProducts();
+  const products = await getAllProducts(currentLocale);
 
   return (
     <>

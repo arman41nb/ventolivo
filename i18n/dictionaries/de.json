@@ -72,6 +72,83 @@
       "orderVia": "Uber WhatsApp bestellen ->"
     }
   },
+  "admin": {
+    "badge": "Admin-Bereich",
+    "title": "Produktleitstand",
+    "description": "Starten Sie jetzt mit einem schlanken geschutzten Admin-Bereich und entwickeln Sie ihn spater zu einem umfangreicheren Authentifizierungsfluss weiter, ohne die Produktverwaltung neu zu schreiben.",
+    "dataSourceLabel": "Datenquelle",
+    "lastActionLabel": "Letzte Aktion",
+    "disabledMessage": "Admin-Bearbeitungen sind deaktiviert, solange PRODUCTS_DATA_SOURCE=mock gesetzt ist. Wechseln Sie zu database, um Produkte zu erstellen, zu bearbeiten oder zu loschen.",
+    "dashboard": {
+      "logout": "Abmelden",
+      "productManager": "Produktverwaltung",
+      "stats": {
+        "products": "Produkte",
+        "featured": "Hervorgehoben"
+      },
+      "recentProductsBadge": "Neueste Produkte",
+      "recentProductsTitle": "Aktuelle Katalogeintrage",
+      "openProductManager": "Produktverwaltung offnen",
+      "roadmapBadge": "Nächste Schritte",
+      "roadmapTitle": "Admin-Roadmap",
+      "roadmapItems": [
+        "Mehrsprachige Produktfelder zentral verwalten.",
+        "Das nachste Auth-Upgrade vorbereiten, ohne Admin-Routen neu zu schreiben.",
+        "Dieses Dashboard als Ausgangspunkt fur zukunftige Inbox- und Analyseansichten verwenden."
+      ]
+    },
+    "create": {
+      "badge": "Erstellen",
+      "title": "Neues Produkt hinzufugen",
+      "submit": "Produkt erstellen"
+    },
+    "inventory": {
+      "badge": "Bestand",
+      "title": "Vorhandene Produkte bearbeiten",
+      "save": "Anderungen speichern",
+      "delete": "Loschen",
+      "pathLabel": "Pfad",
+      "managerDescription": "Verwalten Sie Basis-Katalogfelder und sprachspezifische Ubersetzungen an einem Ort. Das ist die Grundlage fur einen voll mehrsprachigen Storefront und umfangreichere Admin-Ablaufe.",
+      "backToDashboard": "Dashboard",
+      "searchPlaceholder": "Produkte nach Name, Tag oder Slug suchen",
+      "catalogBadge": "Katalog",
+      "visibleProducts": "sichtbares Produkt",
+      "visibleProductsPlural": "sichtbare Produkte",
+      "translationsTitle": "Ubersetzungen"
+    },
+    "form": {
+      "name": "Name",
+      "slug": "Slug",
+      "tag": "Tag",
+      "price": "Preis",
+      "color": "Farbe",
+      "weight": "Gewicht",
+      "ingredients": "Inhaltsstoffe",
+      "ingredientsPlaceholder": "Olivenol, Minzol",
+      "description": "Beschreibung",
+      "featured": "Als hervorgehoben markieren"
+    },
+    "translationAssistant": {
+      "sourceLanguage": "Quellsprache der Ubersetzung",
+      "targetLanguages": "Zielsprachen",
+      "emptyOnly": "Nur leere Felder ubersetzen",
+      "fillBaseFields": "Bitte zuerst die Basisfelder des Produkts ausfullen.",
+      "selectTargetLanguage": "Bitte mindestens eine Zielsprache auswahlen.",
+      "translating": "Wird ubersetzt...",
+      "translateButton": "Automatisch ubersetzen",
+      "unavailable": "Die automatische Ubersetzung ist derzeit nicht verfugbar.",
+      "updated": "Ubersetzungen wurden aktualisiert. Bitte vor dem Speichern prufen.",
+      "providerPrefix": "Anbieter"
+    },
+    "errors": {
+      "slugConflict": "Dieser Slug wird bereits verwendet. Bitte wahlen Sie einen anderen."
+    },
+    "status": {
+      "created": "erstellt",
+      "updated": "aktualisiert",
+      "deleted": "geloscht"
+    }
+  },
   "seo": {
     "siteName": "Ventolivo",
     "tagline": "Handgefertigte Seifen",

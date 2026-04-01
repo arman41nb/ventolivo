@@ -72,6 +72,83 @@
       "orderVia": "WhatsApp'tan Siparis Ver ->"
     }
   },
+  "admin": {
+    "badge": "Yonetim Paneli",
+    "title": "Urun Kontrol Odasi",
+    "description": "Simdilik hafif ve korumali bir yonetim alaniyla baslayin; daha sonra urun yonetimi katmanini yeniden yazmadan daha gelismis bir kimlik dogrulama yapisina gecebilirsiniz.",
+    "dataSourceLabel": "Veri kaynagi",
+    "lastActionLabel": "Son islem",
+    "disabledMessage": "PRODUCTS_DATA_SOURCE=mock iken admin duzenlemeleri devre disidir. Urun eklemek, duzenlemek veya silmek icin database moduna gecin.",
+    "dashboard": {
+      "logout": "Cikis yap",
+      "productManager": "Urun yonetimi",
+      "stats": {
+        "products": "Urunler",
+        "featured": "One cikanlar"
+      },
+      "recentProductsBadge": "Son urunler",
+      "recentProductsTitle": "Katalogdaki son eklenenler",
+      "openProductManager": "Urun yonetimini ac",
+      "roadmapBadge": "Sonraki adimlar",
+      "roadmapTitle": "Admin yol haritasi",
+      "roadmapItems": [
+        "Cok dilli urun alanlarini tek yerden yonetin.",
+        "Admin rotalarini yeniden yazmadan bir sonraki kimlik dogrulama asamasina hazirlanin.",
+        "Bu paneli gelecekteki mesaj kutusu ve analiz ekranlari icin cikis noktasi olarak kullanin."
+      ]
+    },
+    "create": {
+      "badge": "Olustur",
+      "title": "Yeni urun ekle",
+      "submit": "Urun olustur"
+    },
+    "inventory": {
+      "badge": "Envanter",
+      "title": "Mevcut urunleri duzenle",
+      "save": "Degisiklikleri kaydet",
+      "delete": "Sil",
+      "pathLabel": "Yol",
+      "managerDescription": "Temel katalog alanlarini ve dile ozel cevirileri tek yerde yonetin. Bu alan tam cok dilli vitrin ve daha zengin admin akislarinin temelidir.",
+      "backToDashboard": "Pano",
+      "searchPlaceholder": "Ada, etikete veya slug'a gore urun ara",
+      "catalogBadge": "Katalog",
+      "visibleProducts": "gorunen urun",
+      "visibleProductsPlural": "gorunen urunler",
+      "translationsTitle": "Ceviriler"
+    },
+    "form": {
+      "name": "Ad",
+      "slug": "Slug",
+      "tag": "Etiket",
+      "price": "Fiyat",
+      "color": "Renk",
+      "weight": "Agirlik",
+      "ingredients": "Icerikler",
+      "ingredientsPlaceholder": "zeytinyagi, nane yagi",
+      "description": "Aciklama",
+      "featured": "One cikan olarak isaretle"
+    },
+    "translationAssistant": {
+      "sourceLanguage": "Ceviri kaynak dili",
+      "targetLanguages": "Hedef diller",
+      "emptyOnly": "Yalnizca bos alanlari cevir",
+      "fillBaseFields": "Once temel urun alanlarini doldurun.",
+      "selectTargetLanguage": "En az bir hedef dil secin.",
+      "translating": "Ceviriliyor...",
+      "translateButton": "Otomatik cevir",
+      "unavailable": "Otomatik ceviri su anda kullanilamiyor.",
+      "updated": "Ceviriler guncellendi. Kaydetmeden once gozden gecirin.",
+      "providerPrefix": "Saglayici"
+    },
+    "errors": {
+      "slugConflict": "Bu slug zaten kullaniliyor. Lutfen farkli bir slug secin."
+    },
+    "status": {
+      "created": "olusturuldu",
+      "updated": "guncellendi",
+      "deleted": "silindi"
+    }
+  },
   "seo": {
     "siteName": "Ventolivo",
     "tagline": "El Yapimi Sabunlar",

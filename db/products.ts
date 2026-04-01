@@ -1,6 +1,11 @@
 import { prisma } from "./client";
-import { mapDbProductRecord, normalizeProductTag } from "@/modules/products/mappers";
-import type { Product } from "@/types";
+import {
+  mapDbProductRecord,
+  normalizeProductTag,
+  serializeProductIngredients,
+  serializeLocalizedFieldMap,
+} from "@/modules/products/mappers";
+import type { Product, ProductUpsertInput } from "@/types";
 
 export async function dbGetAllProducts(): Promise<Product[]> {
   const products = await prisma.product.findMany({
@@ -42,4 +47,60 @@ export async function dbGetProductsByTag(tag: string): Promise<Product[]> {
   return products
     .map(mapDbProductRecord)
     .filter((product) => normalizeProductTag(product.tag) === normalizedTag);
+}
+
+export async function dbCreateProduct(input: ProductUpsertInput): Promise<Product> {
+  const product = await prisma.product.create({
+    data: {
+      name: input.name,
+      slug: input.slug,
+      tag: input.tag,
+      price: input.price,
+      color: input.color,
+      description: input.description,
+      ingredients: serializeProductIngredients(input.ingredients),
+      weight: input.weight ?? null,
+      featured: input.featured ?? false,
+      nameTranslations: serializeLocalizedFieldMap(input.translations?.name),
+      tagTranslations: serializeLocalizedFieldMap(input.translations?.tag),
+      descriptionTranslations: serializeLocalizedFieldMap(
+        input.translations?.description,
+      ),
+    },
+  });
+
+  return mapDbProductRecord(product);
+}
+
+export async function dbUpdateProduct(
+  id: number,
+  input: ProductUpsertInput,
+): Promise<Product> {
+  const product = await prisma.product.update({
+    where: { id },
+    data: {
+      name: input.name,
+      slug: input.slug,
+      tag: input.tag,
+      price: input.price,
+      color: input.color,
+      description: input.description,
+      ingredients: serializeProductIngredients(input.ingredients),
+      weight: input.weight ?? null,
+      featured: input.featured ?? false,
+      nameTranslations: serializeLocalizedFieldMap(input.translations?.name),
+      tagTranslations: serializeLocalizedFieldMap(input.translations?.tag),
+      descriptionTranslations: serializeLocalizedFieldMap(
+        input.translations?.description,
+      ),
+    },
+  });
+
+  return mapDbProductRecord(product);
+}
+
+export async function dbDeleteProduct(id: number): Promise<void> {
+  await prisma.product.delete({
+    where: { id },
+  });
 }

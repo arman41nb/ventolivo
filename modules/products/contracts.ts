@@ -1,4 +1,4 @@
-import type { Product } from "@/types";
+import type { Product, ProductUpsertInput } from "@/types";
 
 export interface ProductRepository {
   getAllProducts(): Promise<Product[]>;
@@ -6,4 +6,7 @@ export interface ProductRepository {
   getProductBySlug(slug: string): Promise<Product | null>;
   getProductById(id: number): Promise<Product | null>;
   getProductsByTag(tag: string): Promise<Product[]>;
+  createProduct(input: ProductUpsertInput): Promise<Product>;
+  updateProduct(id: number, input: ProductUpsertInput): Promise<Product>;
+  deleteProduct(id: number): Promise<void>;
 }

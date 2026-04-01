@@ -4,22 +4,24 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
-  slug        String   @unique
-  tag         String
-  price       Int
-  color       String
-  description String
-  ingredients String?
-  weight      String?
-  featured    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                    Int      @id @default(autoincrement())
+  name                  String
+  slug                  String   @unique
+  tag                   String
+  price                 Int
+  color                 String
+  description           String
+  ingredients           String?
+  weight                String?
+  featured              Boolean  @default(false)
+  nameTranslations      String?
+  tagTranslations       String?
+  descriptionTranslations String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   @@index([tag])
   @@index([slug])

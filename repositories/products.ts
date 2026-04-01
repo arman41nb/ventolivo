@@ -23,6 +23,15 @@ const mockProductRepository: ProductRepository = {
       (product) => normalizeProductTag(product.tag) === normalizedTag,
     );
   },
+  async createProduct() {
+    throw new Error("Admin product mutations require PRODUCTS_DATA_SOURCE=database");
+  },
+  async updateProduct() {
+    throw new Error("Admin product mutations require PRODUCTS_DATA_SOURCE=database");
+  },
+  async deleteProduct() {
+    throw new Error("Admin product mutations require PRODUCTS_DATA_SOURCE=database");
+  },
 };
 
 const prismaProductRepository: ProductRepository = {
@@ -45,6 +54,18 @@ const prismaProductRepository: ProductRepository = {
   async getProductsByTag(tag) {
     const { dbGetProductsByTag } = await import("@/db");
     return dbGetProductsByTag(tag);
+  },
+  async createProduct(input) {
+    const { dbCreateProduct } = await import("@/db");
+    return dbCreateProduct(input);
+  },
+  async updateProduct(id, input) {
+    const { dbUpdateProduct } = await import("@/db");
+    return dbUpdateProduct(id, input);
+  },
+  async deleteProduct(id) {
+    const { dbDeleteProduct } = await import("@/db");
+    return dbDeleteProduct(id);
   },
 };
 

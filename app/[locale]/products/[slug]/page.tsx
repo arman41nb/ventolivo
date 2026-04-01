@@ -12,8 +12,9 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const { locale, slug } = await params;
+  const resolvedLocale = isValidLocale(locale) ? (locale as Locale) : undefined;
+  const product = await getProductBySlug(slug, resolvedLocale);
 
   if (!product) return {};
 
@@ -35,7 +36,7 @@ export default async function ProductDetailPage({
 
   const currentLocale = rawLocale as Locale;
   const dict = await getDictionary(currentLocale);
-  const product = await getProductBySlug(slug);
+  const product = await getProductBySlug(slug, currentLocale);
 
   if (!product) {
     notFound();

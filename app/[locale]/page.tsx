@@ -23,7 +23,7 @@ export default async function Home({
 
   const currentLocale = locale as Locale;
   const dict = await getDictionary(currentLocale);
-  const featured = await getFeaturedProducts(4);
+  const featured = await getFeaturedProducts(4, currentLocale);
 
   return (
     <>

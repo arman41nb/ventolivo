@@ -72,6 +72,83 @@
       "orderVia": "Order via WhatsApp ->"
     }
   },
+  "admin": {
+    "badge": "Admin Panel",
+    "title": "Product Control Room",
+    "description": "Start with a lightweight protected admin area now, then evolve it into a richer authentication flow later without rewriting the product management layer.",
+    "dataSourceLabel": "Data source",
+    "lastActionLabel": "Last action",
+    "disabledMessage": "Admin edits are disabled while PRODUCTS_DATA_SOURCE=mock. Switch to database to create, edit, or delete products.",
+    "dashboard": {
+      "logout": "Logout",
+      "productManager": "Product manager",
+      "stats": {
+        "products": "Products",
+        "featured": "Featured"
+      },
+      "recentProductsBadge": "Recent products",
+      "recentProductsTitle": "Latest catalog entries",
+      "openProductManager": "Open product manager",
+      "roadmapBadge": "Next steps",
+      "roadmapTitle": "Admin roadmap",
+      "roadmapItems": [
+        "Manage multilingual product fields from one place.",
+        "Prepare the next auth upgrade without rewriting admin routes.",
+        "Use this dashboard as the launch point for future inbox and analytics views."
+      ]
+    },
+    "create": {
+      "badge": "Create",
+      "title": "Add a new product",
+      "submit": "Create product"
+    },
+    "inventory": {
+      "badge": "Inventory",
+      "title": "Edit existing products",
+      "save": "Save changes",
+      "delete": "Delete",
+      "pathLabel": "Path",
+      "managerDescription": "Manage base catalog fields and locale-specific translations in one place. This is the foundation for a fully multilingual storefront and richer admin workflows.",
+      "backToDashboard": "Dashboard",
+      "searchPlaceholder": "Search products by name, tag, or slug",
+      "catalogBadge": "Catalog",
+      "visibleProducts": "visible product",
+      "visibleProductsPlural": "visible products",
+      "translationsTitle": "Translations"
+    },
+    "form": {
+      "name": "Name",
+      "slug": "Slug",
+      "tag": "Tag",
+      "price": "Price",
+      "color": "Color",
+      "weight": "Weight",
+      "ingredients": "Ingredients",
+      "ingredientsPlaceholder": "olive oil, mint oil",
+      "description": "Description",
+      "featured": "Mark as featured"
+    },
+    "translationAssistant": {
+      "sourceLanguage": "Translation source language",
+      "targetLanguages": "Target languages",
+      "emptyOnly": "Translate only empty fields",
+      "fillBaseFields": "Fill the base product fields first.",
+      "selectTargetLanguage": "Select at least one target language.",
+      "translating": "Translating...",
+      "translateButton": "Auto translate",
+      "unavailable": "Auto-translate is unavailable right now.",
+      "updated": "Translations updated. Review them before saving.",
+      "providerPrefix": "Provider"
+    },
+    "errors": {
+      "slugConflict": "This slug is already in use. Please choose a different one."
+    },
+    "status": {
+      "created": "created",
+      "updated": "updated",
+      "deleted": "deleted"
+    }
+  },
   "seo": {
     "siteName": "Ventolivo",
     "tagline": "Handcrafted Artisan Soaps",
