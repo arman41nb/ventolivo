@@ -1,5 +1,7 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "./client";
 import {
+  type DbProductRecord,
   mapDbProductRecord,
   normalizeProductTag,
   serializeProductIngredients,
@@ -38,15 +40,28 @@ export async function dbGetProductById(id: number): Promise<Product | null> {
 }
 
 export async function dbGetProductsByTag(tag: string): Promise<Product[]> {
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: "desc" },
-  });
-
   const normalizedTag = normalizeProductTag(tag);
+  const products = await prisma.$queryRaw<DbProductRecord[]>(Prisma.sql`
+    SELECT
+      "id",
+      "name",
+      "slug",
+      "tag",
+      "price",
+      "color",
+      "description",
+      "ingredients",
+      "weight",
+      "featured",
+      "nameTranslations",
+      "tagTranslations",
+      "descriptionTranslations"
+    FROM "Product"
+    WHERE lower(trim("tag")) = ${normalizedTag}
+    ORDER BY "createdAt" DESC
+  `);
 
-  return products
-    .map(mapDbProductRecord)
-    .filter((product) => normalizeProductTag(product.tag) === normalizedTag);
+  return products.map(mapDbProductRecord);
 }
 
 export async function dbCreateProduct(input: ProductUpsertInput): Promise<Product> {

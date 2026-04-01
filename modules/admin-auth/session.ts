@@ -11,7 +11,13 @@ interface SessionPayload {
 }
 
 function getSessionSecret(): string {
-  return env.ADMIN_SESSION_SECRET || env.ADMIN_PASSWORD || "ventolivo-dev-secret";
+  if (env.ADMIN_SESSION_SECRET && env.ADMIN_SESSION_SECRET.trim().length >= 32) {
+    return env.ADMIN_SESSION_SECRET;
+  }
+
+  throw new Error(
+    "ADMIN_SESSION_SECRET must be set to a long random value before admin auth can be used",
+  );
 }
 
 function encodeBase64Url(input: Uint8Array): string {
@@ -123,6 +129,16 @@ export async function getAdminSession() {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   return verifyAdminSessionToken(token);
+}
+
+export async function requireAdminSession() {
+  const session = await getAdminSession();
+
+  if (!session) {
+    throw new Error("Unauthorized admin action");
+  }
+
+  return session;
 }
 
 export async function isAdminAuthenticatedRequest(

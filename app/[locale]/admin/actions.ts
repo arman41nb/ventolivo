@@ -14,6 +14,7 @@ import { env } from "@/lib/env";
 import { locales } from "@/i18n/config";
 import {
   clearAdminSessionCookie,
+  requireAdminSession,
   setAdminSessionCookie,
 } from "@/modules/admin-auth/session";
 
@@ -134,6 +135,8 @@ export async function loginAdminAction(formData: FormData) {
 }
 
 export async function logoutAdminAction(formData?: FormData) {
+  await requireAdminSession();
+
   const locale =
     (formData ? getStringValue(formData, "locale") : "") ||
     ((await cookies()).get("NEXT_LOCALE")?.value ?? "en");
@@ -143,6 +146,8 @@ export async function logoutAdminAction(formData?: FormData) {
 }
 
 export async function createProductAction(formData: FormData) {
+  await requireAdminSession();
+
   const locale = getStringValue(formData, "locale");
 
   try {
@@ -161,6 +166,8 @@ export async function createProductAction(formData: FormData) {
 }
 
 export async function updateProductAction(formData: FormData) {
+  await requireAdminSession();
+
   const locale = getStringValue(formData, "locale");
   const id = Number(getStringValue(formData, "id"));
 
@@ -184,6 +191,8 @@ export async function updateProductAction(formData: FormData) {
 }
 
 export async function deleteProductAction(formData: FormData) {
+  await requireAdminSession();
+
   const locale = getStringValue(formData, "locale");
   const id = Number(getStringValue(formData, "id"));
 

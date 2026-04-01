@@ -36,12 +36,10 @@ export async function getProductsByTag(
   tag: string,
   locale?: Locale,
 ): Promise<Product[]> {
-  const products = await getAllProducts(locale);
-  const normalizedTag = normalizeProductTag(tag);
-
-  return products.filter(
-    (product) => normalizeProductTag(product.tag) === normalizedTag,
+  const products = await getProductRepository().getProductsByTag(
+    normalizeProductTag(tag),
   );
+  return products.map((product) => resolveLocalizedProduct(product, locale));
 }
 
 export async function createProduct(input: ProductUpsertInput): Promise<Product> {

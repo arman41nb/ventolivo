@@ -1,24 +1,20 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
+import { cache } from "react";
+import ar from "./dictionaries/ar.json";
+import de from "./dictionaries/de.json";
+import en from "./dictionaries/en.json";
+import fa from "./dictionaries/fa.json";
+import tr from "./dictionaries/tr.json";
 import type { Locale } from "./config";
 import type { Dictionary } from "./types";
 
-const dictionaryFiles: Record<Locale, string> = {
-  en: "en.json",
-  tr: "tr.json",
-  de: "de.json",
-  fa: "fa.json",
-  ar: "ar.json",
+const dictionaries: Record<Locale, Dictionary> = {
+  en,
+  tr,
+  de,
+  fa,
+  ar,
 };
 
-export async function getDictionary(locale: Locale): Promise<Dictionary> {
-  const filePath = path.join(
-    process.cwd(),
-    "i18n",
-    "dictionaries",
-    dictionaryFiles[locale],
-  );
-  const fileContents = await readFile(filePath, "utf8");
-
-  return JSON.parse(fileContents) as Dictionary;
-}
+export const getDictionary = cache(async (locale: Locale): Promise<Dictionary> => {
+  return dictionaries[locale];
+});
