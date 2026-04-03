@@ -10,6 +10,15 @@ interface AdminShellProps {
   title: string;
   description: string;
   children: ReactNode;
+  sessionSummary?: {
+    username: string;
+    expiresLabel: string;
+  };
+  navItems?: Array<{
+    href: string;
+    label: string;
+    active?: boolean;
+  }>;
   primaryAction?: {
     href: string;
     label: string;
@@ -26,6 +35,8 @@ export default function AdminShell({
   title,
   description,
   children,
+  sessionSummary,
+  navItems,
   primaryAction,
   secondaryAction,
 }: AdminShellProps) {
@@ -42,6 +53,13 @@ export default function AdminShell({
                 {title}
               </h1>
               <p className="mt-3 max-w-3xl text-sm text-text/80">{description}</p>
+              {sessionSummary ? (
+                <div className="mt-4 inline-flex flex-wrap items-center gap-3 rounded-full bg-cream/70 px-4 py-2 text-xs uppercase tracking-[0.14em] text-brown">
+                  <span>{sessionSummary.username}</span>
+                  <span className="text-brown/40">/</span>
+                  <span>{sessionSummary.expiresLabel}</span>
+                </div>
+              ) : null}
             </div>
             <div className="flex flex-wrap items-center gap-3">
               {secondaryAction ? (
@@ -72,6 +90,24 @@ export default function AdminShell({
             </div>
           </div>
         </section>
+
+        {navItems && navItems.length > 0 ? (
+          <div className="flex flex-wrap gap-3">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] transition-colors ${
+                  item.active
+                    ? "bg-brown text-white"
+                    : "border border-brown/20 bg-white text-brown hover:bg-brown/5"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        ) : null}
 
         {children}
       </div>

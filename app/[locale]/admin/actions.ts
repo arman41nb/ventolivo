@@ -1,22 +1,18 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { adminLoginSchema } from "@/lib/validations";
-import { env } from "@/lib/env";
+import { getSafeAdminNextPath } from "@/modules/admin-auth/navigation";
 import {
-  clearAdminSessionCookie,
-  requireAdminSession,
-  setAdminSessionCookie,
-} from "@/modules/admin-auth/session";
+  authenticateAdmin,
+  logoutAdminSession,
+} from "@/modules/admin-auth/server";
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
-}
-
-function getSafeNextPath(next: string, locale: string) {
-  return next.startsWith(`/${locale}/admin`) ? next : `/${locale}/admin`;
 }
 
 export async function loginAdminAction(formData: FormData) {
@@ -31,25 +27,26 @@ export async function loginAdminAction(formData: FormData) {
   }
 
   const locale = getStringValue(formData, "locale") || "en";
+  const headerStore = await headers();
+  const isAuthenticated = await authenticateAdmin({
+    username: result.data.username,
+    password: result.data.password,
+    ipAddress: headerStore.get("x-forwarded-for")?.split(",")[0]?.trim(),
+    userAgent: headerStore.get("user-agent") ?? undefined,
+  });
 
-  if (
-    result.data.username !== env.ADMIN_USERNAME ||
-    result.data.password !== env.ADMIN_PASSWORD
-  ) {
+  if (!isAuthenticated) {
     redirect(`/${locale}/admin/login?error=credentials`);
   }
 
-  await setAdminSessionCookie(result.data.username);
-  redirect(getSafeNextPath(result.data.next, locale));
+  redirect(getSafeAdminNextPath(result.data.next, locale));
 }
 
 export async function logoutAdminAction(formData?: FormData) {
-  await requireAdminSession();
-
   const locale =
     (formData ? getStringValue(formData, "locale") : "") ||
     ((await cookies()).get("NEXT_LOCALE")?.value ?? "en");
 
-  await clearAdminSessionCookie();
+  await logoutAdminSession();
   redirect(`/${locale}/admin/login?status=logged-out`);
 }

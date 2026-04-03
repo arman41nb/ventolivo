@@ -1,22 +1,34 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import type { Dictionary } from "@/i18n";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
+import type { SiteContentSettings } from "@/types";
 
 interface NavbarProps {
   dict?: Dictionary;
   locale?: Locale;
+  siteSettings?: SiteContentSettings;
 }
 
-export default function Navbar({ dict, locale }: NavbarProps) {
+export default function Navbar({ dict, locale, siteSettings }: NavbarProps) {
   const prefix = locale ? (p: string) => localePath(locale, p) : (p: string) => p;
 
   const navLinks = dict
     ? [
-        { label: dict.navbar.links.products, href: prefix("/products") },
-        { label: dict.navbar.links.about, href: prefix("/#about") },
-        { label: dict.navbar.links.contact, href: prefix("/#contact") },
+        {
+          label: siteSettings?.navbarLinkProducts ?? dict.navbar.links.products,
+          href: prefix("/products"),
+        },
+        {
+          label: siteSettings?.navbarLinkAbout ?? dict.navbar.links.about,
+          href: prefix("/#about"),
+        },
+        {
+          label: siteSettings?.navbarLinkContact ?? dict.navbar.links.contact,
+          href: prefix("/#contact"),
+        },
       ]
     : [
         { label: "Products", href: "/products" },
@@ -33,9 +45,21 @@ export default function Navbar({ dict, locale }: NavbarProps) {
       <Link
         href={locale ? `/${locale}` : "/"}
         className="font-serif text-[22px] font-medium tracking-[2px] text-brown no-underline"
-        aria-label="Ventolivo - Home"
+        aria-label={`${siteSettings?.brandName ?? "Ventolivo"} - Home`}
       >
-        Vento<span className="italic">livo</span>
+        {siteSettings?.logoMode === "image" && siteSettings.logoImageUrl ? (
+          <img
+            src={siteSettings.logoImageUrl}
+            alt={siteSettings.logoAltText || siteSettings.brandName}
+            className="h-10 w-auto object-contain"
+          />
+        ) : (
+          siteSettings?.logoText ?? (
+            <>
+              Vento<span className="italic">livo</span>
+            </>
+          )
+        )}
       </Link>
       <div className="flex gap-[2rem] items-center" role="menubar">
         {navLinks.map((link) => (
@@ -53,9 +77,9 @@ export default function Navbar({ dict, locale }: NavbarProps) {
       <Link
         href={prefix("/#contact")}
         className="bg-brown text-white border-none px-[1.4rem] py-[0.6rem] font-sans text-[12px] tracking-[1px] cursor-pointer hover:bg-dark transition-colors no-underline"
-        aria-label={dict?.navbar.cta ?? "Order Now"}
+        aria-label={siteSettings?.navbarCtaLabel ?? dict?.navbar.cta ?? "Order Now"}
       >
-        {dict?.navbar.cta ?? "Order Now"}
+        {siteSettings?.navbarCtaLabel ?? dict?.navbar.cta ?? "Order Now"}
       </Link>
     </nav>
   );

@@ -1,11 +1,12 @@
-import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 import { env } from "@/lib/env";
 
 const SESSION_COOKIE_NAME = "ventolivo_admin_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
 
-interface SessionPayload {
+export interface SessionCookiePayload {
+  sid: string;
+  token: string;
   sub: string;
   exp: number;
 }
@@ -59,12 +60,32 @@ async function signValue(value: string): Promise<string> {
   return encodeBase64Url(new Uint8Array(signature));
 }
 
-export async function createAdminSessionToken(username: string): Promise<string> {
-  const payload: SessionPayload = {
-    sub: username,
-    exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
-  };
+export function createSessionToken(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return encodeBase64Url(bytes);
+}
 
+export async function hashSessionToken(token: string): Promise<string> {
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(token),
+  );
+
+  return encodeBase64Url(new Uint8Array(digest));
+}
+
+export function getAdminSessionCookieName() {
+  return SESSION_COOKIE_NAME;
+}
+
+export function getAdminSessionTtlSeconds() {
+  return SESSION_TTL_SECONDS;
+}
+
+export async function createSignedSessionCookieValue(
+  payload: SessionCookiePayload,
+): Promise<string> {
   const encodedPayload = encodeBase64Url(
     new TextEncoder().encode(JSON.stringify(payload)),
   );
@@ -73,9 +94,18 @@ export async function createAdminSessionToken(username: string): Promise<string>
   return `${encodedPayload}.${signature}`;
 }
 
-export async function verifyAdminSessionToken(
+export async function createAdminSessionToken(username: string): Promise<string> {
+  return createSignedSessionCookieValue({
+    sid: "test-session",
+    token: createSessionToken(),
+    sub: username,
+    exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
+  });
+}
+
+export async function verifySessionCookieValue(
   token: string | undefined,
-): Promise<SessionPayload | null> {
+): Promise<SessionCookiePayload | null> {
   if (!token) {
     return null;
   }
@@ -95,7 +125,7 @@ export async function verifyAdminSessionToken(
   try {
     const decodedPayload = JSON.parse(
       new TextDecoder().decode(decodeBase64Url(encodedPayload)),
-    ) as SessionPayload;
+    ) as SessionCookiePayload;
 
     if (decodedPayload.exp <= Math.floor(Date.now() / 1000)) {
       return null;
@@ -107,48 +137,16 @@ export async function verifyAdminSessionToken(
   }
 }
 
-export async function setAdminSessionCookie(username: string) {
-  const cookieStore = await cookies();
-  const token = await createAdminSessionToken(username);
-
-  cookieStore.set(SESSION_COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: env.NEXT_PUBLIC_SITE_URL.startsWith("https://"),
-    sameSite: "lax",
-    maxAge: SESSION_TTL_SECONDS,
-    path: "/",
-  });
-}
-
-export async function clearAdminSessionCookie() {
-  const cookieStore = await cookies();
-  cookieStore.delete(SESSION_COOKIE_NAME);
-}
-
-export async function getAdminSession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-  return verifyAdminSessionToken(token);
-}
-
-export async function requireAdminSession() {
-  const session = await getAdminSession();
-
-  if (!session) {
-    throw new Error("Unauthorized admin action");
-  }
-
-  return session;
+export async function verifyAdminSessionToken(
+  token: string | undefined,
+): Promise<SessionCookiePayload | null> {
+  return verifySessionCookieValue(token);
 }
 
 export async function isAdminAuthenticatedRequest(
   request: NextRequest,
 ): Promise<boolean> {
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
-  const session = await verifyAdminSessionToken(token);
+  const session = await verifySessionCookieValue(token);
   return Boolean(session);
-}
-
-export function getAdminSessionCookieName() {
-  return SESSION_COOKIE_NAME;
 }

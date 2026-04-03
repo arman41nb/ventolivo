@@ -1,15 +1,19 @@
 import type { Dictionary } from "@/i18n";
+import type { SiteContentSettings } from "@/types";
 
 interface StripBannerProps {
   dict?: Dictionary;
+  siteSettings?: SiteContentSettings;
 }
 
-export default function StripBanner({ dict }: StripBannerProps) {
-  const items = dict?.stripBanner.items ?? [
-    "Handcrafted",
-    "Natural Ingredients",
-    "No Chemicals",
-    "Made in Denizli",
+export default function StripBanner({ dict, siteSettings }: StripBannerProps) {
+  const items = [
+    siteSettings?.stripBannerItem1 ?? dict?.stripBanner.items?.[0] ?? "Handcrafted",
+    siteSettings?.stripBannerItem2 ??
+      dict?.stripBanner.items?.[1] ??
+      "Natural Ingredients",
+    siteSettings?.stripBannerItem3 ?? dict?.stripBanner.items?.[2] ?? "No Chemicals",
+    siteSettings?.stripBannerItem4 ?? dict?.stripBanner.items?.[3] ?? "Made in Denizli",
   ];
 
   return (

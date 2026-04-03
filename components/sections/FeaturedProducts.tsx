@@ -15,8 +15,8 @@ interface FeaturedProductsProps {
 export default function FeaturedProducts({
   products,
   title = "Our Collection",
-  viewAllLabel = "View all →",
-  orderLabel = "Order via WhatsApp →",
+  viewAllLabel = "View all ->",
+  orderLabel = "Order via WhatsApp ->",
   locale,
 }: FeaturedProductsProps) {
   const productsHref = locale ? localePath(locale, "/products") : "/products";
@@ -32,7 +32,7 @@ export default function FeaturedProducts({
           {viewAllLabel}
         </Link>
       </div>
-      <ProductGrid products={products} orderLabel={orderLabel} />
+      <ProductGrid products={products} orderLabel={orderLabel} locale={locale} />
     </section>
   );
 }

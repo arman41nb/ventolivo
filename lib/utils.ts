@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { siteConfig } from "@/config";
+import type { Product, ProductMediaItem } from "@/types";
 
 export function cn(...classes: (string | undefined | false | null)[]): string {
   return twMerge(classes.filter(Boolean).join(" "));
@@ -23,6 +24,14 @@ export function buildProductWhatsAppMessage(
   price: number
 ): string {
   return `Hello! I'd like to order: ${productName} (${formatPrice(price)})`;
+}
+
+export function getPrimaryProductMedia(product: Product): ProductMediaItem | undefined {
+  return (
+    product.media?.find((item) => item.role === "cover") ??
+    product.media?.find((item) => item.type === "image") ??
+    product.media?.[0]
+  );
 }
 
 export function slugify(text: string): string {

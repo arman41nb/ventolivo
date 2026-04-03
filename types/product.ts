@@ -8,6 +8,18 @@ export interface ProductTranslations {
   description?: LocalizedFieldMap;
 }
 
+export interface ProductMediaItem {
+  id?: string;
+  assetId?: string;
+  type: "image" | "video";
+  url: string;
+  alt?: string;
+  thumbnailUrl?: string;
+  label?: string;
+  role?: "cover" | "gallery" | "video";
+  sortOrder?: number;
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -20,6 +32,7 @@ export interface Product {
   weight?: string;
   featured?: boolean;
   translations?: ProductTranslations;
+  media?: ProductMediaItem[];
 }
 
 export interface ProductUpsertInput {
@@ -33,6 +46,7 @@ export interface ProductUpsertInput {
   weight?: string;
   featured?: boolean;
   translations?: ProductTranslations;
+  media?: ProductMediaItem[];
 }
 
 export interface ProductCategory {

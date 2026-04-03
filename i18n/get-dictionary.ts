@@ -7,12 +7,35 @@ import tr from "./dictionaries/tr.json";
 import type { Locale } from "./config";
 import type { Dictionary } from "./types";
 
+function normalizeDictionary(dictionary: unknown): Dictionary {
+  const candidate = dictionary as Partial<Dictionary>;
+  const admin = candidate.admin ?? en.admin;
+  const dashboard = admin.dashboard ?? en.admin.dashboard;
+
+  return {
+    ...en,
+    ...candidate,
+    admin: {
+      ...en.admin,
+      ...admin,
+      dashboard: {
+        ...en.admin.dashboard,
+        ...dashboard,
+      },
+      login: {
+        ...en.admin.login,
+        ...(admin.login ?? {}),
+      },
+    },
+  };
+}
+
 const dictionaries: Record<Locale, Dictionary> = {
-  en,
-  tr,
-  de,
-  fa,
-  ar,
+  en: normalizeDictionary(en),
+  tr: normalizeDictionary(tr),
+  de: normalizeDictionary(de),
+  fa: normalizeDictionary(fa),
+  ar: normalizeDictionary(ar),
 };
 
 export const getDictionary = cache(async (locale: Locale): Promise<Dictionary> => {

@@ -2,6 +2,7 @@ import { type Locale } from "@/i18n/config";
 import { getProductRepository } from "@/repositories/products";
 import type { Product, ProductUpsertInput } from "@/types";
 import {
+  normalizeProductMedia,
   normalizeProductTag,
   normalizeProductTranslations,
   resolveLocalizedProduct,
@@ -45,6 +46,7 @@ export async function getProductsByTag(
 export async function createProduct(input: ProductUpsertInput): Promise<Product> {
   return getProductRepository().createProduct({
     ...input,
+    media: normalizeProductMedia(input.media),
     translations: normalizeProductTranslations(input.translations),
   });
 }
@@ -55,6 +57,7 @@ export async function updateProduct(
 ): Promise<Product> {
   return getProductRepository().updateProduct(id, {
     ...input,
+    media: normalizeProductMedia(input.media),
     translations: normalizeProductTranslations(input.translations),
   });
 }

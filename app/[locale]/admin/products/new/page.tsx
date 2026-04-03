@@ -1,9 +1,12 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import AdminShell from "@/components/admin/AdminShell";
 import ProductEditorForm from "@/components/admin/ProductEditorForm";
 import { getDictionary } from "@/i18n";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { env } from "@/lib/env";
+import { getAdminSessionRecoveryPath } from "@/modules/admin-auth/navigation";
+import { getAdminSession } from "@/modules/admin-auth/server";
+import { getAllMediaAssets } from "@/modules/media";
 import { createProductAction } from "../actions";
 
 export default async function AdminNewProductPage({
@@ -20,8 +23,22 @@ export default async function AdminNewProductPage({
   }
 
   const locale = rawLocale as Locale;
-  const dictionary = await getDictionary(locale);
-  const { error } = await searchParams;
+  const [dictionary, { error }, session] = await Promise.all([
+    getDictionary(locale),
+    searchParams,
+    getAdminSession(),
+  ]);
+
+  if (!session) {
+    redirect(
+      getAdminSessionRecoveryPath({
+        locale,
+        next: `/${locale}/admin/products/new`,
+      }),
+    );
+  }
+
+  const mediaLibrary = await getAllMediaAssets();
   const isDatabaseMode = env.PRODUCTS_DATA_SOURCE === "database";
   const errorMessage =
     error === "slug-conflict" ? dictionary.admin.errors.slugConflict : null;
@@ -32,6 +49,16 @@ export default async function AdminNewProductPage({
       dictionary={dictionary}
       title={dictionary.admin.create.title}
       description={dictionary.admin.inventory.managerDescription}
+      sessionSummary={{
+        username: session.user.username,
+        expiresLabel: `${dictionary.admin.dashboard.sessionExpires}: ${session.expiresAt.toLocaleString(locale)}`,
+      }}
+      navItems={[
+        { href: `/${locale}/admin`, label: "Dashboard" },
+        { href: `/${locale}/admin/products`, label: "Products", active: true },
+        { href: `/${locale}/admin/media`, label: "Library" },
+        { href: `/${locale}/admin/site`, label: "Site content" },
+      ]}
       secondaryAction={{
         href: `/${locale}/admin/products`,
         label: dictionary.admin.inventory.backToDashboard,
@@ -52,6 +79,7 @@ export default async function AdminNewProductPage({
         dictionary={dictionary}
         submitLabel={dictionary.admin.create.submit}
         action={createProductAction}
+        mediaLibrary={mediaLibrary}
         disabled={!isDatabaseMode}
       />
     </AdminShell>

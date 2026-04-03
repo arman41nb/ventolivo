@@ -1,7 +1,9 @@
 import type { Dictionary } from "@/i18n";
+import type { SiteContentSettings } from "@/types";
 
 interface FeaturesGridProps {
   dict?: Dictionary;
+  siteSettings?: SiteContentSettings;
 }
 
 const featureIcons: Record<string, React.ReactNode> = {
@@ -23,46 +25,60 @@ const featureIcons: Record<string, React.ReactNode> = {
   ),
 };
 
-export default function FeaturesGrid({ dict }: FeaturesGridProps) {
+export default function FeaturesGrid({
+  dict,
+  siteSettings,
+}: FeaturesGridProps) {
   const features = dict
     ? [
         {
           key: "coldProcess",
           icon: featureIcons.coldProcess,
-          title: dict.features.items.coldProcess.title,
-          text: dict.features.items.coldProcess.text,
+          title:
+            siteSettings?.feature1Title ?? dict.features.items.coldProcess.title,
+          text:
+            siteSettings?.feature1Text ?? dict.features.items.coldProcess.text,
         },
         {
           key: "smallBatches",
           icon: featureIcons.smallBatches,
-          title: dict.features.items.smallBatches.title,
-          text: dict.features.items.smallBatches.text,
+          title:
+            siteSettings?.feature2Title ??
+            dict.features.items.smallBatches.title,
+          text:
+            siteSettings?.feature2Text ?? dict.features.items.smallBatches.text,
         },
         {
           key: "natural",
           icon: featureIcons.natural,
-          title: dict.features.items.natural.title,
-          text: dict.features.items.natural.text,
+          title: siteSettings?.feature3Title ?? dict.features.items.natural.title,
+          text: siteSettings?.feature3Text ?? dict.features.items.natural.text,
         },
       ]
     : [
         {
           key: "coldProcess",
           icon: featureIcons.coldProcess,
-          title: "Cold Process",
-          text: "Traditional cold-process method preserving all natural glycerin and nutrients.",
+          title: siteSettings?.feature1Title ?? "Cold Process",
+          text:
+            siteSettings?.feature1Text ??
+            "Traditional cold-process method preserving all natural glycerin and nutrients.",
         },
         {
           key: "smallBatches",
           icon: featureIcons.smallBatches,
-          title: "Small Batches",
-          text: "Each batch is made in small quantities to ensure maximum quality and freshness.",
+          title: siteSettings?.feature2Title ?? "Small Batches",
+          text:
+            siteSettings?.feature2Text ??
+            "Each batch is made in small quantities to ensure maximum quality and freshness.",
         },
         {
           key: "natural",
           icon: featureIcons.natural,
-          title: "100% Natural",
-          text: "Only plant-based oils, butters, and botanicals. Nothing artificial, ever.",
+          title: siteSettings?.feature3Title ?? "100% Natural",
+          text:
+            siteSettings?.feature3Text ??
+            "Only plant-based oils, butters, and botanicals. Nothing artificial, ever.",
         },
       ];
 

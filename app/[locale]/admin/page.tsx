@@ -1,9 +1,14 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import AdminShell from "@/components/admin/AdminShell";
 import { getDictionary } from "@/i18n";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { env } from "@/lib/env";
+import {
+  getAdminSession,
+  getRecentAdminAuditLogEntries,
+} from "@/modules/admin-auth/server";
+import { getAdminSessionRecoveryPath } from "@/modules/admin-auth/navigation";
 import { getAllProducts, getFeaturedProducts } from "@/services/products";
 
 export default async function AdminDashboardPage({
@@ -18,10 +23,24 @@ export default async function AdminDashboardPage({
   }
 
   const locale = rawLocale as Locale;
-  const dictionary = await getDictionary(locale);
-  const [products, featuredProducts] = await Promise.all([
+  const [dictionary, session] = await Promise.all([
+    getDictionary(locale),
+    getAdminSession(),
+  ]);
+
+  if (!session) {
+    redirect(
+      getAdminSessionRecoveryPath({
+        locale,
+        next: `/${locale}/admin`,
+      }),
+    );
+  }
+
+  const [products, featuredProducts, activity] = await Promise.all([
     getAllProducts(locale),
     getFeaturedProducts(4, locale),
+    getRecentAdminAuditLogEntries(6),
   ]);
 
   return (
@@ -30,6 +49,16 @@ export default async function AdminDashboardPage({
       dictionary={dictionary}
       title={dictionary.admin.title}
       description={dictionary.admin.description}
+      sessionSummary={{
+        username: session.user.username,
+        expiresLabel: `${dictionary.admin.dashboard.sessionExpires}: ${session.expiresAt.toLocaleString(locale)}`,
+      }}
+      navItems={[
+        { href: `/${locale}/admin`, label: "Dashboard", active: true },
+        { href: `/${locale}/admin/products`, label: "Products" },
+        { href: `/${locale}/admin/media`, label: "Library" },
+        { href: `/${locale}/admin/site`, label: "Site content" },
+      ]}
       primaryAction={{
         href: `/${locale}/admin/products`,
         label: dictionary.admin.dashboard.productManager,
@@ -109,6 +138,38 @@ export default async function AdminDashboardPage({
               ))}
             </div>
           </article>
+        </section>
+        <section className="rounded-[28px] border border-brown/10 bg-white p-8">
+          <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-[12px] uppercase tracking-[0.2em] text-muted">
+                {dictionary.admin.dashboard.activityBadge}
+              </p>
+              <h2 className="mt-2 font-serif text-3xl text-dark">
+                {dictionary.admin.dashboard.activityTitle}
+              </h2>
+            </div>
+          </div>
+          <div className="mt-6 flex flex-col gap-4">
+            {activity.map((entry) => (
+              <div
+                key={entry.id}
+                className="flex flex-col gap-2 rounded-[22px] border border-brown/10 bg-cream/35 px-5 py-4 md:flex-row md:items-center md:justify-between"
+              >
+                <div>
+                  <p className="text-sm font-medium text-dark">
+                    {entry.actorLabel} · {entry.action}
+                  </p>
+                  <p className="mt-1 text-sm text-text/70">
+                    {entry.metadata ?? dictionary.admin.dashboard.activityFallback}
+                  </p>
+                </div>
+                <span className="text-xs uppercase tracking-[0.14em] text-muted">
+                  {entry.createdAt.toLocaleString(locale)}
+                </span>
+              </div>
+            ))}
+          </div>
         </section>
     </AdminShell>
   );

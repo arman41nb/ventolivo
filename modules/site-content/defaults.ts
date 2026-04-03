@@ -1,0 +1,55 @@
+import type { SiteContentSettings } from "@/types";
+
+export const defaultSiteContentSettings: SiteContentSettings = {
+  brandName: "Ventolivo",
+  logoMode: "text",
+  logoText: "Ventolivo",
+  logoImageUrl: "",
+  logoAltText: "Ventolivo logo",
+  navbarLinkProducts: "Products",
+  navbarLinkAbout: "About",
+  navbarLinkContact: "Contact",
+  navbarCtaLabel: "Order Now",
+  heroSubtitle: "Soap Atelier - Denizli",
+  heroTitleLine1: "Natural soap,",
+  heroTitleLine2: "crafted with",
+  heroTitleLine3: "care.",
+  heroDescription:
+    "Handcrafted artisan soaps made with natural oils and botanicals. Each bar is a small act of self-care.",
+  heroPrimaryButtonLabel: "Shop Now",
+  heroSecondaryButtonLabel: "Our Story",
+  heroBadgeValue: "100%",
+  heroBadgeLabel: "Natural",
+  heroImageUrl:
+    "https://images.unsplash.com/photo-1607006483225-2f78f3032b16?auto=format&fit=crop&w=1200&q=80",
+  heroImageAlt: "Handcrafted artisan soap bars arranged on a warm neutral surface",
+  stripBannerItem1: "Handcrafted",
+  stripBannerItem2: "Natural Ingredients",
+  stripBannerItem3: "No Chemicals",
+  stripBannerItem4: "Made in Denizli",
+  featuredProductsTitle: "Our Collection",
+  featuredProductsViewAllLabel: "View all ->",
+  aboutSubtitle: "Our Story",
+  aboutTitleLine1: "Made by hand,",
+  aboutTitleLine2: "made with love.",
+  aboutDescription:
+    "Every Ventolivo soap is crafted in small batches using cold-process methods and the finest natural ingredients. No shortcuts, no chemicals - just pure, honest skincare.",
+  aboutButtonLabel: "Learn More",
+  aboutImageUrl:
+    "https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=1200&q=80",
+  aboutImageAlt: "Natural soap bars with botanicals on a warm neutral background",
+  feature1Title: "Cold Process",
+  feature1Text:
+    "Traditional cold-process method preserving all natural glycerin and nutrients.",
+  feature2Title: "Small Batches",
+  feature2Text:
+    "Each batch is made in small quantities to ensure maximum quality and freshness.",
+  feature3Title: "100% Natural",
+  feature3Text:
+    "Only plant-based oils, butters, and botanicals. Nothing artificial, ever.",
+  ctaTitleLine1: "Ready to order?",
+  ctaTitleLine2: "We'd love to hear from you.",
+  ctaDescription: "Send us a message and we'll get back to you within hours",
+  ctaButtonLabel: "Order on WhatsApp",
+  footerCopyrightText: "All rights reserved.",
+};

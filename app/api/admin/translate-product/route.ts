@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { locales, type Locale } from "@/i18n/config";
-import { getAdminSession } from "@/modules/admin-auth/session";
+import { getAdminSession } from "@/modules/admin-auth/server";
 import { autoTranslateProductFields } from "@/lib/libretranslate";
 
 const localeSchema = z.enum(locales);

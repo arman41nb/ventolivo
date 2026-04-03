@@ -10,14 +10,18 @@ import {
 } from "@/services/products";
 import { productAdminSchema } from "@/lib/validations";
 import { locales } from "@/i18n/config";
-import { requireAdminSession } from "@/modules/admin-auth/session";
+import {
+  recordAdminAuditLog,
+  requireAdminSession,
+} from "@/modules/admin-auth/server";
+import { getMediaAssetsByIds } from "@/modules/media";
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
 }
 
-function getProductInput(formData: FormData) {
+async function getProductInput(formData: FormData) {
   const result = productAdminSchema.safeParse({
     name: getStringValue(formData, "name"),
     slug: getStringValue(formData, "slug"),
@@ -48,6 +52,107 @@ function getProductInput(formData: FormData) {
     ]),
   );
 
+  const coverImageUrl = getStringValue(formData, "coverImageUrl").trim();
+  const coverImageAlt = getStringValue(formData, "coverImageAlt").trim();
+  const videoUrl = getStringValue(formData, "videoUrl").trim();
+  const videoThumbnailUrl = getStringValue(formData, "videoThumbnailUrl").trim();
+  const galleryImages = getStringValue(formData, "galleryImages")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const coverAssetId = getStringValue(formData, "coverAssetId").trim();
+  const galleryAssetIds = formData
+    .getAll("galleryAssetIds")
+    .map((value) => (typeof value === "string" ? value.trim() : ""))
+    .filter(Boolean);
+  const videoAssetId = getStringValue(formData, "videoAssetId").trim();
+  const selectedAssetIds = Array.from(
+    new Set([coverAssetId, videoAssetId, ...galleryAssetIds].filter(Boolean)),
+  );
+  const selectedAssets = await getMediaAssetsByIds(selectedAssetIds);
+  const assetMap = new Map(selectedAssets.map((asset) => [asset.id, asset]));
+
+  const media = [
+    ...(coverAssetId && assetMap.get(coverAssetId)
+      ? [
+          {
+            assetId: coverAssetId,
+            type: "image" as const,
+            role: "cover" as const,
+            url: assetMap.get(coverAssetId)!.url,
+            alt: assetMap.get(coverAssetId)!.altText || result.data.name,
+            thumbnailUrl: assetMap.get(coverAssetId)!.thumbnailUrl,
+            sortOrder: 0,
+          },
+        ]
+      : []),
+    ...(!coverAssetId && coverImageUrl
+      ? [
+          {
+            type: "image" as const,
+            role: "cover" as const,
+            url: coverImageUrl,
+            alt: coverImageAlt || result.data.name,
+            sortOrder: 0,
+          },
+        ]
+      : []),
+    ...galleryImages.map((line, index) => {
+      const [urlPart, altPart] = line.split("|").map((item) => item.trim());
+
+      return {
+        type: "image" as const,
+        role: "gallery" as const,
+        url: urlPart,
+        alt: altPart || result.data.name,
+        sortOrder: index + 1,
+      };
+    }),
+    ...galleryAssetIds
+      .filter((assetId) => assetId !== coverAssetId && assetMap.has(assetId))
+      .map((assetId, index) => {
+        const asset = assetMap.get(assetId)!;
+
+        return {
+          assetId,
+          type: "image" as const,
+          role: "gallery" as const,
+          url: asset.url,
+          alt: asset.altText || result.data.name,
+          thumbnailUrl: asset.thumbnailUrl,
+          sortOrder: index + (coverAssetId || coverImageUrl ? 1 : 0),
+        };
+      }),
+    ...(videoAssetId && assetMap.get(videoAssetId)
+      ? [
+          {
+            assetId: videoAssetId,
+            type: "video" as const,
+            role: "video" as const,
+            url: assetMap.get(videoAssetId)!.url,
+            alt: assetMap.get(videoAssetId)!.altText || `${result.data.name} video`,
+            thumbnailUrl: assetMap.get(videoAssetId)!.thumbnailUrl,
+            sortOrder:
+              galleryImages.length +
+              galleryAssetIds.length +
+              (coverAssetId || coverImageUrl ? 1 : 0),
+          },
+        ]
+      : []),
+    ...(!videoAssetId && videoUrl
+      ? [
+          {
+            type: "video" as const,
+            role: "video" as const,
+            url: videoUrl,
+            alt: `${result.data.name} video`,
+            thumbnailUrl: videoThumbnailUrl || undefined,
+            sortOrder: galleryImages.length + (coverImageUrl ? 1 : 0),
+          },
+        ]
+      : []),
+  ];
+
   return {
     name: result.data.name,
     slug: result.data.slug,
@@ -62,6 +167,7 @@ function getProductInput(formData: FormData) {
     weight: result.data.weight || undefined,
     featured: result.data.featured,
     translations,
+    media,
   };
 }
 
@@ -101,12 +207,20 @@ function isUniqueSlugError(error: unknown) {
 }
 
 export async function createProductAction(formData: FormData) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
 
   const locale = getStringValue(formData, "locale");
 
   try {
-    await createProduct(getProductInput(formData));
+    const product = await createProduct(await getProductInput(formData));
+    await recordAdminAuditLog({
+      action: "product.created",
+      adminUserId: session.user.id,
+      actorLabel: session.user.username,
+      targetType: "product",
+      targetId: String(product.id),
+      metadata: `Created product ${product.slug}.`,
+    });
   } catch (error) {
     if (isUniqueSlugError(error)) {
       redirect(`/${locale}/admin/products/new?error=slug-conflict`);
@@ -121,7 +235,7 @@ export async function createProductAction(formData: FormData) {
 }
 
 export async function updateProductAction(formData: FormData) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
 
   const locale = getStringValue(formData, "locale");
   const id = Number(getStringValue(formData, "id"));
@@ -131,7 +245,15 @@ export async function updateProductAction(formData: FormData) {
   }
 
   try {
-    await updateProduct(id, getProductInput(formData));
+    const product = await updateProduct(id, await getProductInput(formData));
+    await recordAdminAuditLog({
+      action: "product.updated",
+      adminUserId: session.user.id,
+      actorLabel: session.user.username,
+      targetType: "product",
+      targetId: String(product.id),
+      metadata: `Updated product ${product.slug}.`,
+    });
   } catch (error) {
     if (isUniqueSlugError(error)) {
       redirect(`/${locale}/admin/products/${id}?error=slug-conflict`);
@@ -146,7 +268,7 @@ export async function updateProductAction(formData: FormData) {
 }
 
 export async function deleteProductAction(formData: FormData) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
 
   const locale = getStringValue(formData, "locale");
   const id = Number(getStringValue(formData, "id"));
@@ -156,6 +278,14 @@ export async function deleteProductAction(formData: FormData) {
   }
 
   await deleteProduct(id);
+  await recordAdminAuditLog({
+    action: "product.deleted",
+    adminUserId: session.user.id,
+    actorLabel: session.user.username,
+    targetType: "product",
+    targetId: String(id),
+    metadata: "Deleted product from admin inventory.",
+  });
   revalidateProductPages();
 
   redirect(getAdminProductsPath(locale, { status: "deleted" }));

@@ -1,19 +1,22 @@
 import { buildWhatsAppLink } from "@/lib/utils";
 import type { Dictionary } from "@/i18n";
+import type { SiteContentSettings } from "@/types";
 
 interface CTASectionProps {
   dict?: Dictionary;
+  siteSettings?: SiteContentSettings;
 }
 
-export default function CTASection({ dict }: CTASectionProps) {
-  const title = dict?.cta.title ?? {
-    line1: "Ready to order?",
-    line2: "We'd love to hear from you.",
+export default function CTASection({ dict, siteSettings }: CTASectionProps) {
+  const title = {
+    line1: siteSettings?.ctaTitleLine1 ?? dict?.cta.title.line1 ?? "Ready to order?",
+    line2: siteSettings?.ctaTitleLine2 ?? dict?.cta.title.line2 ?? "We'd love to hear from you.",
   };
   const description =
+    siteSettings?.ctaDescription ??
     dict?.cta.description ??
     "Send us a message and we'll get back to you within hours";
-  const button = dict?.cta.button ?? "Order on WhatsApp";
+  const button = siteSettings?.ctaButtonLabel ?? dict?.cta.button ?? "Order on WhatsApp";
   const whatsappLink = buildWhatsAppLink("");
 
   return (
@@ -26,9 +29,7 @@ export default function CTASection({ dict }: CTASectionProps) {
         <br />
         <em className="italic text-[#C5B49A]">{title.line2}</em>
       </h2>
-      <p className="text-[13px] text-white/[0.5] mb-[2rem] tracking-[1px]">
-        {description}
-      </p>
+      <p className="text-[13px] text-white/[0.5] mb-[2rem] tracking-[1px]">{description}</p>
       <a
         href={whatsappLink}
         target="_blank"

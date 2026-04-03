@@ -29,33 +29,36 @@ export default async function AdminLoginPage({
               {dictionary.admin.badge}
             </p>
             <h1 className="mt-4 font-serif text-5xl leading-none">
-              Secure admin login
+              {dictionary.admin.login.title}
             </h1>
             <p className="mt-4 max-w-md text-sm leading-7 text-white/75">
-              Sign in to access the admin workspace, manage multilingual product
-              content, and prepare the catalog for future operational tools.
+              {dictionary.admin.login.description}
             </p>
           </div>
           <div className="p-10">
             <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
-              Welcome back
+              {dictionary.admin.login.kicker}
             </p>
-            <h2 className="mt-3 font-serif text-4xl text-dark">Sign in</h2>
+            <h2 className="mt-3 font-serif text-4xl text-dark">
+              {dictionary.admin.login.submit}
+            </h2>
             {error ? (
               <p className="mt-4 rounded-2xl border border-red-500/20 bg-red-50 px-4 py-3 text-sm text-red-700">
-                Invalid credentials. Please try again.
+                {dictionary.admin.login.invalidCredentials}
               </p>
             ) : null}
             {status === "logged-out" ? (
               <p className="mt-4 rounded-2xl border border-olive/20 bg-olive/10 px-4 py-3 text-sm text-olive">
-                You have been signed out successfully.
+                {dictionary.admin.login.loggedOut}
               </p>
             ) : null}
             <form action={loginAdminAction} className="mt-8 flex flex-col gap-4">
               <input type="hidden" name="locale" value={locale} />
               <input type="hidden" name="next" value={next ?? ""} />
               <label className="flex flex-col gap-2 text-sm text-dark">
-                <span className="uppercase tracking-[0.16em] text-muted">Username</span>
+                <span className="uppercase tracking-[0.16em] text-muted">
+                  {dictionary.admin.login.username}
+                </span>
                 <input
                   name="username"
                   required
@@ -63,7 +66,9 @@ export default async function AdminLoginPage({
                 />
               </label>
               <label className="flex flex-col gap-2 text-sm text-dark">
-                <span className="uppercase tracking-[0.16em] text-muted">Password</span>
+                <span className="uppercase tracking-[0.16em] text-muted">
+                  {dictionary.admin.login.password}
+                </span>
                 <input
                   type="password"
                   name="password"
@@ -75,9 +80,12 @@ export default async function AdminLoginPage({
                 type="submit"
                 className="mt-4 rounded-full bg-brown px-6 py-3 text-sm uppercase tracking-[0.16em] text-white transition-colors hover:bg-dark"
               >
-                Sign in
+                {dictionary.admin.login.submit}
               </button>
             </form>
+            <p className="mt-6 text-sm leading-6 text-text/70">
+              {dictionary.admin.login.bootstrapHint}
+            </p>
           </div>
         </section>
       </div>

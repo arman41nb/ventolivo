@@ -22,10 +22,132 @@ model Product {
   descriptionTranslations String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
+  mediaLinks            ProductMedia[]
 
   @@index([tag])
   @@index([slug])
   @@index([featured])
+}
+
+model MediaAsset {
+  id           String         @id @default(cuid())
+  kind         String
+  url          String
+  altText      String?
+  thumbnailUrl String?
+  label        String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  productLinks ProductMedia[]
+}
+
+model ProductMedia {
+  id           String     @id @default(cuid())
+  productId    Int
+  mediaAssetId String
+  role         String
+  sortOrder    Int        @default(0)
+  createdAt    DateTime   @default(now())
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  mediaAsset   MediaAsset @relation(fields: [mediaAssetId], references: [id], onDelete: Cascade)
+
+  @@index([productId, sortOrder])
+  @@index([mediaAssetId])
+}
+
+model SiteContentSettings {
+  id                  Int      @id
+  brandName           String
+  logoMode            String
+  logoText            String
+  logoImageUrl        String?
+  logoAltText         String?
+  contentJson         String?
+  navbarCtaLabel      String
+  heroSubtitle        String
+  heroTitleLine1      String
+  heroTitleLine2      String
+  heroTitleLine3      String
+  heroDescription     String
+  heroBadgeValue      String
+  heroBadgeLabel      String
+  heroImageUrl        String?
+  heroImageAlt        String?
+  ctaTitleLine1       String
+  ctaTitleLine2       String
+  ctaDescription      String
+  ctaButtonLabel      String
+  footerCopyrightText String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  translations        SiteContentTranslation[]
+}
+
+model SiteContentTranslation {
+  id                  String              @id @default(cuid())
+  siteContentId       Int
+  locale              String
+  contentJson         String?
+  navbarCtaLabel      String?
+  heroSubtitle        String?
+  heroTitleLine1      String?
+  heroTitleLine2      String?
+  heroTitleLine3      String?
+  heroDescription     String?
+  heroBadgeValue      String?
+  heroBadgeLabel      String?
+  ctaTitleLine1       String?
+  ctaTitleLine2       String?
+  ctaDescription      String?
+  ctaButtonLabel      String?
+  footerCopyrightText String?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  siteContent         SiteContentSettings @relation(fields: [siteContentId], references: [id], onDelete: Cascade)
+
+  @@unique([siteContentId, locale])
+  @@index([locale])
+}
+
+model AdminUser {
+  id           Int            @id @default(autoincrement())
+  username     String         @unique
+  passwordHash String
+  lastLoginAt  DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  sessions     AdminSession[]
+  auditLogs    AuditLog[]
+}
+
+model AdminSession {
+  id          String    @id @default(cuid())
+  adminUserId Int
+  tokenHash   String
+  ipAddress   String?
+  userAgent   String?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+  adminUser   AdminUser  @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  @@index([adminUserId])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id          String     @id @default(cuid())
+  action      String
+  adminUserId Int?
+  actorLabel  String?
+  targetType  String?
+  targetId    String?
+  metadata    String?
+  createdAt   DateTime   @default(now())
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([adminUserId])
+  @@index([createdAt])
+  @@index([action])
 }
 
 model ContactMessage {

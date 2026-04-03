@@ -1,5 +1,39 @@
 import { z } from "zod";
 
+function isValidAssetReference(value: string): boolean {
+  if (value.length === 0) {
+    return true;
+  }
+
+  if (value.startsWith("/")) {
+    return true;
+  }
+
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const assetPathSchema = z
+  .string()
+  .trim()
+  .refine(
+    (value) => isValidAssetReference(value),
+    "Must be a valid URL or a site asset path",
+  );
+
+const requiredAssetPathSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .refine(
+    (value) => value.startsWith("/") || isValidAssetReference(value),
+    "Must be a valid URL or a site asset path",
+  );
+
 export const productQuerySchema = z.object({
   slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
 });
@@ -38,6 +72,61 @@ export const productAdminSchema = z.object({
   featured: z.boolean().optional().default(false),
 });
 
+export const siteContentSchema = z.object({
+  brandName: z.string().trim().min(1).max(80),
+  logoMode: z.enum(["text", "image"]).default("text"),
+  logoText: z.string().trim().min(1).max(80),
+  logoImageUrl: assetPathSchema,
+  logoAltText: z.string().trim().max(120).default(""),
+  navbarLinkProducts: z.string().trim().min(1).max(40),
+  navbarLinkAbout: z.string().trim().min(1).max(40),
+  navbarLinkContact: z.string().trim().min(1).max(40),
+  navbarCtaLabel: z.string().trim().min(1).max(80),
+  heroSubtitle: z.string().trim().min(1).max(120),
+  heroTitleLine1: z.string().trim().min(1).max(120),
+  heroTitleLine2: z.string().trim().min(1).max(120),
+  heroTitleLine3: z.string().trim().min(1).max(120),
+  heroDescription: z.string().trim().min(1).max(500),
+  heroPrimaryButtonLabel: z.string().trim().min(1).max(80),
+  heroSecondaryButtonLabel: z.string().trim().min(1).max(80),
+  heroBadgeValue: z.string().trim().min(1).max(40),
+  heroBadgeLabel: z.string().trim().min(1).max(60),
+  heroImageUrl: assetPathSchema,
+  heroImageAlt: z.string().trim().max(120).default(""),
+  stripBannerItem1: z.string().trim().min(1).max(80),
+  stripBannerItem2: z.string().trim().min(1).max(80),
+  stripBannerItem3: z.string().trim().min(1).max(80),
+  stripBannerItem4: z.string().trim().min(1).max(80),
+  featuredProductsTitle: z.string().trim().min(1).max(120),
+  featuredProductsViewAllLabel: z.string().trim().min(1).max(80),
+  aboutSubtitle: z.string().trim().min(1).max(120),
+  aboutTitleLine1: z.string().trim().min(1).max(120),
+  aboutTitleLine2: z.string().trim().min(1).max(120),
+  aboutDescription: z.string().trim().min(1).max(700),
+  aboutButtonLabel: z.string().trim().min(1).max(80),
+  aboutImageUrl: assetPathSchema,
+  aboutImageAlt: z.string().trim().max(120).default(""),
+  feature1Title: z.string().trim().min(1).max(80),
+  feature1Text: z.string().trim().min(1).max(240),
+  feature2Title: z.string().trim().min(1).max(80),
+  feature2Text: z.string().trim().min(1).max(240),
+  feature3Title: z.string().trim().min(1).max(80),
+  feature3Text: z.string().trim().min(1).max(240),
+  ctaTitleLine1: z.string().trim().min(1).max(120),
+  ctaTitleLine2: z.string().trim().min(1).max(120),
+  ctaDescription: z.string().trim().min(1).max(500),
+  ctaButtonLabel: z.string().trim().min(1).max(80),
+  footerCopyrightText: z.string().trim().min(1).max(180),
+});
+
+export const mediaAssetSchema = z.object({
+  kind: z.enum(["image", "video"]),
+  url: requiredAssetPathSchema,
+  altText: z.string().trim().max(160).optional().default(""),
+  thumbnailUrl: assetPathSchema.optional().default(""),
+  label: z.string().trim().max(120).optional().default(""),
+});
+
 export const adminLoginSchema = z.object({
   username: z.string().trim().min(1, "Username is required"),
   password: z.string().min(1, "Password is required"),
@@ -49,3 +138,5 @@ export type ProductFilter = z.infer<typeof productFilterSchema>;
 export type ContactForm = z.infer<typeof contactFormSchema>;
 export type ProductAdminForm = z.infer<typeof productAdminSchema>;
 export type AdminLoginForm = z.infer<typeof adminLoginSchema>;
+export type SiteContentForm = z.infer<typeof siteContentSchema>;
+export type MediaAssetForm = z.infer<typeof mediaAssetSchema>;

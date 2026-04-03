@@ -3,6 +3,7 @@ import { defaultLocale, locales, type Locale } from "@/i18n/config";
 import type {
   LocalizedFieldMap,
   Product,
+  ProductMediaItem,
   ProductTranslations,
   ProductUpsertInput,
 } from "@/types";
@@ -29,9 +30,48 @@ const dbProductRecordSchema = z.object({
   nameTranslations: z.string().nullable().optional(),
   tagTranslations: z.string().nullable().optional(),
   descriptionTranslations: z.string().nullable().optional(),
+  mediaLinks: z
+    .array(
+      z.object({
+        role: z.string(),
+        sortOrder: z.number().int(),
+        mediaAsset: z.object({
+          id: z.string(),
+          kind: z.string(),
+          url: z.string().url(),
+          altText: z.string().nullable().optional(),
+          thumbnailUrl: z.string().nullable().optional(),
+          label: z.string().nullable().optional(),
+        }),
+      }),
+    )
+    .optional()
+    .default([]),
 });
 
 export type DbProductRecord = z.infer<typeof dbProductRecordSchema>;
+
+export function normalizeProductMedia(
+  media: ProductMediaItem[] | undefined,
+): ProductMediaItem[] | undefined {
+  if (!media || media.length === 0) {
+    return undefined;
+  }
+
+  const normalized = media
+    .map((item, index) => ({
+      ...item,
+      url: item.url.trim(),
+      alt: item.alt?.trim(),
+      thumbnailUrl: item.thumbnailUrl?.trim(),
+      label: item.label?.trim(),
+      role: item.role ?? (item.type === "video" ? "video" : index === 0 ? "cover" : "gallery"),
+      sortOrder: item.sortOrder ?? index,
+    }))
+    .filter((item) => item.url.length > 0 || Boolean(item.assetId));
+
+  return normalized.length > 0 ? normalized : undefined;
+}
 
 export function normalizeProductTag(tag: string): string {
   return tag.trim().toLocaleLowerCase();
@@ -90,6 +130,19 @@ export function mapDbProductRecord(record: DbProductRecord): Product {
     weight: product.weight ?? undefined,
     featured: product.featured,
     translations,
+    media: normalizeProductMedia(
+      product.mediaLinks.map((link) => ({
+        id: link.mediaAsset.id,
+        assetId: link.mediaAsset.id,
+        type: link.mediaAsset.kind === "video" ? "video" : "image",
+        url: link.mediaAsset.url,
+        alt: link.mediaAsset.altText ?? undefined,
+        thumbnailUrl: link.mediaAsset.thumbnailUrl ?? undefined,
+        label: link.mediaAsset.label ?? undefined,
+        role: link.role === "video" ? "video" : link.role === "cover" ? "cover" : "gallery",
+        sortOrder: link.sortOrder,
+      })),
+    ),
   };
 }
 

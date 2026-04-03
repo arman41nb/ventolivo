@@ -82,6 +82,7 @@
     "dashboard": {
       "logout": "Logout",
       "productManager": "Product manager",
+      "sessionExpires": "Session expires",
       "stats": {
         "products": "Products",
         "featured": "Featured"
@@ -89,6 +90,9 @@
       "recentProductsBadge": "Recent products",
       "recentProductsTitle": "Latest catalog entries",
       "openProductManager": "Open product manager",
+      "activityBadge": "Operations",
+      "activityTitle": "Recent admin activity",
+      "activityFallback": "A secure admin event was recorded.",
       "roadmapBadge": "Next steps",
       "roadmapTitle": "Admin roadmap",
       "roadmapItems": [
@@ -96,6 +100,17 @@
         "Prepare the next auth upgrade without rewriting admin routes.",
         "Use this dashboard as the launch point for future inbox and analytics views."
       ]
+    },
+    "login": {
+      "title": "Secure admin access",
+      "description": "Sign in to manage the multilingual catalog with persisted sessions, audit history, and a stronger operational foundation.",
+      "kicker": "Welcome back",
+      "username": "Username",
+      "password": "Password",
+      "submit": "Sign in",
+      "invalidCredentials": "Invalid credentials. Please try again.",
+      "loggedOut": "You have been signed out successfully.",
+      "bootstrapHint": "The first successful login with your bootstrap environment credentials will provision the initial admin account."
     },
     "create": {
       "badge": "Create",

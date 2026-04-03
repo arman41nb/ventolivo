@@ -42,6 +42,7 @@ describe("mapDbProductRecord", () => {
         ingredients: '["mint oil", "olive oil"]',
         weight: "100g",
         featured: true,
+        mediaLinks: [],
       }),
     ).toEqual({
       id: 1,
@@ -51,10 +52,11 @@ describe("mapDbProductRecord", () => {
       price: 120,
       color: "#fff",
       description: "Fresh and clean",
-      ingredients: ["mint oil", "olive oil"],
-      weight: "100g",
-      featured: true,
-    });
+        ingredients: ["mint oil", "olive oil"],
+        weight: "100g",
+        featured: true,
+        media: undefined,
+      });
   });
 
   it("drops invalid ingredient payloads instead of throwing", () => {
@@ -70,6 +72,7 @@ describe("mapDbProductRecord", () => {
         ingredients: "[invalid",
         weight: null,
         featured: false,
+        mediaLinks: [],
       }),
     ).toEqual({
       id: 2,
@@ -79,9 +82,10 @@ describe("mapDbProductRecord", () => {
       price: 150,
       color: "#fdd",
       description: "Soft floral bar",
-      ingredients: undefined,
-      weight: undefined,
-      featured: false,
-    });
+        ingredients: undefined,
+        weight: undefined,
+        featured: false,
+        media: undefined,
+      });
   });
 });

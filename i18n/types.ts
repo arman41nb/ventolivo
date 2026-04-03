@@ -82,6 +82,7 @@ export interface Dictionary {
     dashboard: {
       logout: string;
       productManager: string;
+      sessionExpires: string;
       stats: {
         products: string;
         featured: string;
@@ -89,9 +90,23 @@ export interface Dictionary {
       recentProductsBadge: string;
       recentProductsTitle: string;
       openProductManager: string;
+      activityBadge: string;
+      activityTitle: string;
+      activityFallback: string;
       roadmapBadge: string;
       roadmapTitle: string;
       roadmapItems: string[];
+    };
+    login: {
+      title: string;
+      description: string;
+      kicker: string;
+      username: string;
+      password: string;
+      submit: string;
+      invalidCredentials: string;
+      loggedOut: string;
+      bootstrapHint: string;
     };
     create: {
       badge: string;
