@@ -2,12 +2,14 @@ import { cache } from "react";
 import {
   dbGetLocalizedSiteContentSettings,
   dbGetSiteContentSettings,
+  dbGetSiteLocales,
   dbUpsertSiteContentTranslation,
   dbUpsertSiteContentSettings,
 } from "@/db";
 import type {
   SiteContentInput,
   SiteContentLocaleInput,
+  SiteLocaleConfig,
   SiteContentSettings,
 } from "@/types";
 
@@ -20,6 +22,15 @@ export const getSiteContentSettings = cache(
     return dbGetSiteContentSettings();
   },
 );
+
+export const getSiteLocales = cache(async (): Promise<SiteLocaleConfig[]> => {
+  return dbGetSiteLocales();
+});
+
+export async function isSupportedSiteLocale(locale: string): Promise<boolean> {
+  const siteLocales = await getSiteLocales();
+  return siteLocales.some((siteLocale) => siteLocale.code === locale);
+}
 
 export async function updateSiteContentSettings(
   input: SiteContentInput,

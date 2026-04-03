@@ -2,9 +2,9 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { revalidatePath } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
-import { locales } from "@/i18n/config";
 import { isAdminAuthenticatedRequest } from "@/modules/admin-auth/session";
 import { createMediaAsset } from "@/modules/media";
+import { getSiteLocales } from "@/modules/site-content";
 import { slugify } from "@/lib/utils";
 
 export const runtime = "nodejs";
@@ -110,7 +110,9 @@ export async function POST(request: NextRequest) {
     assets.push(asset);
   }
 
-  for (const locale of locales) {
+  const siteLocales = await getSiteLocales();
+
+  for (const locale of siteLocales.map((siteLocale) => siteLocale.code)) {
     revalidatePath(`/${locale}/admin/media`);
     revalidatePath(`/${locale}/admin/site`);
     revalidatePath(`/${locale}/admin/products`);

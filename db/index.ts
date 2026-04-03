@@ -21,6 +21,7 @@ export {
 export {
   dbGetLocalizedSiteContentSettings,
   dbGetSiteContentSettings,
+  dbGetSiteLocales,
   dbUpsertSiteContentTranslation,
   dbUpsertSiteContentSettings,
 } from "./site-content";

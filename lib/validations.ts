@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidSiteLocaleCode } from "@/modules/site-content/locales";
 
 function isValidAssetReference(value: string): boolean {
   if (value.length === 0) {
@@ -119,6 +120,70 @@ export const siteContentSchema = z.object({
   footerCopyrightText: z.string().trim().min(1).max(180),
 });
 
+export const siteContentLocaleSchema = siteContentSchema.pick({
+  navbarLinkProducts: true,
+  navbarLinkAbout: true,
+  navbarLinkContact: true,
+  navbarCtaLabel: true,
+  heroSubtitle: true,
+  heroTitleLine1: true,
+  heroTitleLine2: true,
+  heroTitleLine3: true,
+  heroDescription: true,
+  heroPrimaryButtonLabel: true,
+  heroSecondaryButtonLabel: true,
+  heroBadgeValue: true,
+  heroBadgeLabel: true,
+  stripBannerItem1: true,
+  stripBannerItem2: true,
+  stripBannerItem3: true,
+  stripBannerItem4: true,
+  featuredProductsTitle: true,
+  featuredProductsViewAllLabel: true,
+  aboutSubtitle: true,
+  aboutTitleLine1: true,
+  aboutTitleLine2: true,
+  aboutDescription: true,
+  aboutButtonLabel: true,
+  feature1Title: true,
+  feature1Text: true,
+  feature2Title: true,
+  feature2Text: true,
+  feature3Title: true,
+  feature3Text: true,
+  ctaTitleLine1: true,
+  ctaTitleLine2: true,
+  ctaDescription: true,
+  ctaButtonLabel: true,
+  footerCopyrightText: true,
+});
+
+export const siteLocaleSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .min(2)
+    .max(16)
+    .refine((value) => isValidSiteLocaleCode(value), "Invalid locale code"),
+  label: z.string().trim().min(1).max(40),
+  direction: z.enum(["ltr", "rtl"]),
+});
+
+export const siteLocalesSchema = z
+  .array(siteLocaleSchema)
+  .min(1)
+  .superRefine((locales, context) => {
+    const codes = locales.map((locale) => locale.code.trim().toLowerCase());
+    const uniqueCodes = new Set(codes);
+
+    if (uniqueCodes.size !== codes.length) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Locale codes must be unique",
+      });
+    }
+  });
+
 export const mediaAssetSchema = z.object({
   kind: z.enum(["image", "video"]),
   url: requiredAssetPathSchema,
@@ -139,4 +204,6 @@ export type ContactForm = z.infer<typeof contactFormSchema>;
 export type ProductAdminForm = z.infer<typeof productAdminSchema>;
 export type AdminLoginForm = z.infer<typeof adminLoginSchema>;
 export type SiteContentForm = z.infer<typeof siteContentSchema>;
+export type SiteContentLocaleForm = z.infer<typeof siteContentLocaleSchema>;
 export type MediaAssetForm = z.infer<typeof mediaAssetSchema>;
+export type SiteLocaleForm = z.infer<typeof siteLocaleSchema>;

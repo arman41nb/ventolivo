@@ -1,8 +1,16 @@
 import { prisma } from "./client";
-import { defaultSiteContentSettings } from "@/modules/site-content/defaults";
+import {
+  defaultSiteContentSettings,
+  defaultSiteLocales,
+} from "@/modules/site-content/defaults";
+import {
+  SITE_LOCALE_CONTENT_KEY,
+  normalizeSiteLocales,
+} from "@/modules/site-content/locales";
 import type {
   SiteContentInput,
   SiteContentLocaleInput,
+  SiteLocaleConfig,
   SiteContentSettings,
 } from "@/types";
 
@@ -33,19 +41,48 @@ const localizedJsonKeys = [
   "feature3Text",
 ] as const;
 
-function parseContentJson(
+function parseRawContentJson(
   value: string | null | undefined,
-): Partial<SiteContentSettings> {
+): Record<string, unknown> {
   if (!value) {
     return {};
   }
 
   try {
-    const parsed = JSON.parse(value) as Partial<SiteContentSettings>;
+    const parsed = JSON.parse(value) as Record<string, unknown>;
     return typeof parsed === "object" && parsed ? parsed : {};
   } catch {
     return {};
   }
+}
+
+function parseContentJson(
+  value: string | null | undefined,
+): Partial<SiteContentSettings> {
+  const rawContent = parseRawContentJson(value);
+
+  return Object.fromEntries(
+    Object.entries(rawContent).filter(([key]) => key !== SITE_LOCALE_CONTENT_KEY),
+  ) as Partial<SiteContentSettings>;
+}
+
+function parseSiteLocales(
+  value: string | null | undefined,
+): SiteLocaleConfig[] {
+  const rawContent = parseRawContentJson(value);
+  const rawLocales = rawContent[SITE_LOCALE_CONTENT_KEY];
+
+  if (!Array.isArray(rawLocales)) {
+    return defaultSiteLocales;
+  }
+
+  return normalizeSiteLocales(
+    rawLocales.map((locale) => ({
+      code: typeof locale?.code === "string" ? locale.code : "",
+      label: typeof locale?.label === "string" ? locale.label : "",
+      direction: locale?.direction === "rtl" ? "rtl" : "ltr",
+    })),
+  );
 }
 
 function pickContentValues(
@@ -62,6 +99,16 @@ function serializeContentValues(
   keys: readonly (keyof SiteContentSettings)[],
 ) {
   return JSON.stringify(pickContentValues(input, keys));
+}
+
+function serializeSiteContentConfig(
+  input: Partial<SiteContentSettings>,
+  siteLocales: SiteLocaleConfig[] | undefined,
+) {
+  return JSON.stringify({
+    ...pickContentValues(input, sharedJsonKeys),
+    [SITE_LOCALE_CONTENT_KEY]: normalizeSiteLocales(siteLocales),
+  });
 }
 
 function getBaseColumnValues(input: Partial<SiteContentSettings>) {
@@ -173,6 +220,17 @@ export async function dbGetSiteContentSettings(): Promise<SiteContentSettings> {
   return mapSiteContentRecord(settings);
 }
 
+export async function dbGetSiteLocales(): Promise<SiteLocaleConfig[]> {
+  const settings = await prisma.siteContentSettings.findUnique({
+    where: { id: 1 },
+    select: {
+      contentJson: true,
+    },
+  });
+
+  return parseSiteLocales(settings?.contentJson);
+}
+
 export async function dbUpsertSiteContentSettings(
   input: SiteContentInput,
 ): Promise<SiteContentSettings> {
@@ -180,12 +238,12 @@ export async function dbUpsertSiteContentSettings(
     where: { id: 1 },
     update: {
       ...getBaseColumnValues(input),
-      contentJson: serializeContentValues(input, sharedJsonKeys),
+      contentJson: serializeSiteContentConfig(input, input.siteLocales),
     },
     create: {
       id: 1,
       ...getBaseColumnValues(input),
-      contentJson: serializeContentValues(input, sharedJsonKeys),
+      contentJson: serializeSiteContentConfig(input, input.siteLocales),
     },
   });
 
@@ -242,9 +300,9 @@ export async function dbUpsertSiteContentTranslation(
     create: {
       id: 1,
       ...getBaseColumnValues(defaultSiteContentSettings),
-      contentJson: serializeContentValues(
+      contentJson: serializeSiteContentConfig(
         defaultSiteContentSettings,
-        sharedJsonKeys,
+        defaultSiteLocales,
       ),
     },
   });

@@ -14,7 +14,10 @@ export type {
 export type { MediaLibraryAsset, MediaLibraryAssetInput } from "./media";
 export type {
   SiteContentInput,
+  SiteContentLocaleFields,
   SiteContentLocaleInput,
+  SiteLocaleConfig,
+  SiteLocaleDirection,
   SiteContentSettings,
 } from "./site-content";
 export type { NavLink, Feature, SocialLink, SEOData } from "./common";

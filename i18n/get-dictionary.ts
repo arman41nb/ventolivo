@@ -30,7 +30,7 @@ function normalizeDictionary(dictionary: unknown): Dictionary {
   };
 }
 
-const dictionaries: Record<Locale, Dictionary> = {
+const dictionaries: Record<string, Dictionary> = {
   en: normalizeDictionary(en),
   tr: normalizeDictionary(tr),
   de: normalizeDictionary(de),
@@ -39,5 +39,5 @@ const dictionaries: Record<Locale, Dictionary> = {
 };
 
 export const getDictionary = cache(async (locale: Locale): Promise<Dictionary> => {
-  return dictionaries[locale];
+  return dictionaries[locale] ?? dictionaries.en;
 });

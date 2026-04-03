@@ -6,7 +6,7 @@ import { isValidLocale, type Locale } from "@/i18n/config";
 import { getAdminSessionRecoveryPath } from "@/modules/admin-auth/navigation";
 import { getAdminSession } from "@/modules/admin-auth/server";
 import { getAllMediaAssets } from "@/modules/media";
-import { getSiteContentSettings } from "@/modules/site-content";
+import { getSiteContentSettings, getSiteLocales } from "@/modules/site-content";
 import { getFeaturedProducts } from "@/services/products";
 import { saveSiteContentAction } from "./actions";
 
@@ -39,10 +39,11 @@ export default async function AdminSiteContentPage({
     );
   }
 
-  const [settings, mediaLibrary, featuredProducts] = await Promise.all([
+  const [settings, mediaLibrary, featuredProducts, supportedLocales] = await Promise.all([
     getSiteContentSettings(locale),
     getAllMediaAssets(),
     getFeaturedProducts(4, locale),
+    getSiteLocales(),
   ]);
 
   return (
@@ -78,6 +79,7 @@ export default async function AdminSiteContentPage({
         dictionary={dictionary}
         mediaLibrary={mediaLibrary}
         featuredProducts={featuredProducts}
+        supportedLocales={supportedLocales}
       />
     </AdminShell>
   );

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { autoTranslateProductFields } from "@/lib/libretranslate";
+import { autoTranslateTextFields } from "@/lib/libretranslate";
+import { siteContentLocaleSchema } from "@/lib/validations";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { getAdminSession } from "@/modules/admin-auth/server";
 
@@ -9,14 +10,10 @@ const localeSchema = z
   .trim()
   .refine((value) => isValidLocale(value), "Invalid locale");
 
-const translateProductSchema = z.object({
+const translateSiteContentSchema = z.object({
   sourceLocale: localeSchema,
   targetLocales: z.array(localeSchema).min(1),
-  fields: z.object({
-    name: z.string().trim().min(1),
-    tag: z.string().trim().min(1),
-    description: z.string().trim().min(1),
-  }),
+  fields: siteContentLocaleSchema,
 });
 
 export async function POST(request: Request) {
@@ -28,7 +25,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const result = translateProductSchema.safeParse(body);
+    const result = translateSiteContentSchema.safeParse(body);
 
     if (!result.success) {
       return NextResponse.json(
@@ -37,7 +34,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { translations, providers } = await autoTranslateProductFields({
+    const { translations, providers } = await autoTranslateTextFields({
       sourceLocale: result.data.sourceLocale as Locale,
       targetLocales: result.data.targetLocales as Locale[],
       fields: result.data.fields,
@@ -45,7 +42,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ translations, providers });
   } catch (error) {
-    console.error("Product auto-translation failed:", error);
+    console.error("Site content auto-translation failed:", error);
 
     return NextResponse.json(
       { error: "Translation service is currently unavailable" },

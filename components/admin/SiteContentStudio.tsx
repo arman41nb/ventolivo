@@ -5,11 +5,18 @@ import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import MediaUploadDropzone from "@/components/admin/MediaUploadDropzone";
+import SiteContentTranslationAssistant from "@/components/admin/SiteContentTranslationAssistant";
+import SiteLocalesManager from "@/components/admin/SiteLocalesManager";
 import ProductGrid from "@/components/products/ProductGrid";
 import { siteConfig, socialLinks } from "@/config";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
-import type { MediaLibraryAsset, Product, SiteContentSettings } from "@/types";
+import type {
+  MediaLibraryAsset,
+  Product,
+  SiteContentSettings,
+  SiteLocaleConfig,
+} from "@/types";
 
 type EditableSectionId =
   | "header"
@@ -97,6 +104,7 @@ export interface SiteContentStudioProps {
   dictionary: Dictionary;
   mediaLibrary: MediaLibraryAsset[];
   featuredProducts: Product[];
+  supportedLocales: SiteLocaleConfig[];
 }
 
 const sectionLabels: Record<EditableSectionId, string> = {
@@ -1369,6 +1377,7 @@ export default function SiteContentStudio({
   dictionary,
   mediaLibrary,
   featuredProducts,
+  supportedLocales,
 }: SiteContentStudioProps) {
   const [selectedField, setSelectedField] =
     useState<EditableFieldId>("heroTitleLine1");
@@ -1723,6 +1732,16 @@ export default function SiteContentStudio({
         <section className="rounded-[32px] border border-brown/15 bg-white p-6 shadow-sm">
           {renderFieldEditor()}
         </section>
+
+        <SiteContentTranslationAssistant
+          currentLocale={locale}
+          locales={supportedLocales}
+        />
+
+        <SiteLocalesManager
+          currentLocale={locale}
+          locales={supportedLocales}
+        />
 
         <section className="rounded-[32px] border border-brown/15 bg-white p-6 shadow-sm">
           <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
