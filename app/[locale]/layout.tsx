@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getDirection, isValidLocale, locales } from "@/i18n/config";
+import { isValidLocale } from "@/i18n/config";
 import type { Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 import { I18nProvider } from "@/hooks/useI18n";
 import { generatePageMetadata } from "@/lib/seo";
+import { getSiteLocales } from "@/modules/site-content";
 import "../globals.css";
-
-export async function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
-}
 
 export async function generateMetadata({
   params,
@@ -18,6 +15,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   if (!isValidLocale(locale)) return {};
+  const siteLocales = await getSiteLocales();
+
+  if (!siteLocales.some((siteLocale) => siteLocale.code === locale)) {
+    return {};
+  }
 
   const dict = await getDictionary(locale);
   const baseMetadata = generatePageMetadata({
@@ -48,11 +50,18 @@ export default async function LocaleLayout({
   }
 
   const locale = rawLocale as Locale;
-  const dir = getDirection(locale);
-  const dictionary = await getDictionary(locale);
+  const [siteLocales, dictionary] = await Promise.all([
+    getSiteLocales(),
+    getDictionary(locale),
+  ]);
+  const localeConfig = siteLocales.find((siteLocale) => siteLocale.code === locale);
+
+  if (!localeConfig) {
+    notFound();
+  }
 
   return (
-    <html lang={locale} dir={dir} className="h-full antialiased">
+    <html lang={locale} dir={localeConfig.direction} className="h-full antialiased">
       <body className="min-h-full flex flex-col">
         <I18nProvider dictionary={dictionary} locale={locale}>
           {children}

@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { isValidSiteLocaleCode } from "@/modules/site-content/locales";
+import {
+  baseSiteLocaleCode,
+  isValidSiteLocaleCode,
+} from "@/modules/site-content/locales";
 
 function isValidAssetReference(value: string): boolean {
   if (value.length === 0) {
@@ -180,6 +183,13 @@ export const siteLocalesSchema = z
       context.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Locale codes must be unique",
+      });
+    }
+
+    if (!uniqueCodes.has(baseSiteLocaleCode)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "The base locale is required",
       });
     }
   });

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Button from "@/components/ui/Button";
 import type { Dictionary } from "@/i18n";
 import type { SiteContentSettings } from "@/types";

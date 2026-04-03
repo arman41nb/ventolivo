@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { siteConfig, socialLinks } from "@/config";
 import type { Dictionary } from "@/i18n";
+import type { Locale } from "@/i18n/config";
 import type { SiteContentSettings } from "@/types";
 
 interface FooterProps {
   dict?: Dictionary;
   siteSettings?: SiteContentSettings;
+  locale?: Locale;
 }
 
-export default function Footer({ dict, siteSettings }: FooterProps) {
+export default function Footer({ dict, siteSettings, locale }: FooterProps) {
   const brandName = siteSettings?.brandName ?? siteConfig.name;
   const copyright =
     siteSettings?.footerCopyrightText ?? dict?.footer.copyright ?? "All rights reserved.";
@@ -18,7 +20,11 @@ export default function Footer({ dict, siteSettings }: FooterProps) {
       className="px-[2.5rem] py-[2rem] flex items-center justify-between border-t border-brown/[0.15]"
       role="contentinfo"
     >
-      <Link href="/" className="font-serif text-[18px] text-brown no-underline" aria-label={brandName}>
+      <Link
+        href={locale ? `/${locale}` : "/"}
+        className="font-serif text-[18px] text-brown no-underline"
+        aria-label={brandName}
+      >
         {brandName}
       </Link>
       <p className="text-[12px] text-muted">

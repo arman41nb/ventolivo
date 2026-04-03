@@ -188,21 +188,15 @@ export async function saveSiteContentAction(formData: FormData) {
     siteLocales,
   });
 
-  if (locale !== defaultLocale) {
-    await updateSiteContentTranslation({
-      locale,
-      ...currentLocaleFields,
-    });
-  }
+  await updateSiteContentTranslation({
+    locale,
+    ...currentLocaleFields,
+  });
 
   for (const [targetLocale, translatedFields] of Object.entries(
     translatedContent,
   )) {
-    if (
-      !translatedFields ||
-      targetLocale === locale ||
-      targetLocale === defaultLocale
-    ) {
+    if (!translatedFields || targetLocale === locale) {
       continue;
     }
 

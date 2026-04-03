@@ -66,11 +66,14 @@ export function getDefaultSiteLocales(): SiteLocaleConfig[] {
 export function normalizeSiteLocales(
   locales: SiteLocaleConfig[] | undefined,
 ): SiteLocaleConfig[] {
-  const normalizedEntries = (locales ?? [])
+  const normalizedEntries: SiteLocaleConfig[] = (locales ?? [])
     .map((locale) => ({
       code: normalizeSiteLocaleCode(locale.code),
       label: locale.label.trim(),
-      direction: locale.direction === "rtl" ? "rtl" : "ltr",
+      direction:
+        locale.direction === "rtl"
+          ? ("rtl" as SiteLocaleDirection)
+          : ("ltr" as SiteLocaleDirection),
     }))
     .filter(
       (locale) =>

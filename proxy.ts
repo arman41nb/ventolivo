@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { defaultLocale, locales } from "@/i18n/config";
+import { defaultLocale, isValidLocale } from "@/i18n/config";
 import type { Locale } from "@/i18n/config";
 import { isAdminAuthenticatedRequest } from "@/modules/admin-auth/session";
 
@@ -17,7 +17,7 @@ function getLocaleFromRequest(request: NextRequest): Locale {
 
   for (const lang of acceptLanguage.split(",")) {
     const code = lang.split(";")[0].trim().toLowerCase().slice(0, 2);
-    if (langMap[code] && locales.includes(langMap[code])) {
+    if (langMap[code]) {
       return langMap[code];
     }
   }
@@ -32,10 +32,7 @@ export async function proxy(request: NextRequest) {
     return enforceAdminAuth(request);
   }
 
-  const pathnameHasLocale = locales.some(
-    (locale) =>
-      pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
-  );
+  const pathnameHasLocale = hasLocalePrefix(pathname);
 
   if (pathnameHasLocale) return;
 
@@ -45,15 +42,21 @@ export async function proxy(request: NextRequest) {
   return NextResponse.redirect(request.nextUrl);
 }
 
+function getPathLocale(pathname: string): string | null {
+  const locale = pathname.split("/")[1] ?? "";
+  return isValidLocale(locale) ? locale : null;
+}
+
+function hasLocalePrefix(pathname: string): boolean {
+  return getPathLocale(pathname) !== null;
+}
+
 function isAdminPath(pathname: string): boolean {
-  return locales.some(
-    (locale) =>
-      pathname === `/${locale}/admin` || pathname.startsWith(`/${locale}/admin/`),
-  );
+  return pathname.split("/")[2] === "admin" && hasLocalePrefix(pathname);
 }
 
 function isAdminLoginPath(pathname: string): boolean {
-  return locales.some((locale) => pathname === `/${locale}/admin/login`);
+  return pathname.split("/")[2] === "admin" && pathname.split("/")[3] === "login";
 }
 
 async function enforceAdminAuth(request: NextRequest) {

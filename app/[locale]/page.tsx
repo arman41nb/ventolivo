@@ -6,7 +6,7 @@ import AboutSection from "@/components/sections/AboutSection";
 import FeaturesGrid from "@/components/sections/FeaturesGrid";
 import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
-import { getSiteContentSettings } from "@/modules/site-content";
+import { getSiteContentSettings, getSiteLocales } from "@/modules/site-content";
 import { getFeaturedProducts } from "@/services/products";
 import { getDictionary } from "@/i18n";
 import { isValidLocale, type Locale } from "@/i18n/config";
@@ -23,15 +23,21 @@ export default async function Home({
   }
 
   const currentLocale = locale as Locale;
-  const [dict, featured, siteSettings] = await Promise.all([
+  const [dict, featured, siteSettings, supportedLocales] = await Promise.all([
     getDictionary(currentLocale),
     getFeaturedProducts(4, currentLocale),
     getSiteContentSettings(currentLocale),
+    getSiteLocales(),
   ]);
 
   return (
     <>
-      <Navbar dict={dict} locale={currentLocale} siteSettings={siteSettings} />
+      <Navbar
+        dict={dict}
+        locale={currentLocale}
+        siteSettings={siteSettings}
+        supportedLocales={supportedLocales}
+      />
       <Hero dict={dict} locale={currentLocale} siteSettings={siteSettings} />
       <StripBanner dict={dict} siteSettings={siteSettings} />
       <FeaturedProducts
@@ -49,7 +55,7 @@ export default async function Home({
       <AboutSection dict={dict} siteSettings={siteSettings} />
       <FeaturesGrid dict={dict} siteSettings={siteSettings} />
       <CTASection dict={dict} siteSettings={siteSettings} />
-      <Footer dict={dict} siteSettings={siteSettings} />
+      <Footer dict={dict} siteSettings={siteSettings} locale={currentLocale} />
     </>
   );
 }

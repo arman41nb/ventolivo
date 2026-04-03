@@ -208,9 +208,15 @@ export function normalizeProductTranslations(
     }
 
     const filtered = Object.fromEntries(
-      Object.entries(value)
-        .map(([locale, text]) => [locale, text.trim()])
-        .filter(([, text]) => text.length > 0),
+      Object.entries(value).flatMap(([locale, text]) => {
+        if (typeof text !== "string") {
+          return [];
+        }
+
+        const normalizedText = text.trim();
+
+        return normalizedText.length > 0 ? [[locale, normalizedText]] : [];
+      }),
     ) as LocalizedFieldMap;
 
     if (Object.keys(filtered).length > 0) {

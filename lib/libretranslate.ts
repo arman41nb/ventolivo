@@ -1,7 +1,7 @@
 import { env } from "@/lib/env";
 import { isValidLocale, type Locale } from "@/i18n/config";
 
-interface TranslationFields {
+interface TranslationFields extends Record<string, string> {
   name: string;
   tag: string;
   description: string;

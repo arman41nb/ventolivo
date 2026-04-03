@@ -15,8 +15,8 @@ describe("getSafeAdminNextPath", () => {
     expect(getSafeAdminNextPath("/products", "fa")).toBe("/fa/admin");
   });
 
-  it("falls back to the default locale when the locale is invalid", () => {
-    expect(getSafeAdminNextPath("/zz/admin", "zz")).toBe("/en/admin");
+  it("keeps syntactically valid locale codes for admin paths", () => {
+    expect(getSafeAdminNextPath("/zz/admin", "zz")).toBe("/zz/admin");
   });
 });
 

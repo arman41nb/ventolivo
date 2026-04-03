@@ -8,7 +8,7 @@ import {
   inferSiteLocaleLabel,
   isValidSiteLocaleCode,
   normalizeSiteLocaleCode,
-} from "@/modules/site-content";
+} from "@/modules/site-content/locales";
 import type { SiteLocaleConfig, SiteLocaleDirection } from "@/types";
 
 interface SiteLocalesManagerProps {

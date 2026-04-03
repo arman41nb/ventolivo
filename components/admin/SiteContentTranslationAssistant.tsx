@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { siteContentTranslationKeys } from "@/modules/site-content";
+import { siteContentTranslationKeys } from "@/modules/site-content/translation";
 import type {
   SiteContentLocaleFields,
   SiteLocaleConfig,

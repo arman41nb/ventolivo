@@ -464,18 +464,33 @@ const editableFields: Record<EditableFieldId, EditableFieldMeta> = {
 
 const featureIcons: ReactNode[] = [
   (
-    <svg viewBox="0 0 24 24" className="h-4 w-4 stroke-brown fill-none" strokeWidth={1.5}>
+    <svg
+      key="feature-icon-clock"
+      viewBox="0 0 24 24"
+      className="h-4 w-4 stroke-brown fill-none"
+      strokeWidth={1.5}
+    >
       <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z" />
       <path d="M12 6v6l4 2" />
     </svg>
   ),
   (
-    <svg viewBox="0 0 24 24" className="h-4 w-4 stroke-brown fill-none" strokeWidth={1.5}>
+    <svg
+      key="feature-icon-home"
+      viewBox="0 0 24 24"
+      className="h-4 w-4 stroke-brown fill-none"
+      strokeWidth={1.5}
+    >
       <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
     </svg>
   ),
   (
-    <svg viewBox="0 0 24 24" className="h-4 w-4 stroke-brown fill-none" strokeWidth={1.5}>
+    <svg
+      key="feature-icon-heart"
+      viewBox="0 0 24 24"
+      className="h-4 w-4 stroke-brown fill-none"
+      strokeWidth={1.5}
+    >
       <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
     </svg>
   ),
