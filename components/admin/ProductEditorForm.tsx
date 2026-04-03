@@ -1,12 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import ProductTranslationAssistant from "@/components/admin/ProductTranslationAssistant";
 import type { Dictionary } from "@/i18n/types";
-import {
-  localeLabels,
-  locales,
-  type Locale,
-} from "@/i18n/config";
-import type { MediaLibraryAsset, Product } from "@/types";
+import type { Locale } from "@/i18n/config";
+import type { MediaLibraryAsset, Product, SiteLocaleConfig } from "@/types";
 
 interface ProductEditorFormProps {
   locale: Locale;
@@ -15,6 +11,7 @@ interface ProductEditorFormProps {
   action: (formData: FormData) => void | Promise<void>;
   product?: Product;
   mediaLibrary?: MediaLibraryAsset[];
+  supportedLocales: SiteLocaleConfig[];
   disabled?: boolean;
 }
 
@@ -25,6 +22,7 @@ export default function ProductEditorForm({
   action,
   product,
   mediaLibrary = [],
+  supportedLocales,
   disabled = false,
 }: ProductEditorFormProps) {
   const selectedCoverId = product?.media?.find((item) => item.role === "cover")?.assetId;
@@ -310,34 +308,33 @@ export default function ProductEditorForm({
           </p>
           <ProductTranslationAssistant
             currentLocale={locale}
-            locales={locales}
-            localeLabels={localeLabels}
+            locales={supportedLocales}
             dictionary={dictionary.admin.translationAssistant}
           />
         </div>
         <div className="mt-4 grid gap-5">
-          {locales.map((translationLocale) => (
+          {supportedLocales.map((translationLocale) => (
             <div
-              key={translationLocale}
+              key={translationLocale.code}
               className="rounded-[20px] border border-brown/10 bg-white p-4"
             >
               <p className="text-xs uppercase tracking-[0.16em] text-brown">
-                {localeLabels[translationLocale]}
+                {translationLocale.label}
               </p>
               <div className="mt-3 grid gap-4 md:grid-cols-2">
                 <label className="flex flex-col gap-2 text-sm">
                   <span className="text-muted">{dictionary.admin.form.name}</span>
                   <input
-                    name={`translations.name.${translationLocale}`}
-                    defaultValue={product?.translations?.name?.[translationLocale] ?? ""}
+                    name={`translations.name.${translationLocale.code}`}
+                    defaultValue={product?.translations?.name?.[translationLocale.code] ?? ""}
                     className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown"
                   />
                 </label>
                 <label className="flex flex-col gap-2 text-sm">
                   <span className="text-muted">{dictionary.admin.form.tag}</span>
                   <input
-                    name={`translations.tag.${translationLocale}`}
-                    defaultValue={product?.translations?.tag?.[translationLocale] ?? ""}
+                    name={`translations.tag.${translationLocale.code}`}
+                    defaultValue={product?.translations?.tag?.[translationLocale.code] ?? ""}
                     className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown"
                   />
                 </label>
@@ -345,9 +342,9 @@ export default function ProductEditorForm({
               <label className="mt-4 flex flex-col gap-2 text-sm">
                 <span className="text-muted">{dictionary.admin.form.description}</span>
                 <textarea
-                  name={`translations.description.${translationLocale}`}
+                  name={`translations.description.${translationLocale.code}`}
                   defaultValue={
-                    product?.translations?.description?.[translationLocale] ?? ""
+                    product?.translations?.description?.[translationLocale.code] ?? ""
                   }
                   rows={3}
                   className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown"

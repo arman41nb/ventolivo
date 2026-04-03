@@ -1,5 +1,5 @@
 import { env } from "@/lib/env";
-import { locales, type Locale } from "@/i18n/config";
+import { isValidLocale, type Locale } from "@/i18n/config";
 
 interface TranslationFields {
   name: string;
@@ -11,6 +11,8 @@ type TranslationResult = Partial<Record<Locale, TranslationFields>>;
 type TranslationProviders = Partial<
   Record<Locale, "libretranslate" | "mymemory">
 >;
+
+type TranslationProvider = "libretranslate" | "mymemory";
 
 interface LibreTranslateResponse {
   translatedText?: string | string[];
@@ -122,19 +124,46 @@ export async function autoTranslateProductFields({
   translations: TranslationResult;
   providers: TranslationProviders;
 }> {
+  const { translations, providers } = await autoTranslateTextFields({
+    sourceLocale,
+    targetLocales,
+    fields,
+  });
+
+  return {
+    translations: translations as TranslationResult,
+    providers: providers as TranslationProviders,
+  };
+}
+
+export async function autoTranslateTextFields<
+  TFields extends Record<string, string>,
+>({
+  sourceLocale,
+  targetLocales,
+  fields,
+}: {
+  sourceLocale: Locale;
+  targetLocales: Locale[];
+  fields: TFields;
+}): Promise<{
+  translations: Partial<Record<Locale, TFields>>;
+  providers: Partial<Record<Locale, TranslationProvider>>;
+}> {
+  const fieldEntries = Object.entries(fields) as Array<[keyof TFields, string]>;
   const validTargets = targetLocales.filter(
-    (locale): locale is Locale => locales.includes(locale) && locale !== sourceLocale,
+    (locale): locale is Locale => isValidLocale(locale) && locale !== sourceLocale,
   );
   const fallbackLocales: Locale[] = [];
 
   const translations = await Promise.all(
     validTargets.map(async (targetLocale) => {
       let translatedTexts: string[];
-      let provider: "libretranslate" | "mymemory" = "libretranslate";
+      let provider: TranslationProvider = "libretranslate";
 
       try {
         translatedTexts = await translateTexts(
-          [fields.name, fields.tag, fields.description],
+          fieldEntries.map(([, value]) => value),
           sourceLocale,
           targetLocale,
         );
@@ -142,24 +171,19 @@ export async function autoTranslateProductFields({
         provider = "mymemory";
         fallbackLocales.push(targetLocale);
         translatedTexts = await translateTextsWithMyMemory(
-          [fields.name, fields.tag, fields.description],
+          fieldEntries.map(([, value]) => value),
           sourceLocale,
           targetLocale,
         );
       }
 
-      const [name, tag, description] = translatedTexts;
+      const translatedRecord = Object.fromEntries(
+        fieldEntries.map(([key], index) => [key, translatedTexts[index] ?? fields[key]]),
+      ) as TFields;
 
       return [
         targetLocale,
-        [
-          {
-            name: name ?? fields.name,
-            tag: tag ?? fields.tag,
-            description: description ?? fields.description,
-          },
-          provider,
-        ],
+        [translatedRecord, provider],
       ] as const;
     }),
   );

@@ -2,26 +2,104 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { locales } from "@/i18n/config";
-import { siteContentSchema } from "@/lib/validations";
+import { defaultLocale } from "@/i18n/config";
+import {
+  siteContentLocaleSchema,
+  siteContentSchema,
+  siteLocalesSchema,
+} from "@/lib/validations";
 import {
   recordAdminAuditLog,
   requireAdminSession,
 } from "@/modules/admin-auth/server";
 import {
   getSiteContentSettings,
+  getSiteLocales,
+  pickSiteContentLocaleFields,
   updateSiteContentSettings,
   updateSiteContentTranslation,
 } from "@/modules/site-content";
+import type { SiteContentLocaleFields, SiteLocaleConfig } from "@/types";
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
 }
 
+function parseSiteLocalesInput(
+  formData: FormData,
+  fallbackLocales: SiteLocaleConfig[],
+): SiteLocaleConfig[] {
+  const rawValue = getStringValue(formData, "siteLocalesJson");
+
+  if (!rawValue) {
+    return fallbackLocales;
+  }
+
+  try {
+    const parsed = JSON.parse(rawValue) as unknown;
+    const result = siteLocalesSchema.safeParse(parsed);
+
+    if (!result.success) {
+      throw new Error("Invalid locale registry");
+    }
+
+    return result.data.map((locale) => ({
+      code: locale.code.trim().toLowerCase(),
+      label: locale.label.trim(),
+      direction: locale.direction,
+    }));
+  } catch {
+    throw new Error("Invalid locale registry");
+  }
+}
+
+function parseTranslatedSiteContentInput(
+  formData: FormData,
+  allowedLocales: Set<string>,
+): Partial<Record<string, SiteContentLocaleFields>> {
+  const rawValue = getStringValue(formData, "translatedSiteContentJson");
+
+  if (!rawValue) {
+    return {};
+  }
+
+  try {
+    const parsed = JSON.parse(rawValue) as Record<string, unknown>;
+    const translations: Partial<Record<string, SiteContentLocaleFields>> = {};
+
+    for (const [locale, value] of Object.entries(parsed)) {
+      if (!allowedLocales.has(locale)) {
+        continue;
+      }
+
+      const result = siteContentLocaleSchema.safeParse(value);
+
+      if (!result.success) {
+        throw new Error("Invalid translated site content");
+      }
+
+      translations[locale] = result.data;
+    }
+
+    return translations;
+  } catch {
+    throw new Error("Invalid translated site content");
+  }
+}
+
+function getRedirectLocale(
+  currentLocale: string,
+  siteLocales: SiteLocaleConfig[],
+): string {
+  return siteLocales.some((locale) => locale.code === currentLocale)
+    ? currentLocale
+    : defaultLocale;
+}
+
 export async function saveSiteContentAction(formData: FormData) {
   const session = await requireAdminSession();
-  const locale = getStringValue(formData, "locale") || "en";
+  const locale = getStringValue(formData, "locale") || defaultLocale;
   const result = siteContentSchema.safeParse({
     brandName: getStringValue(formData, "brandName"),
     logoMode: getStringValue(formData, "logoMode"),
@@ -38,7 +116,10 @@ export async function saveSiteContentAction(formData: FormData) {
     heroTitleLine3: getStringValue(formData, "heroTitleLine3"),
     heroDescription: getStringValue(formData, "heroDescription"),
     heroPrimaryButtonLabel: getStringValue(formData, "heroPrimaryButtonLabel"),
-    heroSecondaryButtonLabel: getStringValue(formData, "heroSecondaryButtonLabel"),
+    heroSecondaryButtonLabel: getStringValue(
+      formData,
+      "heroSecondaryButtonLabel",
+    ),
     heroBadgeValue: getStringValue(formData, "heroBadgeValue"),
     heroBadgeLabel: getStringValue(formData, "heroBadgeLabel"),
     heroImageUrl: getStringValue(formData, "heroImageUrl"),
@@ -76,7 +157,20 @@ export async function saveSiteContentAction(formData: FormData) {
     throw new Error("Invalid site content form data");
   }
 
-  const currentBaseSettings = await getSiteContentSettings();
+  const [currentBaseSettings, currentSiteLocales] = await Promise.all([
+    getSiteContentSettings(),
+    getSiteLocales(),
+  ]);
+  const siteLocales = parseSiteLocalesInput(formData, currentSiteLocales);
+  const allowedLocaleCodes = new Set(
+    siteLocales.map((siteLocale) => siteLocale.code),
+  );
+  const translatedContent = parseTranslatedSiteContentInput(
+    formData,
+    allowedLocaleCodes,
+  );
+  const currentLocaleFields = pickSiteContentLocaleFields(result.data);
+  const translatedDefaultLocale = translatedContent[defaultLocale];
 
   await updateSiteContentSettings({
     ...currentBaseSettings,
@@ -89,84 +183,35 @@ export async function saveSiteContentAction(formData: FormData) {
     heroImageAlt: result.data.heroImageAlt,
     aboutImageUrl: result.data.aboutImageUrl,
     aboutImageAlt: result.data.aboutImageAlt,
-    ...(locale === "en"
-      ? {
-          navbarLinkProducts: result.data.navbarLinkProducts,
-          navbarLinkAbout: result.data.navbarLinkAbout,
-          navbarLinkContact: result.data.navbarLinkContact,
-          navbarCtaLabel: result.data.navbarCtaLabel,
-          heroSubtitle: result.data.heroSubtitle,
-          heroTitleLine1: result.data.heroTitleLine1,
-          heroTitleLine2: result.data.heroTitleLine2,
-          heroTitleLine3: result.data.heroTitleLine3,
-          heroDescription: result.data.heroDescription,
-          heroPrimaryButtonLabel: result.data.heroPrimaryButtonLabel,
-          heroSecondaryButtonLabel: result.data.heroSecondaryButtonLabel,
-          heroBadgeValue: result.data.heroBadgeValue,
-          heroBadgeLabel: result.data.heroBadgeLabel,
-          stripBannerItem1: result.data.stripBannerItem1,
-          stripBannerItem2: result.data.stripBannerItem2,
-          stripBannerItem3: result.data.stripBannerItem3,
-          stripBannerItem4: result.data.stripBannerItem4,
-          featuredProductsTitle: result.data.featuredProductsTitle,
-          featuredProductsViewAllLabel: result.data.featuredProductsViewAllLabel,
-          aboutSubtitle: result.data.aboutSubtitle,
-          aboutTitleLine1: result.data.aboutTitleLine1,
-          aboutTitleLine2: result.data.aboutTitleLine2,
-          aboutDescription: result.data.aboutDescription,
-          aboutButtonLabel: result.data.aboutButtonLabel,
-          feature1Title: result.data.feature1Title,
-          feature1Text: result.data.feature1Text,
-          feature2Title: result.data.feature2Title,
-          feature2Text: result.data.feature2Text,
-          feature3Title: result.data.feature3Title,
-          feature3Text: result.data.feature3Text,
-          ctaTitleLine1: result.data.ctaTitleLine1,
-          ctaTitleLine2: result.data.ctaTitleLine2,
-          ctaDescription: result.data.ctaDescription,
-          ctaButtonLabel: result.data.ctaButtonLabel,
-          footerCopyrightText: result.data.footerCopyrightText,
-        }
-      : {}),
+    ...(locale === defaultLocale ? currentLocaleFields : {}),
+    ...(translatedDefaultLocale ?? {}),
+    siteLocales,
   });
-  await updateSiteContentTranslation({
-    locale,
-    navbarLinkProducts: result.data.navbarLinkProducts,
-    navbarLinkAbout: result.data.navbarLinkAbout,
-    navbarLinkContact: result.data.navbarLinkContact,
-    navbarCtaLabel: result.data.navbarCtaLabel,
-    heroSubtitle: result.data.heroSubtitle,
-    heroTitleLine1: result.data.heroTitleLine1,
-    heroTitleLine2: result.data.heroTitleLine2,
-    heroTitleLine3: result.data.heroTitleLine3,
-    heroDescription: result.data.heroDescription,
-    heroPrimaryButtonLabel: result.data.heroPrimaryButtonLabel,
-    heroSecondaryButtonLabel: result.data.heroSecondaryButtonLabel,
-    heroBadgeValue: result.data.heroBadgeValue,
-    heroBadgeLabel: result.data.heroBadgeLabel,
-    stripBannerItem1: result.data.stripBannerItem1,
-    stripBannerItem2: result.data.stripBannerItem2,
-    stripBannerItem3: result.data.stripBannerItem3,
-    stripBannerItem4: result.data.stripBannerItem4,
-    featuredProductsTitle: result.data.featuredProductsTitle,
-    featuredProductsViewAllLabel: result.data.featuredProductsViewAllLabel,
-    aboutSubtitle: result.data.aboutSubtitle,
-    aboutTitleLine1: result.data.aboutTitleLine1,
-    aboutTitleLine2: result.data.aboutTitleLine2,
-    aboutDescription: result.data.aboutDescription,
-    aboutButtonLabel: result.data.aboutButtonLabel,
-    feature1Title: result.data.feature1Title,
-    feature1Text: result.data.feature1Text,
-    feature2Title: result.data.feature2Title,
-    feature2Text: result.data.feature2Text,
-    feature3Title: result.data.feature3Title,
-    feature3Text: result.data.feature3Text,
-    ctaTitleLine1: result.data.ctaTitleLine1,
-    ctaTitleLine2: result.data.ctaTitleLine2,
-    ctaDescription: result.data.ctaDescription,
-    ctaButtonLabel: result.data.ctaButtonLabel,
-    footerCopyrightText: result.data.footerCopyrightText,
-  });
+
+  if (locale !== defaultLocale) {
+    await updateSiteContentTranslation({
+      locale,
+      ...currentLocaleFields,
+    });
+  }
+
+  for (const [targetLocale, translatedFields] of Object.entries(
+    translatedContent,
+  )) {
+    if (
+      !translatedFields ||
+      targetLocale === locale ||
+      targetLocale === defaultLocale
+    ) {
+      continue;
+    }
+
+    await updateSiteContentTranslation({
+      locale: targetLocale,
+      ...translatedFields,
+    });
+  }
+
   await recordAdminAuditLog({
     action: "site-content.updated",
     adminUserId: session.user.id,
@@ -176,12 +221,20 @@ export async function saveSiteContentAction(formData: FormData) {
     metadata: `Updated site branding and locale content for ${locale}.`,
   });
 
-  for (const currentLocale of locales) {
+  const localesToRevalidate = new Set([
+    ...currentSiteLocales.map((siteLocale) => siteLocale.code),
+    ...siteLocales.map((siteLocale) => siteLocale.code),
+  ]);
+
+  for (const currentLocale of localesToRevalidate) {
     revalidatePath(`/${currentLocale}`);
     revalidatePath(`/${currentLocale}/products`);
     revalidatePath(`/${currentLocale}/products/[slug]`, "page");
+    revalidatePath(`/${currentLocale}/admin`);
+    revalidatePath(`/${currentLocale}/admin/products`);
+    revalidatePath(`/${currentLocale}/admin/media`);
     revalidatePath(`/${currentLocale}/admin/site`);
   }
 
-  redirect(`/${locale}/admin/site?status=updated`);
+  redirect(`/${getRedirectLocale(locale, siteLocales)}/admin/site?status=updated`);
 }

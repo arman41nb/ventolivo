@@ -4,15 +4,21 @@ import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import type { Dictionary } from "@/i18n";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
-import type { SiteContentSettings } from "@/types";
+import type { SiteContentSettings, SiteLocaleConfig } from "@/types";
 
 interface NavbarProps {
   dict?: Dictionary;
   locale?: Locale;
   siteSettings?: SiteContentSettings;
+  supportedLocales?: SiteLocaleConfig[];
 }
 
-export default function Navbar({ dict, locale, siteSettings }: NavbarProps) {
+export default function Navbar({
+  dict,
+  locale,
+  siteSettings,
+  supportedLocales = [],
+}: NavbarProps) {
   const prefix = locale ? (p: string) => localePath(locale, p) : (p: string) => p;
 
   const navLinks = dict
@@ -72,7 +78,7 @@ export default function Navbar({ dict, locale, siteSettings }: NavbarProps) {
             {link.label}
           </Link>
         ))}
-        <LanguageSwitcher />
+        <LanguageSwitcher locales={supportedLocales} />
       </div>
       <Link
         href={prefix("/#contact")}

@@ -45,7 +45,17 @@ export interface SiteContentSettings {
   footerCopyrightText: string;
 }
 
-export type SiteContentInput = SiteContentSettings;
+export type SiteLocaleDirection = "ltr" | "rtl";
+
+export interface SiteLocaleConfig {
+  code: string;
+  label: string;
+  direction: SiteLocaleDirection;
+}
+
+export interface SiteContentInput extends SiteContentSettings {
+  siteLocales?: SiteLocaleConfig[];
+}
 
 export interface SiteContentLocaleInput {
   locale: string;
@@ -85,3 +95,5 @@ export interface SiteContentLocaleInput {
   ctaButtonLabel: string;
   footerCopyrightText: string;
 }
+
+export type SiteContentLocaleFields = Omit<SiteContentLocaleInput, "locale">;

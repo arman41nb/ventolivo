@@ -9,12 +9,12 @@ import {
   updateProduct,
 } from "@/services/products";
 import { productAdminSchema } from "@/lib/validations";
-import { locales } from "@/i18n/config";
 import {
   recordAdminAuditLog,
   requireAdminSession,
 } from "@/modules/admin-auth/server";
 import { getMediaAssetsByIds } from "@/modules/media";
+import { getSiteLocales } from "@/modules/site-content";
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -38,11 +38,14 @@ async function getProductInput(formData: FormData) {
     throw new Error("Invalid product form data");
   }
 
+  const siteLocales = await getSiteLocales();
+  const localeCodes = siteLocales.map((locale) => locale.code);
+
   const translations = Object.fromEntries(
     ["name", "tag", "description"].map((field) => [
       field,
       Object.fromEntries(
-        locales
+        localeCodes
           .map((locale) => [
             locale,
             getStringValue(formData, `translations.${field}.${locale}`),
@@ -171,8 +174,10 @@ async function getProductInput(formData: FormData) {
   };
 }
 
-function revalidateProductPages() {
-  for (const locale of locales) {
+async function revalidateProductPages() {
+  const siteLocales = await getSiteLocales();
+
+  for (const locale of siteLocales.map((siteLocale) => siteLocale.code)) {
     revalidatePath(`/${locale}`);
     revalidatePath(`/${locale}/products`);
     revalidatePath(`/${locale}/admin`);
@@ -229,7 +234,7 @@ export async function createProductAction(formData: FormData) {
     throw error;
   }
 
-  revalidateProductPages();
+  await revalidateProductPages();
 
   redirect(getAdminProductsPath(locale, { status: "created" }));
 }
@@ -262,7 +267,7 @@ export async function updateProductAction(formData: FormData) {
     throw error;
   }
 
-  revalidateProductPages();
+  await revalidateProductPages();
 
   redirect(getAdminProductsPath(locale, { status: "updated" }));
 }
@@ -286,7 +291,7 @@ export async function deleteProductAction(formData: FormData) {
     targetId: String(id),
     metadata: "Deleted product from admin inventory.",
   });
-  revalidateProductPages();
+  await revalidateProductPages();
 
   redirect(getAdminProductsPath(locale, { status: "deleted" }));
 }

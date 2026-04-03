@@ -1,4 +1,5 @@
 import type { SiteContentSettings } from "@/types";
+import { getDefaultSiteLocales } from "./locales";
 
 export const defaultSiteContentSettings: SiteContentSettings = {
   brandName: "Ventolivo",
@@ -53,3 +54,5 @@ export const defaultSiteContentSettings: SiteContentSettings = {
   ctaButtonLabel: "Order on WhatsApp",
   footerCopyrightText: "All rights reserved.",
 };
+
+export const defaultSiteLocales = getDefaultSiteLocales();

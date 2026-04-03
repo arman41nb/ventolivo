@@ -2,17 +2,20 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { locales, localeLabels, localeFlags } from "@/i18n/config";
-import type { Locale } from "@/i18n/config";
+import type { SiteLocaleConfig } from "@/types";
 
-export default function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+  locales: SiteLocaleConfig[];
+}
+
+export default function LanguageSwitcher({ locales }: LanguageSwitcherProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const currentLocale = pathname.split("/")[1] as Locale;
-  const isValid = locales.includes(currentLocale);
+  const currentLocale = pathname.split("/")[1];
+  const currentLocaleEntry = locales.find((locale) => locale.code === currentLocale);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -34,9 +37,9 @@ export default function LanguageSwitcher() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
-  if (!isValid) return null;
+  if (!currentLocaleEntry || locales.length <= 1) return null;
 
-  function switchLocale(newLocale: Locale) {
+  function switchLocale(newLocale: string) {
     const segments = pathname.split("/");
     segments[1] = newLocale;
     router.push(segments.join("/"));
@@ -50,9 +53,9 @@ export default function LanguageSwitcher() {
         className="text-[12px] tracking-[1.5px] uppercase text-muted hover:text-brown transition-colors cursor-pointer bg-transparent border-none flex items-center gap-[4px]"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        aria-label={`Language: ${localeLabels[currentLocale]}`}
+        aria-label={`Language: ${currentLocaleEntry.label}`}
       >
-        {localeFlags[currentLocale]} {currentLocale.toUpperCase()}
+        {currentLocaleEntry.code.toUpperCase()} {currentLocaleEntry.label}
         <svg
           viewBox="0 0 24 24"
           className={`w-3 h-3 stroke-current fill-none transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -71,17 +74,17 @@ export default function LanguageSwitcher() {
         >
           {locales.map((locale) => (
             <button
-              key={locale}
-              onClick={() => switchLocale(locale)}
+              key={locale.code}
+              onClick={() => switchLocale(locale.code)}
               className={`w-full text-left px-[1rem] py-[0.6rem] text-[12px] tracking-[1px] cursor-pointer border-none transition-colors ${
-                locale === currentLocale
+                locale.code === currentLocale
                   ? "bg-brown/[0.1] text-brown"
                   : "bg-transparent text-muted hover:bg-brown/[0.05] hover:text-brown"
               }`}
               role="option"
-              aria-selected={locale === currentLocale}
+              aria-selected={locale.code === currentLocale}
             >
-              {localeFlags[locale]} {localeLabels[locale]}
+              {locale.code.toUpperCase()} {locale.label}
             </button>
           ))}
         </div>

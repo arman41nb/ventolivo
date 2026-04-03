@@ -7,6 +7,7 @@ import { env } from "@/lib/env";
 import { getAdminSessionRecoveryPath } from "@/modules/admin-auth/navigation";
 import { getAdminSession } from "@/modules/admin-auth/server";
 import { getAllMediaAssets } from "@/modules/media";
+import { getSiteLocales } from "@/modules/site-content";
 import { getProductById } from "@/services/products";
 import { updateProductAction } from "../actions";
 
@@ -45,9 +46,10 @@ export default async function AdminEditProductPage({
     );
   }
 
-  const [product, mediaLibrary] = await Promise.all([
+  const [product, mediaLibrary, supportedLocales] = await Promise.all([
     getProductById(id),
     getAllMediaAssets(),
+    getSiteLocales(),
   ]);
 
   if (!product) {
@@ -96,6 +98,7 @@ export default async function AdminEditProductPage({
         action={updateProductAction}
         product={product}
         mediaLibrary={mediaLibrary}
+        supportedLocales={supportedLocales}
         disabled={!isDatabaseMode}
       />
     </AdminShell>

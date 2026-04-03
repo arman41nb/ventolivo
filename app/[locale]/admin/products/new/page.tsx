@@ -7,6 +7,7 @@ import { env } from "@/lib/env";
 import { getAdminSessionRecoveryPath } from "@/modules/admin-auth/navigation";
 import { getAdminSession } from "@/modules/admin-auth/server";
 import { getAllMediaAssets } from "@/modules/media";
+import { getSiteLocales } from "@/modules/site-content";
 import { createProductAction } from "../actions";
 
 export default async function AdminNewProductPage({
@@ -38,7 +39,10 @@ export default async function AdminNewProductPage({
     );
   }
 
-  const mediaLibrary = await getAllMediaAssets();
+  const [mediaLibrary, supportedLocales] = await Promise.all([
+    getAllMediaAssets(),
+    getSiteLocales(),
+  ]);
   const isDatabaseMode = env.PRODUCTS_DATA_SOURCE === "database";
   const errorMessage =
     error === "slug-conflict" ? dictionary.admin.errors.slugConflict : null;
@@ -80,6 +84,7 @@ export default async function AdminNewProductPage({
         submitLabel={dictionary.admin.create.submit}
         action={createProductAction}
         mediaLibrary={mediaLibrary}
+        supportedLocales={supportedLocales}
         disabled={!isDatabaseMode}
       />
     </AdminShell>

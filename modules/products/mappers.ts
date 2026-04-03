@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { defaultLocale, locales, type Locale } from "@/i18n/config";
+import { defaultLocale, type Locale } from "@/i18n/config";
 import type {
   LocalizedFieldMap,
   Product,
@@ -9,12 +9,10 @@ import type {
 } from "@/types";
 
 const productIngredientsSchema = z.array(z.string());
-const localizedFieldMapSchema = z.object(
-  Object.fromEntries(locales.map((locale) => [locale, z.string().trim()])) as Record<
-    Locale,
-    z.ZodString
-  >,
-).partial();
+const localizedFieldMapSchema = z.record(
+  z.string().trim().min(2).max(16),
+  z.string().trim(),
+);
 
 const dbProductRecordSchema = z.object({
   id: z.number().int().positive(),
