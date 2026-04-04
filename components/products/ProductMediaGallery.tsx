@@ -19,14 +19,14 @@ export default function ProductMediaGallery({
   const selectedItem = items[selectedIndex];
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="overflow-hidden rounded-[28px] bg-warm">
+    <div className="animate-rise flex flex-col gap-4">
+      <div className="mesh-bg overflow-hidden rounded-[30px] border border-brown/8 p-3 shadow-[0_16px_36px_rgba(72,49,30,0.08)]">
         {selectedItem ? (
           selectedItem.type === "video" ? (
             <video
               controls
               poster={selectedItem.thumbnailUrl}
-              className="aspect-square w-full bg-dark object-cover"
+              className="aspect-square w-full rounded-[24px] bg-dark object-cover"
             >
               <source src={selectedItem.url} />
               {selectedItem.alt ?? `${productName} video`}
@@ -35,12 +35,12 @@ export default function ProductMediaGallery({
             <img
               src={selectedItem.url}
               alt={selectedItem.alt ?? productName}
-              className="aspect-square w-full object-cover"
+              className="aspect-square w-full rounded-[24px] object-cover"
             />
           )
         ) : (
-          <div className="flex aspect-square items-center justify-center">
-            <div className="h-[140px] w-[140px] rounded-[12px]" style={{ backgroundColor: color }} />
+          <div className="flex aspect-square items-center justify-center rounded-[24px] bg-white/55">
+            <div className="animate-float h-[140px] w-[140px] rounded-[16px]" style={{ backgroundColor: color }} />
           </div>
         )}
       </div>
@@ -52,15 +52,17 @@ export default function ProductMediaGallery({
               key={`${item.type}-${item.url}-${index}`}
               type="button"
               onClick={() => setSelectedIndex(index)}
-              className={`overflow-hidden rounded-[18px] border transition-colors ${
-                selectedIndex === index ? "border-brown" : "border-brown/10"
+              className={`overflow-hidden rounded-[20px] border bg-white/70 p-1 transition-all ${
+                selectedIndex === index
+                  ? "border-brown shadow-[0_10px_20px_rgba(72,49,30,0.08)]"
+                  : "border-brown/10 hover:-translate-y-0.5 hover:border-brown/30"
               }`}
             >
               <div className="relative">
                 <img
                   src={item.type === "video" ? item.thumbnailUrl || item.url : item.url}
                   alt={item.alt ?? productName}
-                  className="aspect-square w-full object-cover"
+                  className="aspect-square w-full rounded-[16px] object-cover"
                 />
                 {item.type === "video" ? (
                   <span className="absolute inset-0 flex items-center justify-center bg-dark/25 text-xs uppercase tracking-[0.16em] text-white">

@@ -28,11 +28,11 @@ type ButtonProps = ButtonAsLink | ButtonAsButton;
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-brown text-white border-brown hover:bg-dark hover:border-dark",
+    "border-transparent bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] text-white hover:-translate-y-0.5",
   secondary:
-    "bg-transparent text-brown border-brown hover:bg-brown hover:text-white",
+    "border-brown/15 bg-white/60 text-brown hover:bg-white",
   ghost:
-    "bg-transparent text-muted border-transparent hover:text-brown",
+    "border-transparent bg-transparent text-muted hover:text-brown",
 };
 
 export default function Button({
@@ -46,7 +46,7 @@ export default function Button({
   ...rest
 }: ButtonProps) {
   const baseClasses = cn(
-    "inline-flex items-center gap-[10px] border px-[2rem] py-[0.8rem] font-sans text-[13px] tracking-[1px] cursor-pointer transition-colors no-underline",
+    "inline-flex items-center gap-[10px] rounded-full border px-6 py-4 font-sans text-[13px] font-medium uppercase tracking-[0.16em] cursor-pointer transition-all no-underline shadow-[0_10px_22px_rgba(72,49,30,0.06)]",
     variantClasses[variant],
     className,
   );

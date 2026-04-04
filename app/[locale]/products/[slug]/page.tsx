@@ -52,20 +52,22 @@ export default async function ProductDetailPage({
   }
 
   return (
-    <>
+    <div className="page-shell min-h-screen">
       <Navbar
         dict={dict}
         locale={currentLocale}
         siteSettings={siteSettings}
         supportedLocales={supportedLocales}
       />
-      <section className="px-[2.5rem] py-[4rem]">
-        <ProductDetail
-          product={product}
-          orderLabel={dict.products.card.orderVia}
-        />
-      </section>
+      <main className="px-4 py-10 md:px-6 md:py-14">
+        <section className="mx-auto max-w-[1380px]">
+          <ProductDetail
+            product={product}
+            orderLabel={dict.products.card.orderVia}
+          />
+        </section>
+      </main>
       <Footer dict={dict} siteSettings={siteSettings} locale={currentLocale} />
-    </>
+    </div>
   );
 }

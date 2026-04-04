@@ -50,7 +50,7 @@ export default function LanguageSwitcher({ locales }: LanguageSwitcherProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="text-[12px] tracking-[1.5px] uppercase text-muted hover:text-brown transition-colors cursor-pointer bg-transparent border-none flex items-center gap-[4px]"
+        className="flex cursor-pointer items-center gap-2 rounded-full border border-brown/8 bg-white/84 px-4 py-3 text-[12px] uppercase tracking-[0.16em] text-[#8f735d] shadow-[0_10px_22px_rgba(72,49,30,0.05)] transition-colors hover:bg-white"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-label={`Language: ${currentLocaleEntry.label}`}
@@ -68,7 +68,7 @@ export default function LanguageSwitcher({ locales }: LanguageSwitcherProps) {
 
       {isOpen && (
         <div
-          className="absolute top-full right-0 mt-[0.5rem] bg-cream border border-brown/[0.15] shadow-lg min-w-[140px] z-50"
+          className="absolute end-0 top-full z-50 mt-2 min-w-[170px] overflow-hidden rounded-[20px] border border-brown/8 bg-[rgba(255,253,249,0.97)] shadow-[0_18px_36px_rgba(107,79,58,0.1)] backdrop-blur"
           role="listbox"
           aria-label="Select language"
         >
@@ -76,10 +76,10 @@ export default function LanguageSwitcher({ locales }: LanguageSwitcherProps) {
             <button
               key={locale.code}
               onClick={() => switchLocale(locale.code)}
-              className={`w-full text-left px-[1rem] py-[0.6rem] text-[12px] tracking-[1px] cursor-pointer border-none transition-colors ${
+              className={`w-full cursor-pointer border-none px-4 py-3 text-start text-[12px] tracking-[0.08em] transition-colors ${
                 locale.code === currentLocale
-                  ? "bg-brown/[0.1] text-brown"
-                  : "bg-transparent text-muted hover:bg-brown/[0.05] hover:text-brown"
+                  ? "bg-brown/8 text-brown"
+                  : "bg-transparent text-muted hover:bg-brown/5 hover:text-brown"
               }`}
               role="option"
               aria-selected={locale.code === currentLocale}

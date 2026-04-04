@@ -79,6 +79,15 @@ export interface Dictionary {
     dataSourceLabel: string;
     lastActionLabel: string;
     disabledMessage: string;
+    navigation: {
+      dashboard: string;
+      products: string;
+      media: string;
+      siteContent: string;
+    };
+    shell: {
+      localeSwitcher: string;
+    };
     dashboard: {
       logout: string;
       productManager: string;
@@ -93,9 +102,6 @@ export interface Dictionary {
       activityBadge: string;
       activityTitle: string;
       activityFallback: string;
-      roadmapBadge: string;
-      roadmapTitle: string;
-      roadmapItems: string[];
     };
     login: {
       title: string;
@@ -108,6 +114,16 @@ export interface Dictionary {
       loggedOut: string;
       bootstrapHint: string;
     };
+    mediaLibrary: {
+      title: string;
+      description: string;
+      updated: string;
+    };
+    siteStudio: {
+      title: string;
+      description: string;
+      updated: string;
+    };
     create: {
       badge: string;
       title: string;
@@ -116,11 +132,13 @@ export interface Dictionary {
     inventory: {
       badge: string;
       title: string;
+      edit: string;
       save: string;
       delete: string;
       pathLabel: string;
       managerDescription: string;
       backToDashboard: string;
+      backToProducts: string;
       searchPlaceholder: string;
       catalogBadge: string;
       visibleProducts: string;
@@ -150,6 +168,123 @@ export interface Dictionary {
       unavailable: string;
       updated: string;
       providerPrefix: string;
+      targetLocales: string;
+      overwriteAllowed: string;
+    };
+    productEditor: {
+      workspaceBadge: string;
+      workspaceTitle: string;
+      workspaceDescription: string;
+      libraryImages: string;
+      libraryVideos: string;
+      activeLocales: string;
+      tabs: {
+        library: string;
+        manual: string;
+        translations: string;
+      };
+      libraryCoverTitle: string;
+      libraryCoverDescription: string;
+      noLibraryCover: string;
+      noLibraryCoverDescription: string;
+      libraryGalleryTitle: string;
+      libraryGalleryDescription: string;
+      libraryVideoTitle: string;
+      libraryVideoDescription: string;
+      noLibraryVideo: string;
+      noLibraryVideoDescription: string;
+      manualMediaTitle: string;
+      manualMediaDescription: string;
+      coverImageUrl: string;
+      coverImageAlt: string;
+      videoUrl: string;
+      videoThumbnailUrl: string;
+      galleryImages: string;
+      galleryImagesPlaceholder: string;
+      translationsTitle: string;
+      translationsDescription: string;
+      localeEditors: string;
+      localesWithSavedData: string;
+      hasContent: string;
+      empty: string;
+      currentEditorLocale: string;
+      currentEditorLocaleDescription: string;
+    };
+    siteTranslationAssistant: {
+      badge: string;
+      title: string;
+      description: string;
+      targetLanguagesSelected: string;
+      stagedTranslationSets: string;
+      sourceLanguage: string;
+      targetLanguages: string;
+      onlyEmptyFields: string;
+      translateButton: string;
+      translating: string;
+      fillCurrentFields: string;
+      selectTargetLanguage: string;
+      ready: string;
+      unavailable: string;
+      providerPrefix: string;
+    };
+    siteLocalesManager: {
+      badge: string;
+      title: string;
+      description: string;
+      stagedUntilSave: string;
+      activeLanguages: string;
+      baseLocaleLocked: string;
+      baseLocale: string;
+      currentEditor: string;
+      openInStudio: string;
+      removeFromDraft: string;
+      localeHelp: string;
+      label: string;
+      direction: string;
+      addLanguage: string;
+      addLanguageTitle: string;
+      addLanguageDescription: string;
+      usePresetPicker: string;
+      addCustomLocale: string;
+      findLanguage: string;
+      searchPlaceholder: string;
+      noPresetResults: string;
+      stagedDraft: string;
+      draftPlaceholder: string;
+      clearDraft: string;
+      code: string;
+      saveToDraft: string;
+      draftSavedHint: string;
+      invalidLocale: string;
+      duplicateLocale: string;
+    };
+    mediaManager: {
+      uploadTitle: string;
+      uploadDescription: string;
+      controlsBadge: string;
+      controlsTitle: string;
+      controlsDescription: string;
+      totalAssets: string;
+      images: string;
+      videos: string;
+      searchAssets: string;
+      searchPlaceholder: string;
+      all: string;
+      addExternalAsset: string;
+      hideExternalAssetForm: string;
+      assetType: string;
+      assetUrl: string;
+      altText: string;
+      thumbnailUrl: string;
+      label: string;
+      saveExternalAsset: string;
+      untitledAsset: string;
+      noAltText: string;
+      collapseEditor: string;
+      editDetails: string;
+      saveAsset: string;
+      deleteAsset: string;
+      noMatchingAssets: string;
     };
     errors: {
       slugConflict: string;

@@ -21,7 +21,7 @@ function isValidAssetReference(value: string): boolean {
   }
 }
 
-const assetPathSchema = z
+export const assetPathSchema = z
   .string()
   .trim()
   .refine(
@@ -29,7 +29,7 @@ const assetPathSchema = z
     "Must be a valid URL or a site asset path",
   );
 
-const requiredAssetPathSchema = z
+export const requiredAssetPathSchema = z
   .string()
   .trim()
   .min(1)

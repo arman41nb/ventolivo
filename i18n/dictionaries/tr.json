@@ -88,14 +88,7 @@
       },
       "recentProductsBadge": "Son urunler",
       "recentProductsTitle": "Katalogdaki son eklenenler",
-      "openProductManager": "Urun yonetimini ac",
-      "roadmapBadge": "Sonraki adimlar",
-      "roadmapTitle": "Admin yol haritasi",
-      "roadmapItems": [
-        "Cok dilli urun alanlarini tek yerden yonetin.",
-        "Admin rotalarini yeniden yazmadan bir sonraki kimlik dogrulama asamasina hazirlanin.",
-        "Bu paneli gelecekteki mesaj kutusu ve analiz ekranlari icin cikis noktasi olarak kullanin."
-      ]
+      "openProductManager": "Urun yonetimini ac"
     },
     "create": {
       "badge": "Olustur",
@@ -103,6 +96,8 @@
       "submit": "Urun olustur"
     },
     "inventory": {
+      "edit": "Urunu duzenle",
+      "backToProducts": "Urunlere don",
       "badge": "Envanter",
       "title": "Mevcut urunleri duzenle",
       "save": "Degisiklikleri kaydet",

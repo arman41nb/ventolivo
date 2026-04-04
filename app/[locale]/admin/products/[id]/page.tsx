@@ -6,6 +6,7 @@ import { isValidLocale, type Locale } from "@/i18n/config";
 import { env } from "@/lib/env";
 import { getAdminSessionRecoveryPath } from "@/modules/admin-auth/navigation";
 import { getAdminSession } from "@/modules/admin-auth/server";
+import { getAdminNavItems } from "@/modules/admin/ui";
 import { getAllMediaAssets } from "@/modules/media";
 import { getSiteLocales } from "@/modules/site-content";
 import { getProductById } from "@/services/products";
@@ -70,15 +71,10 @@ export default async function AdminEditProductPage({
         username: session.user.username,
         expiresLabel: `${dictionary.admin.dashboard.sessionExpires}: ${session.expiresAt.toLocaleString(locale)}`,
       }}
-      navItems={[
-        { href: `/${locale}/admin`, label: "Dashboard" },
-        { href: `/${locale}/admin/products`, label: "Products", active: true },
-        { href: `/${locale}/admin/media`, label: "Library" },
-        { href: `/${locale}/admin/site`, label: "Site content" },
-      ]}
+      navItems={getAdminNavItems(locale, "products", dictionary.admin.navigation)}
       secondaryAction={{
         href: `/${locale}/admin/products`,
-        label: dictionary.admin.inventory.backToDashboard,
+        label: dictionary.admin.inventory.backToProducts,
       }}
     >
       {errorMessage ? (

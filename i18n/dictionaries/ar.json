@@ -90,6 +90,8 @@
       "submit": "إنشاء المنتج"
     },
     "inventory": {
+      "edit": "تحرير المنتج",
+      "backToProducts": "العودة إلى المنتجات",
       "badge": "المخزون",
       "title": "تحرير المنتجات الحالية",
       "save": "حفظ التغييرات",
@@ -129,14 +131,7 @@
       },
       "recentProductsBadge": "Recent products",
       "recentProductsTitle": "Latest catalog entries",
-      "openProductManager": "Open product manager",
-      "roadmapBadge": "Next steps",
-      "roadmapTitle": "Admin roadmap",
-      "roadmapItems": [
-        "Manage multilingual product fields from one place.",
-        "Prepare the next auth upgrade without rewriting admin routes.",
-        "Use this dashboard as the launch point for future inbox and analytics views."
-      ]
+      "openProductManager": "Open product manager"
     },
     "translationAssistant": {
       "sourceLanguage": "Translation source language",
@@ -160,3 +155,4 @@
     "description": "صابون حرفي مصنوع يدويا من الزيوت الطبيعية والنباتات. صنع في دنيزلي."
   }
 }
+

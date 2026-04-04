@@ -28,6 +28,8 @@ type EditableSectionId =
   | "cta"
   | "footer";
 
+type WorkspacePanelId = "translations" | "languages" | "workflow";
+
 type EditableFieldId =
   | "brandName"
   | "logoText"
@@ -116,6 +118,30 @@ const sectionLabels: Record<EditableSectionId, string> = {
   features: "Features",
   cta: "CTA",
   footer: "Footer",
+};
+
+const workspacePanelMeta: Record<
+  WorkspacePanelId,
+  { label: string; title: string; description: string }
+> = {
+  translations: {
+    label: "Translations",
+    title: "Translate the current preview into other locales",
+    description:
+      "Use auto-translation after editing the active locale, then review everything once before saving.",
+  },
+  languages: {
+    label: "Languages",
+    title: "Manage the storefront language registry",
+    description:
+      "Add, remove, and tune locale settings without leaving the homepage editor.",
+  },
+  workflow: {
+    label: "Workspace",
+    title: "Keep the editing workflow focused",
+    description:
+      "This workspace keeps translation tools, language settings, and publishing context in one predictable place.",
+  },
 };
 
 const editableFields: Record<EditableFieldId, EditableFieldMeta> = {
@@ -1396,6 +1422,8 @@ export default function SiteContentStudio({
 }: SiteContentStudioProps) {
   const [selectedField, setSelectedField] =
     useState<EditableFieldId>("heroTitleLine1");
+  const [activeWorkspacePanel, setActiveWorkspacePanel] =
+    useState<WorkspacePanelId>("translations");
   const [draft, setDraft] = useState<SiteContentSettings>(settings);
   const [assets, setAssets] = useState(mediaLibrary);
   const selectedMeta = editableFields[selectedField];
@@ -1404,6 +1432,7 @@ export default function SiteContentStudio({
       field.section === selectedMeta.section && field.id !== selectedField,
   );
   const imageAssets = assets.filter((asset) => asset.kind === "image");
+  const activeWorkspace = workspacePanelMeta[activeWorkspacePanel];
 
   function updateField<Key extends keyof SiteContentSettings>(
     key: Key,
@@ -1571,6 +1600,55 @@ export default function SiteContentStudio({
     );
   }
 
+  function renderWorkspacePanel() {
+    if (activeWorkspacePanel === "translations") {
+      return (
+        <SiteContentTranslationAssistant
+          currentLocale={locale}
+          locales={supportedLocales}
+          dictionary={dictionary.admin.siteTranslationAssistant}
+        />
+      );
+    }
+
+    if (activeWorkspacePanel === "languages") {
+      return (
+        <SiteLocalesManager
+          currentLocale={locale}
+          locales={supportedLocales}
+          dictionary={dictionary.admin.siteLocalesManager}
+        />
+      );
+    }
+
+    return (
+      <section className="rounded-[32px] border border-brown/15 bg-white p-6 shadow-sm">
+        <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
+          Publishing flow
+        </p>
+        <h3 className="mt-2 font-serif text-2xl text-dark">
+          Keep the homepage edits calm and reviewable
+        </h3>
+        <p className="mt-3 text-sm text-text/75">
+          Pick the exact field from the preview, make the change on the right,
+          stage translations or locale edits only when needed, then save once.
+          This keeps the content workflow predictable even as the panel grows.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+            {imageAssets.length} reusable images
+          </span>
+          <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+            {supportedLocales.length} storefront languages
+          </span>
+          <span className="rounded-full bg-olive/10 px-4 py-2 text-xs uppercase tracking-[0.16em] text-olive">
+            Single-save publishing flow
+          </span>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <form
       action={action}
@@ -1592,19 +1670,19 @@ export default function SiteContentStudio({
               Live preview
             </p>
             <h2 className="mt-2 font-serif text-3xl text-dark">
-              Click the exact part you want to change
+              Edit the homepage by clicking the exact element
             </h2>
             <p className="mt-2 max-w-2xl text-sm text-text/75">
-              The preview now covers the full homepage content flow. Click any
-              text, button, or image and the right panel will jump to that exact
-              field.
+              The preview covers the full homepage flow. Click any text, image,
+              or button and the right side will jump straight to the matching
+              field instead of making you hunt for it manually.
             </p>
           </div>
           <Link
             href={`/${locale}/admin/media`}
             className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
           >
-            Open full library
+            Open media library
           </Link>
         </div>
 
@@ -1702,7 +1780,7 @@ export default function SiteContentStudio({
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
-                Focused field
+                Selected field
               </p>
               <h2 className="mt-2 font-serif text-3xl text-dark">
                 {selectedMeta.title}
@@ -1748,38 +1826,37 @@ export default function SiteContentStudio({
           {renderFieldEditor()}
         </section>
 
-        <SiteContentTranslationAssistant
-          currentLocale={locale}
-          locales={supportedLocales}
-        />
-
-        <SiteLocalesManager
-          currentLocale={locale}
-          locales={supportedLocales}
-        />
-
         <section className="rounded-[32px] border border-brown/15 bg-white p-6 shadow-sm">
           <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
-            Workflow
+            Workspace
           </p>
           <h3 className="mt-2 font-serif text-2xl text-dark">
-            Homepage content is now template-ready
+            {activeWorkspace.title}
           </h3>
           <p className="mt-3 text-sm text-text/75">
-            Header, hero, banner, featured section, about block, feature cards,
-            CTA, footer, and site imagery now live in one editing flow. The
-            library still stays reusable in code, but the admin UX is much
-            closer to a visual CMS.
+            {activeWorkspace.description}
           </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
-              {imageAssets.length} reusable images
-            </span>
-            <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
-              Full homepage editing enabled
-            </span>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {(Object.entries(workspacePanelMeta) as Array<
+              [WorkspacePanelId, (typeof workspacePanelMeta)[WorkspacePanelId]]
+            >).map(([panelId, panel]) => (
+              <button
+                key={panelId}
+                type="button"
+                onClick={() => setActiveWorkspacePanel(panelId)}
+                className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.16em] transition-colors ${
+                  activeWorkspacePanel === panelId
+                    ? "border-brown bg-brown text-white"
+                    : "border-brown/20 bg-white text-brown hover:bg-brown/5"
+                }`}
+              >
+                {panel.label}
+              </button>
+            ))}
           </div>
         </section>
+
+        {renderWorkspacePanel()}
       </aside>
     </form>
   );

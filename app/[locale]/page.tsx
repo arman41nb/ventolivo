@@ -1,6 +1,5 @@
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
-import StripBanner from "@/components/sections/StripBanner";
 import FeaturedProducts from "@/components/sections/FeaturedProducts";
 import AboutSection from "@/components/sections/AboutSection";
 import FeaturesGrid from "@/components/sections/FeaturesGrid";
@@ -31,31 +30,32 @@ export default async function Home({
   ]);
 
   return (
-    <>
+    <div className="page-shell min-h-screen">
       <Navbar
         dict={dict}
         locale={currentLocale}
         siteSettings={siteSettings}
         supportedLocales={supportedLocales}
       />
-      <Hero dict={dict} locale={currentLocale} siteSettings={siteSettings} />
-      <StripBanner dict={dict} siteSettings={siteSettings} />
-      <FeaturedProducts
-        products={featured}
-        title={
-          siteSettings.featuredProductsTitle || dict.featuredProducts.title
-        }
-        viewAllLabel={
-          siteSettings.featuredProductsViewAllLabel ||
-          dict.featuredProducts.viewAll
-        }
-        orderLabel={dict.products.card.orderVia}
-        locale={currentLocale}
-      />
-      <AboutSection dict={dict} siteSettings={siteSettings} />
-      <FeaturesGrid dict={dict} siteSettings={siteSettings} />
-      <CTASection dict={dict} siteSettings={siteSettings} />
+      <main>
+        <Hero dict={dict} locale={currentLocale} siteSettings={siteSettings} />
+        <FeaturedProducts
+          products={featured}
+          title={
+            siteSettings.featuredProductsTitle || dict.featuredProducts.title
+          }
+          viewAllLabel={
+            siteSettings.featuredProductsViewAllLabel ||
+            dict.featuredProducts.viewAll
+          }
+          orderLabel={dict.products.card.orderVia}
+          locale={currentLocale}
+        />
+        <AboutSection dict={dict} siteSettings={siteSettings} />
+        <FeaturesGrid dict={dict} siteSettings={siteSettings} />
+        <CTASection dict={dict} siteSettings={siteSettings} />
+      </main>
       <Footer dict={dict} siteSettings={siteSettings} locale={currentLocale} />
-    </>
+    </div>
   );
 }

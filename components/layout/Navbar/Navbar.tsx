@@ -20,6 +20,12 @@ export default function Navbar({
   supportedLocales = [],
 }: NavbarProps) {
   const prefix = locale ? (p: string) => localePath(locale, p) : (p: string) => p;
+  const stripItems = [
+    siteSettings?.stripBannerItem1 ?? "Handcrafted",
+    siteSettings?.stripBannerItem2 ?? "Natural Ingredients",
+    siteSettings?.stripBannerItem3 ?? "No Harsh Chemicals",
+    siteSettings?.stripBannerItem4 ?? "Made in Denizli",
+  ];
 
   const navLinks = dict
     ? [
@@ -43,50 +49,62 @@ export default function Navbar({
       ];
 
   return (
-    <nav
-      className="flex items-center justify-between px-[2.5rem] py-[1.2rem] bg-cream border-b border-brown/[0.15] sticky top-0 z-10"
-      role="navigation"
-      aria-label="Main navigation"
-    >
-      <Link
-        href={locale ? `/${locale}` : "/"}
-        className="font-serif text-[22px] font-medium tracking-[2px] text-brown no-underline"
-        aria-label={`${siteSettings?.brandName ?? "Ventolivo"} - Home`}
-      >
-        {siteSettings?.logoMode === "image" && siteSettings.logoImageUrl ? (
-          <img
-            src={siteSettings.logoImageUrl}
-            alt={siteSettings.logoAltText || siteSettings.brandName}
-            className="h-10 w-auto object-contain"
-          />
-        ) : (
-          siteSettings?.logoText ?? (
-            <>
-              Vento<span className="italic">livo</span>
-            </>
-          )
-        )}
-      </Link>
-      <div className="flex gap-[2rem] items-center" role="menubar">
-        {navLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="text-[12px] tracking-[1.5px] uppercase text-muted no-underline hover:text-brown transition-colors"
-            role="menuitem"
-          >
-            {link.label}
-          </Link>
-        ))}
-        <LanguageSwitcher locales={supportedLocales} />
+    <header className="sticky top-0 z-40">
+      <div className="bg-[linear-gradient(180deg,#694733_0%,#5d3d27_100%)] px-4 py-2.5 text-center text-[10px] uppercase tracking-[0.24em] text-cream/88 md:px-6">
+        <div className="mx-auto flex max-w-[1380px] flex-wrap items-center justify-center gap-x-8 gap-y-2">
+          {stripItems.map((item) => (
+            <span key={item}>{item}</span>
+          ))}
+        </div>
       </div>
-      <Link
-        href={prefix("/#contact")}
-        className="bg-brown text-white border-none px-[1.4rem] py-[0.6rem] font-sans text-[12px] tracking-[1px] cursor-pointer hover:bg-dark transition-colors no-underline"
-        aria-label={siteSettings?.navbarCtaLabel ?? dict?.navbar.cta ?? "Order Now"}
+
+      <nav
+        className="border-b border-brown/8 bg-[rgba(249,244,238,0.9)] px-4 py-4 backdrop-blur-xl md:px-6"
+        role="navigation"
+        aria-label="Main navigation"
       >
-        {siteSettings?.navbarCtaLabel ?? dict?.navbar.cta ?? "Order Now"}
-      </Link>
-    </nav>
+        <div className="mx-auto flex max-w-[1380px] flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <Link
+            href={locale ? `/${locale}` : "/"}
+            className="font-serif text-[2rem] tracking-[0.06em] text-[#8f735d] no-underline"
+            aria-label={`${siteSettings?.brandName ?? "Ventolivo"} - Home`}
+          >
+            {siteSettings?.logoMode === "image" && siteSettings.logoImageUrl ? (
+              <img
+                src={siteSettings.logoImageUrl}
+                alt={siteSettings.logoAltText || siteSettings.brandName}
+                className="h-11 w-auto object-contain"
+              />
+            ) : (
+              siteSettings?.logoText ?? "Ventolivo"
+            )}
+          </Link>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 lg:gap-7" role="menubar">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="relative pb-1 text-[12px] uppercase tracking-[0.2em] text-[#9f8976] no-underline transition-colors after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-brown/70 after:transition-all hover:text-brown hover:after:w-full"
+                role="menuitem"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 lg:justify-end">
+            <LanguageSwitcher locales={supportedLocales} />
+            <Link
+              href={prefix("/#contact")}
+              className="rounded-full bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] px-6 py-3 text-[12px] font-medium uppercase tracking-[0.16em] text-white shadow-[0_14px_28px_rgba(93,61,39,0.16)] transition-transform hover:-translate-y-0.5 no-underline"
+              aria-label={siteSettings?.navbarCtaLabel ?? dict?.navbar.cta ?? "Order Now"}
+            >
+              {siteSettings?.navbarCtaLabel ?? dict?.navbar.cta ?? "Order Now"}
+            </Link>
+          </div>
+        </div>
+      </nav>
+    </header>
   );
 }

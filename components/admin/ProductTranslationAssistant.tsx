@@ -1,7 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { Dictionary } from "@/i18n/types";
+import {
+  getSiteLocaleFlag,
+  getSiteLocaleNativeLabel,
+} from "@/modules/site-content/locales";
 import type { SiteLocaleConfig } from "@/types";
 
 interface ProductTranslationAssistantProps {
@@ -24,6 +28,10 @@ export default function ProductTranslationAssistant({
   const [onlyEmptyFields, setOnlyEmptyFields] = useState(true);
   const [status, setStatus] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const targetLocales = useMemo(
+    () => selectedLocales.filter((locale) => locale !== sourceLocale),
+    [selectedLocales, sourceLocale],
+  );
 
   function toggleLocale(locale: string) {
     setSelectedLocales((current) =>
@@ -31,6 +39,7 @@ export default function ProductTranslationAssistant({
         ? current.filter((item) => item !== locale)
         : [...current, locale],
     );
+    setStatus("");
   }
 
   async function handleTranslate(
@@ -52,7 +61,7 @@ export default function ProductTranslationAssistant({
 
     const payload = {
       sourceLocale,
-      targetLocales: selectedLocales.filter((locale) => locale !== sourceLocale),
+      targetLocales,
       fields: {
         name: getValue("name"),
         tag: getValue("tag"),
@@ -150,18 +159,30 @@ export default function ProductTranslationAssistant({
   return (
     <div className="rounded-[20px] border border-brown/10 bg-white p-4">
       <div className="flex flex-col gap-4">
+        <div className="flex flex-wrap gap-2">
+          <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+            {targetLocales.length} {dictionary.targetLocales}
+          </span>
+          <span className="rounded-full bg-olive/10 px-4 py-2 text-xs uppercase tracking-[0.16em] text-olive">
+            {onlyEmptyFields ? dictionary.emptyOnly : dictionary.overwriteAllowed}
+          </span>
+        </div>
         <label className="flex flex-col gap-2 text-sm">
           <span className="uppercase tracking-[0.16em] text-muted">
             {dictionary.sourceLanguage}
           </span>
           <select
             value={sourceLocale}
-            onChange={(event) => setSourceLocale(event.target.value)}
+            onChange={(event) => {
+              setSourceLocale(event.target.value);
+              setStatus("");
+            }}
             className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown"
           >
             {locales.map((locale) => (
               <option key={locale.code} value={locale.code}>
-                {locale.label}
+                {getSiteLocaleFlag(locale.code)} {locale.label} (
+                {locale.code.toUpperCase()})
               </option>
             ))}
           </select>
@@ -187,11 +208,21 @@ export default function ProductTranslationAssistant({
                         : "border-brown/20 bg-white text-brown hover:bg-brown/5"
                     }`}
                   >
-                    {locale.label}
+                    {getSiteLocaleFlag(locale.code)} {locale.label}
                   </button>
                 );
               })}
           </div>
+          {targetLocales.length > 0 ? (
+            <p className="mt-3 text-sm text-text/70">
+              {targetLocales
+                .map(
+                  (localeCode) =>
+                    `${getSiteLocaleFlag(localeCode)} ${getSiteLocaleNativeLabel(localeCode)} (${localeCode.toUpperCase()})`,
+                )
+                .join(", ")}
+            </p>
+          ) : null}
         </div>
         <label className="inline-flex items-center gap-3 text-sm text-dark">
           <input

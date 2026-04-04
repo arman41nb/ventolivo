@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { getAdminSessionRecoveryPath } from "@/modules/admin-auth/navigation";
 import { getAdminSession } from "@/modules/admin-auth/server";
+import { getAdminNavItems } from "@/modules/admin/ui";
 import { getAllMediaAssets } from "@/modules/media";
 import { getSiteContentSettings, getSiteLocales } from "@/modules/site-content";
 import { getFeaturedProducts } from "@/services/products";
@@ -50,8 +51,8 @@ export default async function AdminSiteContentPage({
     <AdminShell
       locale={locale}
       dictionary={dictionary}
-      title="Site content studio"
-      description="Edit the homepage visually, preview changes live, and reuse library assets without leaving the content workflow."
+      title={dictionary.admin.siteStudio.title}
+      description={dictionary.admin.siteStudio.description}
       sessionSummary={{
         username: session.user.username,
         expiresLabel: `${dictionary.admin.dashboard.sessionExpires}: ${session.expiresAt.toLocaleString(locale)}`,
@@ -60,16 +61,11 @@ export default async function AdminSiteContentPage({
         href: `/${locale}/admin/products`,
         label: dictionary.admin.dashboard.productManager,
       }}
-      navItems={[
-        { href: `/${locale}/admin`, label: "Dashboard" },
-        { href: `/${locale}/admin/products`, label: "Products" },
-        { href: `/${locale}/admin/media`, label: "Library" },
-        { href: `/${locale}/admin/site`, label: "Site content", active: true },
-      ]}
+      navItems={getAdminNavItems(locale, "siteContent", dictionary.admin.navigation)}
     >
       {status === "updated" ? (
         <p className="rounded-2xl border border-olive/20 bg-olive/10 px-4 py-3 text-sm text-olive">
-          Site content updated.
+          {dictionary.admin.siteStudio.updated}
         </p>
       ) : null}
       <SiteContentForm

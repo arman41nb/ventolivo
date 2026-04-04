@@ -1,6 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import {
+  getSiteLocaleFlag,
+  getSiteLocaleNativeLabel,
+} from "@/modules/site-content/locales";
+import type { Dictionary } from "@/i18n/types";
 import { siteContentTranslationKeys } from "@/modules/site-content/translation";
 import type {
   SiteContentLocaleFields,
@@ -10,6 +15,7 @@ import type {
 interface SiteContentTranslationAssistantProps {
   currentLocale: string;
   locales: SiteLocaleConfig[];
+  dictionary: Dictionary["admin"]["siteTranslationAssistant"];
 }
 
 type TranslationProviders = Partial<
@@ -19,6 +25,7 @@ type TranslationProviders = Partial<
 export default function SiteContentTranslationAssistant({
   currentLocale,
   locales,
+  dictionary,
 }: SiteContentTranslationAssistantProps) {
   const [sourceLocale, setSourceLocale] = useState(currentLocale);
   const [selectedLocales, setSelectedLocales] = useState(
@@ -37,6 +44,11 @@ export default function SiteContentTranslationAssistant({
     () => JSON.stringify(translations),
     [translations],
   );
+  const targetLocales = useMemo(
+    () => selectedLocales.filter((locale) => locale !== sourceLocale),
+    [selectedLocales, sourceLocale],
+  );
+  const stagedTranslationsCount = Object.keys(translations).length;
 
   function toggleLocale(locale: string) {
     setSelectedLocales((currentLocales) =>
@@ -44,6 +56,7 @@ export default function SiteContentTranslationAssistant({
         ? currentLocales.filter((item) => item !== locale)
         : [...currentLocales, locale],
     );
+    setStatus("");
   }
 
   async function handleTranslate(
@@ -65,24 +78,20 @@ export default function SiteContentTranslationAssistant({
       }),
     ) as SiteContentLocaleFields;
 
-    const targetLocales = selectedLocales.filter(
-      (locale) => locale !== sourceLocale,
-    );
-
     if (
       siteContentTranslationKeys.some((field) => !fields[field].trim())
     ) {
-      setStatus("Fill the current live preview fields before translating.");
+      setStatus(dictionary.fillCurrentFields);
       return;
     }
 
     if (targetLocales.length === 0) {
-      setStatus("Select at least one target language.");
+      setStatus(dictionary.selectTargetLanguage);
       return;
     }
 
     setLoading(true);
-    setStatus("Translating site content...");
+    setStatus(dictionary.translating);
 
     try {
       const response = await fetch("/api/admin/translate-site-content", {
@@ -135,13 +144,13 @@ export default function SiteContentTranslationAssistant({
         ? Array.from(new Set(Object.values(result.providers)))
         : [];
       const providerLabel =
-        providers.length > 0 ? ` Provider: ${providers.join(", ")}.` : "";
+        providers.length > 0
+          ? ` ${dictionary.providerPrefix}: ${providers.join(", ")}.`
+          : "";
 
-      setStatus(
-        `Translated site content is ready and will be saved with this form.${providerLabel}`,
-      );
+      setStatus(`${dictionary.ready}${providerLabel}`);
     } catch {
-      setStatus("Site translation is unavailable right now.");
+      setStatus(dictionary.unavailable);
     } finally {
       setLoading(false);
     }
@@ -156,29 +165,41 @@ export default function SiteContentTranslationAssistant({
       />
 
       <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
-        Translation
+        {dictionary.badge}
       </p>
       <h3 className="mt-2 font-serif text-2xl text-dark">
-        Mirror live preview changes into other languages
+        {dictionary.title}
       </h3>
       <p className="mt-3 text-sm text-text/75">
-        Use the same workflow as product translation: edit the current locale in
-        the visual preview, translate it into target locales, then save once.
+        {dictionary.description}
       </p>
 
-      <div className="mt-5 flex flex-col gap-4">
+      <div className="mt-5 flex flex-wrap gap-2">
+        <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+          {targetLocales.length} {dictionary.targetLanguagesSelected}
+        </span>
+        <span className="rounded-full bg-olive/10 px-4 py-2 text-xs uppercase tracking-[0.16em] text-olive">
+          {stagedTranslationsCount} {dictionary.stagedTranslationSets}
+        </span>
+      </div>
+
+      <div className="mt-5 flex flex-col gap-5">
         <label className="flex flex-col gap-2 text-sm">
           <span className="uppercase tracking-[0.16em] text-muted">
-            Source language
+            {dictionary.sourceLanguage}
           </span>
           <select
             value={sourceLocale}
-            onChange={(event) => setSourceLocale(event.target.value)}
+            onChange={(event) => {
+              setSourceLocale(event.target.value);
+              setStatus("");
+            }}
             className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown"
           >
             {locales.map((locale) => (
               <option key={locale.code} value={locale.code}>
-                {locale.label}
+                {getSiteLocaleFlag(locale.code)} {locale.label} (
+                {locale.code.toUpperCase()})
               </option>
             ))}
           </select>
@@ -186,7 +207,7 @@ export default function SiteContentTranslationAssistant({
 
         <div>
           <p className="text-[12px] uppercase tracking-[0.16em] text-muted">
-            Target languages
+            {dictionary.targetLanguages}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {locales
@@ -205,11 +226,21 @@ export default function SiteContentTranslationAssistant({
                         : "border-brown/20 bg-white text-brown hover:bg-brown/5"
                     }`}
                   >
-                    {locale.label}
+                    {getSiteLocaleFlag(locale.code)} {locale.label}
                   </button>
                 );
               })}
           </div>
+          {targetLocales.length > 0 ? (
+            <p className="mt-3 text-sm text-text/70">
+              {targetLocales
+                .map(
+                  (localeCode) =>
+                    `${getSiteLocaleFlag(localeCode)} ${getSiteLocaleNativeLabel(localeCode)} (${localeCode.toUpperCase()})`,
+                )
+                .join(", ")}
+            </p>
+          ) : null}
         </div>
 
         <label className="inline-flex items-center gap-3 text-sm text-dark">
@@ -219,7 +250,7 @@ export default function SiteContentTranslationAssistant({
             onChange={(event) => setOnlyEmptyFields(event.target.checked)}
             className="h-4 w-4 accent-brown"
           />
-          Only fill empty pending translations
+          {dictionary.onlyEmptyFields}
         </label>
 
         <div className="flex justify-end">
@@ -229,7 +260,7 @@ export default function SiteContentTranslationAssistant({
             disabled={loading}
             className="rounded-full bg-olive px-5 py-3 text-xs uppercase tracking-[0.16em] text-white transition-colors hover:bg-dark disabled:cursor-not-allowed disabled:bg-muted"
           >
-            {loading ? "Translating..." : "Auto translate site content"}
+            {loading ? dictionary.translating : dictionary.translateButton}
           </button>
         </div>
       </div>

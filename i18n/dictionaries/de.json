@@ -88,14 +88,7 @@
       },
       "recentProductsBadge": "Neueste Produkte",
       "recentProductsTitle": "Aktuelle Katalogeintrage",
-      "openProductManager": "Produktverwaltung offnen",
-      "roadmapBadge": "Nächste Schritte",
-      "roadmapTitle": "Admin-Roadmap",
-      "roadmapItems": [
-        "Mehrsprachige Produktfelder zentral verwalten.",
-        "Das nachste Auth-Upgrade vorbereiten, ohne Admin-Routen neu zu schreiben.",
-        "Dieses Dashboard als Ausgangspunkt fur zukunftige Inbox- und Analyseansichten verwenden."
-      ]
+      "openProductManager": "Produktverwaltung offnen"
     },
     "create": {
       "badge": "Erstellen",
@@ -103,6 +96,8 @@
       "submit": "Produkt erstellen"
     },
     "inventory": {
+      "edit": "Produkt bearbeiten",
+      "backToProducts": "Zuruck zu den Produkten",
       "badge": "Bestand",
       "title": "Vorhandene Produkte bearbeiten",
       "save": "Anderungen speichern",
@@ -155,3 +150,4 @@
     "description": "Handgefertigte Seifen aus naturlichen Olen und Pflanzen. Hergestellt in Denizli."
   }
 }
+

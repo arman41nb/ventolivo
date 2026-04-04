@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { defaultLocale, type Locale } from "@/i18n/config";
+import { assetPathSchema, requiredAssetPathSchema } from "@/lib/validations";
 import type {
   LocalizedFieldMap,
   Product,
@@ -13,6 +14,18 @@ const localizedFieldMapSchema = z.record(
   z.string().trim().min(2).max(16),
   z.string().trim(),
 );
+const dbProductMediaLinkSchema = z.object({
+  role: z.string(),
+  sortOrder: z.number().int(),
+  mediaAsset: z.object({
+    id: z.string(),
+    kind: z.string(),
+    url: requiredAssetPathSchema,
+    altText: z.string().nullable().optional(),
+    thumbnailUrl: assetPathSchema.nullable().optional(),
+    label: z.string().nullable().optional(),
+  }),
+});
 
 const dbProductRecordSchema = z.object({
   id: z.number().int().positive(),
@@ -28,23 +41,7 @@ const dbProductRecordSchema = z.object({
   nameTranslations: z.string().nullable().optional(),
   tagTranslations: z.string().nullable().optional(),
   descriptionTranslations: z.string().nullable().optional(),
-  mediaLinks: z
-    .array(
-      z.object({
-        role: z.string(),
-        sortOrder: z.number().int(),
-        mediaAsset: z.object({
-          id: z.string(),
-          kind: z.string(),
-          url: z.string().url(),
-          altText: z.string().nullable().optional(),
-          thumbnailUrl: z.string().nullable().optional(),
-          label: z.string().nullable().optional(),
-        }),
-      }),
-    )
-    .optional()
-    .default([]),
+  mediaLinks: z.array(z.unknown()).optional().default([]),
 });
 
 export type DbProductRecord = z.infer<typeof dbProductRecordSchema>;
@@ -110,6 +107,10 @@ export function parseLocalizedFieldMap(
 
 export function mapDbProductRecord(record: DbProductRecord): Product {
   const product = dbProductRecordSchema.parse(record);
+  const mediaLinks = product.mediaLinks.flatMap((link) => {
+    const result = dbProductMediaLinkSchema.safeParse(link);
+    return result.success ? [result.data] : [];
+  });
   const translations = normalizeProductTranslations({
     name: parseLocalizedFieldMap(product.nameTranslations),
     tag: parseLocalizedFieldMap(product.tagTranslations),
@@ -129,7 +130,7 @@ export function mapDbProductRecord(record: DbProductRecord): Product {
     featured: product.featured,
     translations,
     media: normalizeProductMedia(
-      product.mediaLinks.map((link) => ({
+      mediaLinks.map((link) => ({
         id: link.mediaAsset.id,
         assetId: link.mediaAsset.id,
         type: link.mediaAsset.kind === "video" ? "video" : "image",

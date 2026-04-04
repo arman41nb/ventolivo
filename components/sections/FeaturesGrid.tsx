@@ -83,23 +83,28 @@ export default function FeaturesGrid({
       ];
 
   return (
-    <section className="grid grid-cols-1 md:grid-cols-3 border-t border-brown/[0.15] mx-[2.5rem]">
-      {features.map((feature, i, arr) => (
-        <div
-          key={feature.key}
-          className={`p-[2.5rem] ${
-            i < arr.length - 1 ? "border-r border-brown/[0.15]" : ""
-          }`}
-        >
-          <div className="w-[32px] h-[32px] border border-brown flex items-center justify-center mb-[1rem]">
-            {feature.icon}
-          </div>
-          <p className="font-serif text-[18px] text-dark mb-[0.5rem]">
-            {feature.title}
-          </p>
-          <p className="text-[13px] leading-[1.7] text-muted">{feature.text}</p>
+    <section className="px-4 py-20 md:px-6">
+      <div className="mx-auto max-w-[1380px]">
+        <div className="grid gap-5 md:grid-cols-3">
+          {features.map((feature, index) => (
+            <article
+              key={feature.key}
+              className={`animate-rise rounded-[28px] border border-brown/8 bg-[rgba(255,253,249,0.7)] p-6 shadow-[0_12px_28px_rgba(72,49,30,0.06)] ${
+                index === 1 ? "translate-y-4 md:translate-y-8" : ""
+              }`}
+              style={{ animationDelay: `${index * 120}ms` }}
+            >
+              <div className="mb-4 grid h-[54px] w-[54px] place-items-center rounded-[18px] bg-[linear-gradient(135deg,#dfe5d4,#eef2e8)] text-olive">
+                {feature.icon}
+              </div>
+              <p className="mb-2 font-serif text-[1.6rem] text-dark">
+                {feature.title}
+              </p>
+              <p className="text-[14px] leading-[1.85] text-muted">{feature.text}</p>
+            </article>
+          ))}
         </div>
-      ))}
+      </div>
     </section>
   );
 }
