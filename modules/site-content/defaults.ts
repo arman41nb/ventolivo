@@ -1,5 +1,6 @@
 import type { SiteContentSettings } from "@/types";
 import { getDefaultSiteLocales } from "./locales";
+import { MEDIA_FRAMING_LIMITS } from "@/modules/media/framing";
 
 export const defaultSiteContentSettings: SiteContentSettings = {
   brandName: "Ventolivo",
@@ -24,6 +25,16 @@ export const defaultSiteContentSettings: SiteContentSettings = {
   heroImageUrl:
     "https://images.unsplash.com/photo-1607006483225-2f78f3032b16?auto=format&fit=crop&w=1200&q=80",
   heroImageAlt: "Handcrafted artisan soap bars arranged on a warm neutral surface",
+  heroAccentImageUrl:
+    "/uploads/media/pastel-pink-candle-holder-removebg-preview.png",
+  heroAccentImageAlt: "Pastel pink candle beside the hero soap product",
+  heroAccentImageOffsetX: MEDIA_FRAMING_LIMITS.offset.defaultValue,
+  heroAccentImageOffsetY: MEDIA_FRAMING_LIMITS.offset.defaultValue,
+  heroAccentImageScale: MEDIA_FRAMING_LIMITS.scale.defaultValue,
+  heroForegroundMedia: "hero",
+  heroImageOffsetX: MEDIA_FRAMING_LIMITS.offset.defaultValue,
+  heroImageOffsetY: MEDIA_FRAMING_LIMITS.offset.defaultValue,
+  heroImageScale: MEDIA_FRAMING_LIMITS.scale.defaultValue,
   stripBannerItem1: "Handcrafted",
   stripBannerItem2: "Natural Ingredients",
   stripBannerItem3: "No Chemicals",

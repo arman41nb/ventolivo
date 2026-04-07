@@ -14,7 +14,19 @@ import type {
   SiteContentSettings,
 } from "@/types";
 
-const sharedJsonKeys = ["aboutImageUrl", "aboutImageAlt"] as const;
+const sharedJsonKeys = [
+  "aboutImageUrl",
+  "aboutImageAlt",
+  "heroAccentImageUrl",
+  "heroAccentImageAlt",
+  "heroAccentImageOffsetX",
+  "heroAccentImageOffsetY",
+  "heroAccentImageScale",
+  "heroForegroundMedia",
+  "heroImageOffsetX",
+  "heroImageOffsetY",
+  "heroImageScale",
+] as const;
 
 const localizedJsonKeys = [
   "navbarLinkProducts",

@@ -3,6 +3,7 @@ import {
   baseSiteLocaleCode,
   isValidSiteLocaleCode,
 } from "@/modules/site-content/locales";
+import { MEDIA_FRAMING_LIMITS } from "@/modules/media/framing";
 
 function isValidAssetReference(value: string): boolean {
   if (value.length === 0) {
@@ -97,6 +98,45 @@ export const siteContentSchema = z.object({
   heroBadgeLabel: z.string().trim().min(1).max(60),
   heroImageUrl: assetPathSchema,
   heroImageAlt: z.string().trim().max(120).default(""),
+  heroAccentImageUrl: assetPathSchema,
+  heroAccentImageAlt: z.string().trim().max(120).default(""),
+  heroAccentImageOffsetX: z.coerce
+    .number()
+    .finite()
+    .min(MEDIA_FRAMING_LIMITS.offset.min)
+    .max(MEDIA_FRAMING_LIMITS.offset.max)
+    .default(MEDIA_FRAMING_LIMITS.offset.defaultValue),
+  heroAccentImageOffsetY: z.coerce
+    .number()
+    .finite()
+    .min(MEDIA_FRAMING_LIMITS.offset.min)
+    .max(MEDIA_FRAMING_LIMITS.offset.max)
+    .default(MEDIA_FRAMING_LIMITS.offset.defaultValue),
+  heroAccentImageScale: z.coerce
+    .number()
+    .finite()
+    .min(MEDIA_FRAMING_LIMITS.scale.min)
+    .max(MEDIA_FRAMING_LIMITS.scale.max)
+    .default(MEDIA_FRAMING_LIMITS.scale.defaultValue),
+  heroForegroundMedia: z.enum(["hero", "accent"]).default("hero"),
+  heroImageOffsetX: z.coerce
+    .number()
+    .finite()
+    .min(MEDIA_FRAMING_LIMITS.offset.min)
+    .max(MEDIA_FRAMING_LIMITS.offset.max)
+    .default(MEDIA_FRAMING_LIMITS.offset.defaultValue),
+  heroImageOffsetY: z.coerce
+    .number()
+    .finite()
+    .min(MEDIA_FRAMING_LIMITS.offset.min)
+    .max(MEDIA_FRAMING_LIMITS.offset.max)
+    .default(MEDIA_FRAMING_LIMITS.offset.defaultValue),
+  heroImageScale: z.coerce
+    .number()
+    .finite()
+    .min(MEDIA_FRAMING_LIMITS.scale.min)
+    .max(MEDIA_FRAMING_LIMITS.scale.max)
+    .default(MEDIA_FRAMING_LIMITS.scale.defaultValue),
   stripBannerItem1: z.string().trim().min(1).max(80),
   stripBannerItem2: z.string().trim().min(1).max(80),
   stripBannerItem3: z.string().trim().min(1).max(80),

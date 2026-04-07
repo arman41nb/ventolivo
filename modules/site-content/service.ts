@@ -1,4 +1,4 @@
-import { cache } from "react";
+import { unstable_noStore as noStore } from "next/cache";
 import {
   dbGetLocalizedSiteContentSettings,
   dbGetSiteContentSettings,
@@ -13,19 +13,22 @@ import type {
   SiteContentSettings,
 } from "@/types";
 
-export const getSiteContentSettings = cache(
-  async (locale?: string): Promise<SiteContentSettings> => {
-    if (locale) {
-      return dbGetLocalizedSiteContentSettings(locale);
-    }
+export async function getSiteContentSettings(
+  locale?: string,
+): Promise<SiteContentSettings> {
+  noStore();
 
-    return dbGetSiteContentSettings();
-  },
-);
+  if (locale) {
+    return dbGetLocalizedSiteContentSettings(locale);
+  }
 
-export const getSiteLocales = cache(async (): Promise<SiteLocaleConfig[]> => {
+  return dbGetSiteContentSettings();
+}
+
+export async function getSiteLocales(): Promise<SiteLocaleConfig[]> {
+  noStore();
   return dbGetSiteLocales();
-});
+}
 
 export async function isSupportedSiteLocale(locale: string): Promise<boolean> {
   const siteLocales = await getSiteLocales();

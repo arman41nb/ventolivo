@@ -13,6 +13,7 @@ export type {
 } from "./product";
 export type { MediaLibraryAsset, MediaLibraryAssetInput } from "./media";
 export type {
+  HeroForegroundMedia,
   SiteContentInput,
   SiteContentLocaleFields,
   SiteContentLocaleInput,

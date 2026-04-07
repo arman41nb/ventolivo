@@ -62,6 +62,7 @@ export default async function AdminSiteContentPage({
         label: dictionary.admin.dashboard.productManager,
       }}
       navItems={getAdminNavItems(locale, "siteContent", dictionary.admin.navigation)}
+      immersivePreview
     >
       {status === "updated" ? (
         <p className="rounded-2xl border border-olive/20 bg-olive/10 px-4 py-3 text-sm text-olive">

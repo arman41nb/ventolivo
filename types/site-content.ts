@@ -1,3 +1,5 @@
+export type HeroForegroundMedia = "hero" | "accent";
+
 export interface SiteContentSettings {
   brandName: string;
   logoMode: "text" | "image";
@@ -19,6 +21,15 @@ export interface SiteContentSettings {
   heroBadgeLabel: string;
   heroImageUrl?: string;
   heroImageAlt?: string;
+  heroAccentImageUrl?: string;
+  heroAccentImageAlt?: string;
+  heroAccentImageOffsetX: number;
+  heroAccentImageOffsetY: number;
+  heroAccentImageScale: number;
+  heroForegroundMedia: HeroForegroundMedia;
+  heroImageOffsetX: number;
+  heroImageOffsetY: number;
+  heroImageScale: number;
   stripBannerItem1: string;
   stripBannerItem2: string;
   stripBannerItem3: string;

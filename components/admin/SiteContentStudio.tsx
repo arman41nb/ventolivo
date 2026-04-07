@@ -2,15 +2,22 @@
 
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import SceneImage from "@/components/media/SceneImage";
+import { useState, type CSSProperties, type ReactNode } from "react";
+import HeroVisualStage from "@/components/sections/HeroVisualStage";
 import { useFormStatus } from "react-dom";
 import MediaUploadDropzone from "@/components/admin/MediaUploadDropzone";
 import SiteContentTranslationAssistant from "@/components/admin/SiteContentTranslationAssistant";
 import SiteLocalesManager from "@/components/admin/SiteLocalesManager";
+import { MEDIA_FRAMING_LIMITS } from "@/modules/media/framing";
 import ProductGrid from "@/components/products/ProductGrid";
 import { siteConfig, socialLinks } from "@/config";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
+import {
+  getHeroSceneMediaState,
+  getHeroSceneTransforms,
+} from "@/modules/site-content/hero-scene";
 import type {
   MediaLibraryAsset,
   Product,
@@ -48,6 +55,7 @@ type EditableFieldId =
   | "heroBadgeValue"
   | "heroBadgeLabel"
   | "heroImage"
+  | "heroAccentImage"
   | "stripBannerItem1"
   | "stripBannerItem2"
   | "stripBannerItem3"
@@ -72,8 +80,16 @@ type EditableFieldId =
   | "ctaButtonLabel"
   | "footerCopyrightText";
 
-type AssetFieldKey = "logoImageUrl" | "heroImageUrl" | "aboutImageUrl";
-type AssetAltFieldKey = "logoAltText" | "heroImageAlt" | "aboutImageAlt";
+type AssetFieldKey =
+  | "logoImageUrl"
+  | "heroImageUrl"
+  | "heroAccentImageUrl"
+  | "aboutImageUrl";
+type AssetAltFieldKey =
+  | "logoAltText"
+  | "heroImageAlt"
+  | "heroAccentImageAlt"
+  | "aboutImageAlt";
 
 type EditableFieldMeta = {
   id: EditableFieldId;
@@ -285,14 +301,31 @@ const editableFields: Record<EditableFieldId, EditableFieldMeta> = {
     section: "hero",
     label: "Hero image",
     title: "Hero image",
-    description: "Upload or swap the main hero image.",
+    description:
+      "Upload the main hero image, then fine-tune its framing with live position and scale controls.",
     editor: {
       type: "asset",
       urlKey: "heroImageUrl",
       altKey: "heroImageAlt",
       assetTitle: "Hero image",
       helper:
-        "Drop a new hero image here or choose one from the shared library.",
+        "Drop a new hero image here, choose one from the shared library, then adjust its size and position in the live preview.",
+    },
+  },
+  heroAccentImage: {
+    id: "heroAccentImage",
+    section: "hero",
+    label: "Hero accent image",
+    title: "Hero accent image",
+    description:
+      "Upload or replace the secondary hero image that sits beside the main product in the stage.",
+    editor: {
+      type: "asset",
+      urlKey: "heroAccentImageUrl",
+      altKey: "heroAccentImageAlt",
+      assetTitle: "Hero accent image",
+      helper:
+        "Use this for the candle or any supporting object that should appear next to the main product.",
     },
   },
   stripBannerItem1: {
@@ -573,6 +606,118 @@ function PanelTextArea({
   );
 }
 
+function PanelRange({
+  label,
+  value,
+  onChange,
+  min,
+  max,
+  step = 1,
+  suffix = "",
+  inputStep,
+}: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  min: number;
+  max: number;
+  step?: number;
+  suffix?: string;
+  inputStep?: number;
+}) {
+  function handleChange(nextRawValue: string) {
+    const nextValue = Number(nextRawValue);
+
+    if (Number.isFinite(nextValue)) {
+      onChange(nextValue);
+    }
+  }
+
+  return (
+    <label className="grid gap-3 text-sm">
+      <div className="flex items-center justify-between gap-3">
+        <span className="uppercase tracking-[0.16em] text-muted">{label}</span>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-white px-3 py-1 text-xs uppercase tracking-[0.14em] text-brown shadow-sm">
+            {value}
+            {suffix}
+          </span>
+          <span className="text-[10px] uppercase tracking-[0.16em] text-muted">
+            Min {min}
+            {suffix} / Max {max}
+            {suffix}
+          </span>
+        </div>
+      </div>
+      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_110px] md:items-center">
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={(event) => handleChange(event.target.value)}
+          className="h-2 w-full cursor-pointer appearance-none rounded-full bg-[#e7d8c8] accent-[#7a5638]"
+        />
+        <div className="relative">
+          <input
+            type="number"
+            min={min}
+            max={max}
+            step={inputStep ?? step}
+            value={value}
+            onChange={(event) => handleChange(event.target.value)}
+            className="w-full rounded-[14px] border border-brown/15 bg-white px-3 py-2 pr-8 text-sm text-brown outline-none transition-colors focus:border-brown"
+          />
+          {suffix ? (
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs uppercase tracking-[0.12em] text-muted">
+              {suffix}
+            </span>
+          ) : null}
+        </div>
+      </div>
+    </label>
+  );
+}
+
+function PanelSegmentedControl({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: Array<{ label: string; value: string }>;
+}) {
+  return (
+    <div className="grid gap-3 text-sm">
+      <span className="uppercase tracking-[0.16em] text-muted">{label}</span>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {options.map((option) => {
+          const isActive = value === option.value;
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onChange(option.value)}
+              className={`rounded-[18px] border px-4 py-3 text-left text-xs uppercase tracking-[0.14em] transition-colors ${
+                isActive
+                  ? "border-brown bg-brown text-white shadow-sm"
+                  : "border-brown/15 bg-white text-brown hover:bg-brown/5"
+              }`}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function SubmitButton() {
   const { pending } = useFormStatus();
 
@@ -595,6 +740,8 @@ function EditableElement({
   children,
   className = "",
   badgeAlign = "left",
+  contentClassName = "",
+  style,
 }: {
   fieldId: EditableFieldId;
   selectedField: EditableFieldId;
@@ -603,6 +750,8 @@ function EditableElement({
   children: ReactNode;
   className?: string;
   badgeAlign?: "left" | "right";
+  contentClassName?: string;
+  style?: CSSProperties;
 }) {
   const isSelected = selectedField === fieldId;
 
@@ -611,6 +760,7 @@ function EditableElement({
       type="button"
       onClick={() => onSelect(fieldId)}
       className={`group relative rounded-[18px] text-left focus:outline-none ${className}`}
+      style={style}
     >
       <span
         aria-hidden="true"
@@ -627,7 +777,7 @@ function EditableElement({
       >
         {label}
       </span>
-      <span className="relative block">{children}</span>
+      <span className={`relative block ${contentClassName}`}>{children}</span>
     </button>
   );
 }
@@ -873,150 +1023,297 @@ function PreviewHero({
   selectedField: EditableFieldId;
   onSelectField: (field: EditableFieldId) => void;
 }) {
+  const subtitle = draft.heroSubtitle || dictionary.hero.subtitle;
+  const title = {
+    line1: draft.heroTitleLine1 || dictionary.hero.title.line1,
+    line2: draft.heroTitleLine2 || dictionary.hero.title.line2,
+    line3: draft.heroTitleLine3 || dictionary.hero.title.line3,
+  };
+  const description = draft.heroDescription || dictionary.hero.description;
+  const primaryButton = draft.heroPrimaryButtonLabel || dictionary.hero.shopNow;
+  const secondaryButton = draft.heroSecondaryButtonLabel || dictionary.hero.ourStory;
+  const badgeValue = draft.heroBadgeValue || dictionary.hero.badge.value;
+  const badgeLabel = draft.heroBadgeLabel || dictionary.hero.badge.label;
+  const brandName = draft.brandName || siteConfig.name;
+  const processTitle = draft.feature1Title || dictionary.features.items.coldProcess.title;
+  const processText = draft.feature1Text || dictionary.features.items.coldProcess.text;
+  const batchTitle =
+    draft.feature2Title || dictionary.features.items.smallBatches.title;
+  const naturalTitle = draft.feature3Title || dictionary.features.items.natural.title;
+  const naturalText = draft.feature3Text || dictionary.features.items.natural.text;
+  const heroMedia = getHeroSceneMediaState(draft, brandName);
+  const heroScene = getHeroSceneTransforms(0, heroMedia);
+  const trustPills = [
+    { id: "feature3Title" as const, value: naturalTitle },
+    { id: "feature2Title" as const, value: batchTitle },
+    { id: "feature1Title" as const, value: processTitle },
+  ];
+
   return (
-    <section className="grid min-h-[480px] grid-cols-1 md:grid-cols-2">
-      <div className="flex flex-col justify-center bg-warm px-[3rem] py-[4rem]">
-        <EditableElement
-          fieldId="heroSubtitle"
-          selectedField={selectedField}
-          onSelect={onSelectField}
-          label="Hero subtitle"
-          className="mb-[1.2rem] w-fit"
-        >
-          <span className="text-[11px] uppercase tracking-[2px] text-olive">
-            {draft.heroSubtitle || dictionary.hero.subtitle}
-          </span>
-        </EditableElement>
+    <section className="px-4 pb-5 pt-4 md:px-6 md:pt-5">
+      <div className="relative mx-auto max-w-[1380px] overflow-hidden rounded-[42px] border border-white/55 bg-[linear-gradient(180deg,rgba(252,248,243,0.98),rgba(244,236,228,0.94))] shadow-[0_28px_90px_rgba(109,82,58,0.14)]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_18%,rgba(255,255,255,0.95),transparent_20%),radial-gradient(circle_at_82%_15%,rgba(255,255,255,0.7),transparent_16%),radial-gradient(circle_at_50%_88%,rgba(198,178,156,0.2),transparent_22%)]" />
+        <span className="ambient-orb left-10 top-10 h-28 w-28 bg-white/52" />
+        <span className="ambient-orb bottom-10 left-[48%] h-24 w-24 bg-[#d9c4a7]/20 [animation-delay:1.2s]" />
+        <span className="ambient-orb right-16 top-16 h-24 w-24 bg-white/34 [animation-delay:2s]" />
 
-        <h1 className="mb-[1.5rem] font-serif text-[52px] leading-[1.1] text-dark">
-          <EditableElement
-            fieldId="heroTitleLine1"
-            selectedField={selectedField}
-            onSelect={onSelectField}
-            label="Hero line 1"
-            className="mb-1 w-fit"
-          >
-            <span>{draft.heroTitleLine1 || dictionary.hero.title.line1}</span>
-          </EditableElement>
-          <EditableElement
-            fieldId="heroTitleLine2"
-            selectedField={selectedField}
-            onSelect={onSelectField}
-            label="Hero line 2"
-            className="mb-1 w-fit"
-          >
-            <em className="italic text-brown">
-              {draft.heroTitleLine2 || dictionary.hero.title.line2}
-            </em>
-          </EditableElement>
-          <EditableElement
-            fieldId="heroTitleLine3"
-            selectedField={selectedField}
-            onSelect={onSelectField}
-            label="Hero line 3"
-            className="w-fit"
-          >
-            <span>{draft.heroTitleLine3 || dictionary.hero.title.line3}</span>
-          </EditableElement>
-        </h1>
+        <div className="relative grid gap-10 px-5 py-6 md:px-8 md:py-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(620px,1.2fr)] lg:items-center lg:gap-4 lg:px-12 lg:py-12 xl:px-14 xl:py-14">
+          <div className="relative z-10 flex flex-col justify-center lg:pe-6">
+            <div className="flex flex-wrap items-center gap-3">
+              <EditableElement
+                fieldId="heroSubtitle"
+                selectedField={selectedField}
+                onSelect={onSelectField}
+                label="Hero subtitle"
+                className="w-fit"
+              >
+                <span className="inline-flex items-center gap-3 rounded-full border border-brown/8 bg-white/82 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-[#9c826a] shadow-[0_10px_25px_rgba(72,49,30,0.05)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-olive" />
+                  {subtitle}
+                </span>
+              </EditableElement>
 
-        <EditableElement
-          fieldId="heroDescription"
-          selectedField={selectedField}
-          onSelect={onSelectField}
-          label="Hero description"
-          className="mb-[2rem] max-w-[360px]"
-        >
-          <p className="text-[14px] leading-[1.8] text-muted">
-            {draft.heroDescription || dictionary.hero.description}
-          </p>
-        </EditableElement>
-
-        <div className="flex items-center gap-[1rem]">
-          <EditableElement
-            fieldId="heroPrimaryButtonLabel"
-            selectedField={selectedField}
-            onSelect={onSelectField}
-            label="Primary button"
-            className="w-fit"
-          >
-            <span className="bg-brown px-[2rem] py-[0.8rem] text-[13px] tracking-[1px] text-white">
-              {draft.heroPrimaryButtonLabel || dictionary.hero.shopNow}
-            </span>
-          </EditableElement>
-          <EditableElement
-            fieldId="heroSecondaryButtonLabel"
-            selectedField={selectedField}
-            onSelect={onSelectField}
-            label="Secondary button"
-            className="w-fit"
-          >
-            <span className="border border-brown px-[2rem] py-[0.8rem] text-[13px] tracking-[1px] text-brown">
-              {draft.heroSecondaryButtonLabel || dictionary.hero.ourStory}
-            </span>
-          </EditableElement>
-        </div>
-      </div>
-
-      <div className="relative flex items-center justify-center overflow-hidden bg-[#D4C5B2]">
-        <EditableElement
-          fieldId="heroImage"
-          selectedField={selectedField}
-          onSelect={onSelectField}
-          label="Hero image"
-          className="block h-full w-full"
-        >
-          {draft.heroImageUrl ? (
-            <img
-              src={draft.heroImageUrl}
-              alt={draft.heroImageAlt || draft.brandName}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="relative flex h-full min-h-[320px] items-center justify-center">
-              <div className="relative" style={{ width: 200, height: 120 }}>
-                <div
-                  className="absolute h-[70px] w-[70px] rounded-[2px] bg-brown/[0.7]"
-                  style={{ top: -20, left: 0, transform: "rotate(-8deg)" }}
-                />
-                <div
-                  className="absolute h-[70px] w-[70px] rounded-[2px] bg-[#8B7355]"
-                  style={{ top: 25, left: 50 }}
-                />
-                <div
-                  className="absolute h-[70px] w-[70px] rounded-[2px] bg-[#C5B49A]"
-                  style={{ top: -5, left: 100, transform: "rotate(5deg)" }}
-                />
+              <div className="inline-flex items-center gap-1 rounded-full border border-brown/8 bg-white/74 px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-[#9c826a]">
+                <EditableElement
+                  fieldId="heroBadgeValue"
+                  selectedField={selectedField}
+                  onSelect={onSelectField}
+                  label="Badge value"
+                  className="w-fit"
+                >
+                  <span>{badgeValue}</span>
+                </EditableElement>
+                <EditableElement
+                  fieldId="heroBadgeLabel"
+                  selectedField={selectedField}
+                  onSelect={onSelectField}
+                  label="Badge label"
+                  className="w-fit"
+                >
+                  <span>{badgeLabel}</span>
+                </EditableElement>
               </div>
             </div>
-          )}
-        </EditableElement>
 
-        <div className="absolute bottom-[2rem] right-[2rem] bg-cream px-[1.2rem] py-[0.8rem] text-center">
-          <EditableElement
-            fieldId="heroBadgeValue"
-            selectedField={selectedField}
-            onSelect={onSelectField}
-            label="Badge value"
-            badgeAlign="right"
-            className="w-full"
-          >
-            <div className="font-serif text-[28px] text-brown">
-              {draft.heroBadgeValue || dictionary.hero.badge.value}
+            <div className="mt-6 max-w-[620px]">
+              <h1 className="font-serif text-[3.55rem] leading-[0.88] tracking-[-0.03em] text-[#3f2c1f] md:text-[5.1rem] xl:text-[6.3rem]">
+                <EditableElement
+                  fieldId="heroTitleLine1"
+                  selectedField={selectedField}
+                  onSelect={onSelectField}
+                  label="Hero line 1"
+                  className="mb-1 w-fit"
+                >
+                  <span className="block">{title.line1}</span>
+                </EditableElement>
+                <EditableElement
+                  fieldId="heroTitleLine2"
+                  selectedField={selectedField}
+                  onSelect={onSelectField}
+                  label="Hero line 2"
+                  className="mb-1 w-fit"
+                >
+                  <em className="block font-medium italic text-[#a07d62]">
+                    {title.line2}
+                  </em>
+                </EditableElement>
+                <EditableElement
+                  fieldId="heroTitleLine3"
+                  selectedField={selectedField}
+                  onSelect={onSelectField}
+                  label="Hero line 3"
+                  className="w-fit"
+                >
+                  <span className="block">{title.line3}</span>
+                </EditableElement>
+              </h1>
+
+              <EditableElement
+                fieldId="heroDescription"
+                selectedField={selectedField}
+                onSelect={onSelectField}
+                label="Hero description"
+                className="mt-8 max-w-[430px]"
+              >
+                <p className="text-[15px] leading-[1.9] text-[#6f5a49] md:text-[17px]">
+                  {description}
+                </p>
+              </EditableElement>
             </div>
-          </EditableElement>
-          <EditableElement
-            fieldId="heroBadgeLabel"
-            selectedField={selectedField}
-            onSelect={onSelectField}
-            label="Badge label"
-            badgeAlign="right"
-            className="mt-1 w-full"
-          >
-            <div className="text-[10px] uppercase tracking-[1px] text-muted">
-              {draft.heroBadgeLabel || dictionary.hero.badge.label}
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <EditableElement
+                fieldId="heroPrimaryButtonLabel"
+                selectedField={selectedField}
+                onSelect={onSelectField}
+                label="Primary button"
+                className="w-fit"
+              >
+                <span className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] px-7 py-4 text-[13px] font-medium uppercase tracking-[0.16em] text-white shadow-[0_16px_34px_rgba(93,61,39,0.18)]">
+                  {primaryButton}
+                </span>
+              </EditableElement>
+              <EditableElement
+                fieldId="heroSecondaryButtonLabel"
+                selectedField={selectedField}
+                onSelect={onSelectField}
+                label="Secondary button"
+                className="w-fit"
+              >
+                <span className="inline-flex items-center justify-center rounded-full border border-brown/8 bg-white/84 px-7 py-4 text-[13px] font-medium uppercase tracking-[0.16em] text-[#8a6b52] shadow-[0_10px_24px_rgba(72,49,30,0.05)]">
+                  {secondaryButton}
+                </span>
+              </EditableElement>
             </div>
-          </EditableElement>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              {trustPills.map((pill) => (
+                <EditableElement
+                  key={pill.id}
+                  fieldId={pill.id}
+                  selectedField={selectedField}
+                  onSelect={onSelectField}
+                  label={editableFields[pill.id].label}
+                  className="w-fit"
+                >
+                  <span className="rounded-full border border-brown/8 bg-white/74 px-4 py-3 text-[11px] uppercase tracking-[0.2em] text-[#a18a75] shadow-[0_8px_22px_rgba(72,49,30,0.04)]">
+                    {pill.value}
+                  </span>
+                </EditableElement>
+              ))}
+            </div>
+          </div>
+
+          <div className="relative z-10 min-h-[500px] lg:min-h-[680px]">
+            <div className="grid h-full min-h-[500px] gap-5 sm:grid-cols-[minmax(0,1fr)_230px] sm:items-stretch lg:min-h-[680px] lg:gap-7">
+              <HeroVisualStage
+                brandName={brandName}
+                media={heroMedia}
+                transforms={heroScene}
+                renderAccentImage={(content, props) => (
+                  <EditableElement
+                    fieldId="heroAccentImage"
+                    selectedField={selectedField}
+                    onSelect={onSelectField}
+                    label="Hero accent image"
+                    className={props.className}
+                    contentClassName={props.contentClassName}
+                    style={props.style}
+                  >
+                    {content}
+                  </EditableElement>
+                )}
+                renderHeroImage={(content, props) => (
+                  <EditableElement
+                    fieldId="heroImage"
+                    selectedField={selectedField}
+                    onSelect={onSelectField}
+                    label="Hero image"
+                    className={props.className}
+                    contentClassName={props.contentClassName}
+                    style={props.style}
+                  >
+                    {content}
+                  </EditableElement>
+                )}
+                renderBrandBadge={(content, props) => (
+                  <EditableElement
+                    fieldId="brandName"
+                    selectedField={selectedField}
+                    onSelect={onSelectField}
+                    label="Brand name"
+                    className={props.className}
+                    contentClassName={props.contentClassName}
+                    style={props.style}
+                  >
+                    {content}
+                  </EditableElement>
+                )}
+              />
+              <div className="relative z-30 flex flex-col justify-center gap-6 pb-[16%] pt-[20%] sm:py-[18%] lg:py-[20%]">
+                <div
+                  className="rounded-[30px] border border-white/60 bg-[linear-gradient(180deg,rgba(255,251,246,0.96),rgba(248,243,237,0.84))] p-5 shadow-[0_22px_45px_rgba(105,81,61,0.08)] backdrop-blur-xl transition-transform duration-300"
+                  style={{ transform: heroScene.processCardTransform }}
+                >
+                  <EditableElement
+                    fieldId="feature1Title"
+                    selectedField={selectedField}
+                    onSelect={onSelectField}
+                    label="Feature 1 title"
+                    className="w-fit"
+                  >
+                    <div>
+                      <small className="block text-[11px] uppercase tracking-[0.18em] text-[#c2a78f]">
+                        {processTitle}
+                      </small>
+                      <strong className="mt-3 block font-serif text-[2rem] leading-none text-[#96755d]">
+                        {processTitle}
+                      </strong>
+                    </div>
+                  </EditableElement>
+                  <EditableElement
+                    fieldId="feature1Text"
+                    selectedField={selectedField}
+                    onSelect={onSelectField}
+                    label="Feature 1 text"
+                    className="mt-4 block"
+                  >
+                    <p className="text-[13px] leading-[1.95] text-[#806b59]">
+                      {processText}
+                    </p>
+                  </EditableElement>
+                </div>
+
+                <div
+                  className="rounded-[30px] border border-white/60 bg-[linear-gradient(180deg,rgba(255,248,246,0.96),rgba(247,239,235,0.86))] p-5 shadow-[0_22px_45px_rgba(105,81,61,0.08)] backdrop-blur-xl transition-transform duration-300"
+                  style={{ transform: heroScene.naturalCardTransform }}
+                >
+                  <div className="flex flex-wrap items-center gap-1 text-[11px] uppercase tracking-[0.18em] text-[#c2a78f]">
+                    <EditableElement
+                      fieldId="heroBadgeValue"
+                      selectedField={selectedField}
+                      onSelect={onSelectField}
+                      label="Badge value"
+                      className="w-fit"
+                    >
+                      <span>{badgeValue}</span>
+                    </EditableElement>
+                    <EditableElement
+                      fieldId="heroBadgeLabel"
+                      selectedField={selectedField}
+                      onSelect={onSelectField}
+                      label="Badge label"
+                      className="w-fit"
+                    >
+                      <span>{badgeLabel}</span>
+                    </EditableElement>
+                  </div>
+                  <EditableElement
+                    fieldId="feature3Title"
+                    selectedField={selectedField}
+                    onSelect={onSelectField}
+                    label="Feature 3 title"
+                    className="mt-3 w-fit"
+                  >
+                    <strong className="block font-serif text-[2rem] leading-none text-[#96755d]">
+                      {naturalTitle}
+                    </strong>
+                  </EditableElement>
+                  <EditableElement
+                    fieldId="feature3Text"
+                    selectedField={selectedField}
+                    onSelect={onSelectField}
+                    label="Feature 3 text"
+                    className="mt-4 block"
+                  >
+                    <p className="text-[13px] leading-[1.95] text-[#806b59]">
+                      {naturalText}
+                    </p>
+                  </EditableElement>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1152,19 +1449,14 @@ function PreviewAbout({
         label="About image"
         className="block"
       >
-        <div className="aspect-[4/3] overflow-hidden bg-[#C5B49A]">
-          {draft.aboutImageUrl ? (
-            <img
-              src={draft.aboutImageUrl}
-              alt={draft.aboutImageAlt || draft.brandName}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center font-serif text-[18px] text-brown/60">
-              Product photo here
-            </div>
-          )}
-        </div>
+        <SceneImage
+          src={draft.aboutImageUrl}
+          alt={draft.aboutImageAlt || draft.brandName}
+          label="About image"
+          hint="Choose or upload the image from the editor panel."
+          imageClassName="aspect-[4/3] w-full object-cover"
+          placeholderClassName="aspect-[4/3]"
+        />
       </EditableElement>
 
       <div>
@@ -1444,6 +1736,15 @@ export default function SiteContentStudio({
     }));
   }
 
+  function handleSelectField(field: EditableFieldId) {
+    setSelectedField(field);
+  }
+
+  function handleRestoreDraft() {
+    setDraft(settings);
+    setAssets(mediaLibrary);
+  }
+
   function applyUploadedAsset(
     uploadedAssets: MediaLibraryAsset[],
     urlKey: AssetFieldKey,
@@ -1596,6 +1897,176 @@ export default function SiteContentStudio({
             applyUploadedAsset(uploadedAssets, editor.urlKey, editor.altKey)
           }
         />
+        {editor.urlKey === "heroImageUrl" ? (
+          <div className="grid gap-4 rounded-[24px] border border-brown/10 bg-cream/35 p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-[12px] uppercase tracking-[0.2em] text-muted">
+                  Hero framing
+                </p>
+                <p className="mt-2 text-sm text-text/75">
+                  Tune the product placement directly from this panel and watch
+                  the live preview update instantly.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  updateField(
+                    "heroImageOffsetX",
+                    MEDIA_FRAMING_LIMITS.offset.defaultValue,
+                  );
+                  updateField(
+                    "heroImageOffsetY",
+                    MEDIA_FRAMING_LIMITS.offset.defaultValue,
+                  );
+                  updateField(
+                    "heroImageScale",
+                    MEDIA_FRAMING_LIMITS.scale.defaultValue,
+                  );
+                }}
+                className="rounded-full border border-brown/20 px-3 py-2 text-xs uppercase tracking-[0.14em] text-brown transition-colors hover:bg-brown/5"
+              >
+                Reset framing
+              </button>
+            </div>
+
+            <PanelRange
+              label="Horizontal position"
+              min={MEDIA_FRAMING_LIMITS.offset.min}
+              max={MEDIA_FRAMING_LIMITS.offset.max}
+              step={MEDIA_FRAMING_LIMITS.offset.step}
+              value={
+                draft.heroImageOffsetX ??
+                MEDIA_FRAMING_LIMITS.offset.defaultValue
+              }
+              onChange={(value) => updateField("heroImageOffsetX", value)}
+            />
+            <PanelRange
+              label="Vertical position"
+              min={MEDIA_FRAMING_LIMITS.offset.min}
+              max={MEDIA_FRAMING_LIMITS.offset.max}
+              step={MEDIA_FRAMING_LIMITS.offset.step}
+              value={
+                draft.heroImageOffsetY ??
+                MEDIA_FRAMING_LIMITS.offset.defaultValue
+              }
+              onChange={(value) => updateField("heroImageOffsetY", value)}
+            />
+            <PanelRange
+              label="Image scale"
+              min={MEDIA_FRAMING_LIMITS.scale.min}
+              max={MEDIA_FRAMING_LIMITS.scale.max}
+              step={MEDIA_FRAMING_LIMITS.scale.step}
+              value={
+                draft.heroImageScale ??
+                MEDIA_FRAMING_LIMITS.scale.defaultValue
+              }
+              suffix="%"
+              inputStep={1}
+              onChange={(value) => updateField("heroImageScale", value)}
+            />
+            <PanelSegmentedControl
+              label="Layer order"
+              value={draft.heroForegroundMedia}
+              onChange={(value) =>
+                updateField(
+                  "heroForegroundMedia",
+                  value === "accent" ? "accent" : "hero",
+                )
+              }
+              options={[
+                { label: "Main image on top", value: "hero" },
+                { label: "Accent image on top", value: "accent" },
+              ]}
+            />
+          </div>
+        ) : null}
+        {editor.urlKey === "heroAccentImageUrl" ? (
+          <div className="grid gap-4 rounded-[24px] border border-brown/10 bg-cream/35 p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-[12px] uppercase tracking-[0.2em] text-muted">
+                  Accent framing
+                </p>
+                <p className="mt-2 text-sm text-text/75">
+                  Move the candle freely inside the live preview so the storefront
+                  mock stays close to the final hero composition.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  updateField(
+                    "heroAccentImageOffsetX",
+                    MEDIA_FRAMING_LIMITS.offset.defaultValue,
+                  );
+                  updateField(
+                    "heroAccentImageOffsetY",
+                    MEDIA_FRAMING_LIMITS.offset.defaultValue,
+                  );
+                  updateField(
+                    "heroAccentImageScale",
+                    MEDIA_FRAMING_LIMITS.scale.defaultValue,
+                  );
+                }}
+                className="rounded-full border border-brown/20 px-3 py-2 text-xs uppercase tracking-[0.14em] text-brown transition-colors hover:bg-brown/5"
+              >
+                Reset accent
+              </button>
+            </div>
+
+            <PanelRange
+              label="Horizontal position"
+              min={MEDIA_FRAMING_LIMITS.offset.min}
+              max={MEDIA_FRAMING_LIMITS.offset.max}
+              step={MEDIA_FRAMING_LIMITS.offset.step}
+              value={
+                draft.heroAccentImageOffsetX ??
+                MEDIA_FRAMING_LIMITS.offset.defaultValue
+              }
+              onChange={(value) => updateField("heroAccentImageOffsetX", value)}
+            />
+            <PanelRange
+              label="Vertical position"
+              min={MEDIA_FRAMING_LIMITS.offset.min}
+              max={MEDIA_FRAMING_LIMITS.offset.max}
+              step={MEDIA_FRAMING_LIMITS.offset.step}
+              value={
+                draft.heroAccentImageOffsetY ??
+                MEDIA_FRAMING_LIMITS.offset.defaultValue
+              }
+              onChange={(value) => updateField("heroAccentImageOffsetY", value)}
+            />
+            <PanelRange
+              label="Accent scale"
+              min={MEDIA_FRAMING_LIMITS.scale.min}
+              max={MEDIA_FRAMING_LIMITS.scale.max}
+              step={MEDIA_FRAMING_LIMITS.scale.step}
+              value={
+                draft.heroAccentImageScale ??
+                MEDIA_FRAMING_LIMITS.scale.defaultValue
+              }
+              suffix="%"
+              inputStep={1}
+              onChange={(value) => updateField("heroAccentImageScale", value)}
+            />
+            <PanelSegmentedControl
+              label="Layer order"
+              value={draft.heroForegroundMedia}
+              onChange={(value) =>
+                updateField(
+                  "heroForegroundMedia",
+                  value === "accent" ? "accent" : "hero",
+                )
+              }
+              options={[
+                { label: "Main image on top", value: "hero" },
+                { label: "Accent image on top", value: "accent" },
+              ]}
+            />
+          </div>
+        ) : null}
       </div>
     );
   }
@@ -1649,10 +2120,118 @@ export default function SiteContentStudio({
     );
   }
 
+  const editorPanel = (
+    <>
+      <section className="sticky top-0 z-20 rounded-[24px] border border-brown/15 bg-[#f7f0e6]/96 p-3 backdrop-blur">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-brown/12 bg-white/92 px-4 py-3 shadow-sm">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-muted">
+              Editor actions
+            </p>
+            <p className="mt-1 text-sm text-text/70">
+              Save the current draft or restore the last saved version.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={handleRestoreDraft}
+              className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
+            >
+              Redo
+            </button>
+            <SubmitButton />
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-brown/15 bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
+              Selected field
+            </p>
+            <h2 className="mt-2 font-serif text-3xl text-dark">
+              {selectedMeta.title}
+            </h2>
+            <p className="mt-2 text-sm text-text/75">
+              {selectedMeta.description}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+            Area: {sectionLabels[selectedMeta.section]}
+          </span>
+          <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+            Locale: {locale}
+          </span>
+        </div>
+
+        {relatedFields.length > 0 ? (
+          <div className="mt-6">
+            <p className="text-[12px] uppercase tracking-[0.18em] text-muted">
+              Nearby items
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {relatedFields.map((field) => (
+                <button
+                  key={field.id}
+                  type="button"
+                  onClick={() => handleSelectField(field.id)}
+                  className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
+                >
+                  {field.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </section>
+
+      <section className="rounded-[28px] border border-brown/15 bg-white p-6 shadow-sm">
+        {renderFieldEditor()}
+      </section>
+
+      <section className="rounded-[28px] border border-brown/15 bg-white p-6 shadow-sm">
+        <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
+          Workspace
+        </p>
+        <h3 className="mt-2 font-serif text-2xl text-dark">
+          {activeWorkspace.title}
+        </h3>
+        <p className="mt-3 text-sm text-text/75">
+          {activeWorkspace.description}
+        </p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {(Object.entries(workspacePanelMeta) as Array<
+            [WorkspacePanelId, (typeof workspacePanelMeta)[WorkspacePanelId]]
+          >).map(([panelId, panel]) => (
+            <button
+              key={panelId}
+              type="button"
+              onClick={() => setActiveWorkspacePanel(panelId)}
+              className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.16em] transition-colors ${
+                activeWorkspacePanel === panelId
+                  ? "border-brown bg-brown text-white"
+                  : "border-brown/20 bg-white text-brown hover:bg-brown/5"
+              }`}
+            >
+              {panel.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {renderWorkspacePanel()}
+    </>
+  );
+
   return (
     <form
       action={action}
-      className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_430px]"
+      className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_430px]"
     >
       <input type="hidden" name="locale" value={locale} />
       {(
@@ -1663,7 +2242,7 @@ export default function SiteContentStudio({
         <input key={key} type="hidden" name={key} value={value ?? ""} />
       ))}
 
-      <section className="rounded-[32px] border border-brown/15 bg-white/80 p-5 shadow-sm backdrop-blur xl:sticky xl:top-8 xl:self-start">
+      <section className="rounded-[32px] border border-brown/15 bg-white/80 p-5 shadow-sm backdrop-blur">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
@@ -1686,6 +2265,18 @@ export default function SiteContentStudio({
           </Link>
         </div>
 
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+            Selected: {selectedMeta.title}
+          </span>
+          <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+            Area: {sectionLabels[selectedMeta.section]}
+          </span>
+          <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+            Locale: {locale}
+          </span>
+        </div>
+
         <div className="mt-6 overflow-hidden rounded-[28px] border border-brown/10 bg-[#f5ede2]">
           <div className="flex items-center gap-2 border-b border-brown/10 bg-[#efe1ce] px-4 py-3">
             <span className="h-3 w-3 rounded-full bg-[#d96b5f]" />
@@ -1704,7 +2295,7 @@ export default function SiteContentStudio({
                   dictionary={dictionary}
                   draft={draft}
                   selectedField={selectedField}
-                  onSelectField={setSelectedField}
+                  onSelectField={handleSelectField}
                 />
               </section>
 
@@ -1713,7 +2304,7 @@ export default function SiteContentStudio({
                   dictionary={dictionary}
                   draft={draft}
                   selectedField={selectedField}
-                  onSelectField={setSelectedField}
+                  onSelectField={handleSelectField}
                 />
               </section>
 
@@ -1722,7 +2313,7 @@ export default function SiteContentStudio({
                   dictionary={dictionary}
                   draft={draft}
                   selectedField={selectedField}
-                  onSelectField={setSelectedField}
+                  onSelectField={handleSelectField}
                 />
               </section>
 
@@ -1732,7 +2323,7 @@ export default function SiteContentStudio({
                   dictionary={dictionary}
                   draft={draft}
                   selectedField={selectedField}
-                  onSelectField={setSelectedField}
+                  onSelectField={handleSelectField}
                   featuredProducts={featuredProducts}
                 />
               </section>
@@ -1742,7 +2333,7 @@ export default function SiteContentStudio({
                   dictionary={dictionary}
                   draft={draft}
                   selectedField={selectedField}
-                  onSelectField={setSelectedField}
+                  onSelectField={handleSelectField}
                 />
               </section>
 
@@ -1751,7 +2342,7 @@ export default function SiteContentStudio({
                   dictionary={dictionary}
                   draft={draft}
                   selectedField={selectedField}
-                  onSelectField={setSelectedField}
+                  onSelectField={handleSelectField}
                 />
               </section>
 
@@ -1760,7 +2351,7 @@ export default function SiteContentStudio({
                   dictionary={dictionary}
                   draft={draft}
                   selectedField={selectedField}
-                  onSelectField={setSelectedField}
+                  onSelectField={handleSelectField}
                 />
               </section>
 
@@ -1768,95 +2359,16 @@ export default function SiteContentStudio({
                 <PreviewFooter
                   draft={draft}
                   selectedField={selectedField}
-                  onSelectField={setSelectedField}
+                  onSelectField={handleSelectField}
                 />
               </section>
             </div>
           </div>
         </div>
       </section>
-      <aside className="flex flex-col gap-6">
-        <section className="rounded-[32px] border border-brown/15 bg-white p-6 shadow-sm">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
-                Selected field
-              </p>
-              <h2 className="mt-2 font-serif text-3xl text-dark">
-                {selectedMeta.title}
-              </h2>
-              <p className="mt-2 text-sm text-text/75">
-                {selectedMeta.description}
-              </p>
-            </div>
-            <SubmitButton />
-          </div>
 
-          <div className="mt-5 flex flex-wrap gap-2">
-            <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
-              Area: {sectionLabels[selectedMeta.section]}
-            </span>
-            <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
-              Locale: {locale}
-            </span>
-          </div>
-
-          {relatedFields.length > 0 ? (
-            <div className="mt-6">
-              <p className="text-[12px] uppercase tracking-[0.18em] text-muted">
-                Nearby items
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {relatedFields.map((field) => (
-                  <button
-                    key={field.id}
-                    type="button"
-                    onClick={() => setSelectedField(field.id)}
-                    className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
-                  >
-                    {field.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : null}
-        </section>
-
-        <section className="rounded-[32px] border border-brown/15 bg-white p-6 shadow-sm">
-          {renderFieldEditor()}
-        </section>
-
-        <section className="rounded-[32px] border border-brown/15 bg-white p-6 shadow-sm">
-          <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
-            Workspace
-          </p>
-          <h3 className="mt-2 font-serif text-2xl text-dark">
-            {activeWorkspace.title}
-          </h3>
-          <p className="mt-3 text-sm text-text/75">
-            {activeWorkspace.description}
-          </p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            {(Object.entries(workspacePanelMeta) as Array<
-              [WorkspacePanelId, (typeof workspacePanelMeta)[WorkspacePanelId]]
-            >).map(([panelId, panel]) => (
-              <button
-                key={panelId}
-                type="button"
-                onClick={() => setActiveWorkspacePanel(panelId)}
-                className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.16em] transition-colors ${
-                  activeWorkspacePanel === panelId
-                    ? "border-brown bg-brown text-white"
-                    : "border-brown/20 bg-white text-brown hover:bg-brown/5"
-                }`}
-              >
-                {panel.label}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {renderWorkspacePanel()}
+      <aside className="flex flex-col gap-6 self-start rounded-[32px] border border-brown/15 bg-[#f7f0e6]/96 p-4 shadow-[0_24px_60px_rgba(71,49,30,0.12)] backdrop-blur xl:sticky xl:top-8 xl:max-h-[calc(100vh-2rem)] xl:overflow-y-auto">
+        {editorPanel}
       </aside>
     </form>
   );

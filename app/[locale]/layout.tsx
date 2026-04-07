@@ -8,6 +8,9 @@ import { generatePageMetadata } from "@/lib/seo";
 import { getSiteLocales } from "@/modules/site-content";
 import "../globals.css";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateMetadata({
   params,
 }: {

@@ -30,7 +30,7 @@ export default function CTASection({ dict, siteSettings }: CTASectionProps) {
     >
       <div className="mx-auto grid max-w-[1380px] gap-6 lg:grid-cols-[0.88fr_1.12fr]">
         <div className="animate-rise rounded-[32px] border border-brown/8 bg-[rgba(255,251,246,0.75)] p-8 shadow-[0_14px_32px_rgba(72,49,30,0.08)] md:p-10">
-          <div className="font-serif text-[5rem] leading-[0.7] text-[#a77f58]">"</div>
+          <div className="font-serif text-[5rem] leading-[0.7] text-[#a77f58]">&quot;</div>
           <p className="mt-2 font-serif text-[2rem] leading-[1.08] text-[#5d3d27] md:text-[2.35rem]">
             {quote}
           </p>
