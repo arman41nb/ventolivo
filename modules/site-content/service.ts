@@ -1,11 +1,5 @@
 import { unstable_noStore as noStore } from "next/cache";
-import {
-  dbGetLocalizedSiteContentSettings,
-  dbGetSiteContentSettings,
-  dbGetSiteLocales,
-  dbUpsertSiteContentTranslation,
-  dbUpsertSiteContentSettings,
-} from "@/db";
+import { getSiteContentRepository } from "@/repositories/site-content";
 import type {
   SiteContentInput,
   SiteContentLocaleInput,
@@ -19,15 +13,15 @@ export async function getSiteContentSettings(
   noStore();
 
   if (locale) {
-    return dbGetLocalizedSiteContentSettings(locale);
+    return getSiteContentRepository().getLocalizedSiteContentSettings(locale);
   }
 
-  return dbGetSiteContentSettings();
+  return getSiteContentRepository().getSiteContentSettings();
 }
 
 export async function getSiteLocales(): Promise<SiteLocaleConfig[]> {
   noStore();
-  return dbGetSiteLocales();
+  return getSiteContentRepository().getSiteLocales();
 }
 
 export async function isSupportedSiteLocale(locale: string): Promise<boolean> {
@@ -38,11 +32,11 @@ export async function isSupportedSiteLocale(locale: string): Promise<boolean> {
 export async function updateSiteContentSettings(
   input: SiteContentInput,
 ): Promise<SiteContentSettings> {
-  return dbUpsertSiteContentSettings(input);
+  return getSiteContentRepository().upsertSiteContentSettings(input);
 }
 
 export async function updateSiteContentTranslation(
   input: SiteContentLocaleInput,
 ): Promise<void> {
-  return dbUpsertSiteContentTranslation(input);
+  return getSiteContentRepository().upsertSiteContentTranslation(input);
 }

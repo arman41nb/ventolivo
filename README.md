@@ -32,6 +32,7 @@ Ventolivo is a multilingual e-commerce storefront for an artisan soap brand, bui
 - **Media Library**: Upload and manage product images and videos
 
 ### Technical Features
+- **Repository-backed Content Access**: Public storefront content can fall back to default site settings when the database is not configured
 - **Dual Data Source**: Switch between mock data and database without changing route logic
 - **Type Safety**: Full TypeScript support with strict mode enabled
 - **API Routes**: RESTful API endpoints for products
@@ -108,6 +109,8 @@ NEXT_PUBLIC_GA_ID=
 NEXT_PUBLIC_SENTRY_DSN=
 
 # Database
+# Optional for the public storefront when using mock/default content.
+# Required for admin authentication, media persistence, and saving site content.
 DATABASE_URL=file:./dev.db
 
 # Data Source Selection
@@ -149,13 +152,15 @@ The application supports two data sources:
 
 ### Mock Data (Default)
 - Data stored in `data/products.ts`
-- No database required
+- No database required for product content
+- Site content falls back to built-in defaults when `DATABASE_URL` is not configured
 - Suitable for development and prototyping
 
 ### Database
 - Prisma with SQLite backend
 - Set `PRODUCTS_DATA_SOURCE=database` in environment
 - Full CRUD operations supported
+- Required for admin authentication, media storage, audit logs, and persistent site-content editing
 
 To switch to database:
 ```bash
@@ -214,6 +219,8 @@ Translation files are located in `i18n/dictionaries/`:
 - `de.json`
 - `fa.json`
 - `ar.json`
+
+Locale-aware routing accepts valid locale codes. If a locale does not have a dedicated UI dictionary yet, shared interface copy safely falls back to English while database-backed site content can still be localized per locale.
 
 ## Admin Panel
 

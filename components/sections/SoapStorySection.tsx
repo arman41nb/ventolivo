@@ -4,6 +4,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Dictionary } from "@/i18n";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { clampProgress } from "@/modules/media/transform";
 import { getHeroSceneMediaState } from "@/modules/site-content/hero-scene";
 import type { SiteContentSettings } from "@/types";
@@ -61,19 +62,11 @@ export default function SoapStorySection({
   const initializedRef = useRef(false);
   const targetProgressRef = useRef(0);
   const currentProgressRef = useRef(0);
+  const prefersReducedMotion = usePrefersReducedMotion();
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    if (mediaQuery.matches) {
-      targetProgressRef.current = 1;
-      currentProgressRef.current = 1;
-      setProgress(1);
+    if (typeof window === "undefined" || prefersReducedMotion) {
       return;
     }
 
@@ -139,7 +132,7 @@ export default function SoapStorySection({
       window.removeEventListener("scroll", requestTick);
       window.removeEventListener("resize", requestTick);
     };
-  }, []);
+  }, [prefersReducedMotion]);
 
   const brandName = siteSettings?.brandName ?? "Ventolivo";
   const heroMedia = getHeroSceneMediaState(siteSettings, brandName);
@@ -159,14 +152,15 @@ export default function SoapStorySection({
     studyText: "Crafted for skin and soul",
   };
 
-  const visualProgress = easeOutCubic(progress);
-  const lineReveal = revealAmount(progress, 0.05, 0.08);
-  const soapReveal = revealAmount(progress, 0.0, 0.08);
-  const accentReveal = revealAmount(progress, 0.0, 0.07);
-  const ritualReveal = revealAmount(progress, 0.07, 0.08);
-  const detailReveal = revealAmount(progress, 0.12, 0.08);
-  const studyReveal = revealAmount(progress, 0.17, 0.08);
-  const momentsReveal = revealAmount(progress, 0.21, 0.08);
+  const resolvedProgress = prefersReducedMotion ? 1 : progress;
+  const visualProgress = easeOutCubic(resolvedProgress);
+  const lineReveal = revealAmount(resolvedProgress, 0.05, 0.08);
+  const soapReveal = revealAmount(resolvedProgress, 0.0, 0.08);
+  const accentReveal = revealAmount(resolvedProgress, 0.0, 0.07);
+  const ritualReveal = revealAmount(resolvedProgress, 0.07, 0.08);
+  const detailReveal = revealAmount(resolvedProgress, 0.12, 0.08);
+  const studyReveal = revealAmount(resolvedProgress, 0.17, 0.08);
+  const momentsReveal = revealAmount(resolvedProgress, 0.21, 0.08);
   const soapX = mix(-68, 24, visualProgress);
   const soapY = mix(64, -32, visualProgress);
   const soapRotate = mix(-18, 1.5, visualProgress);
@@ -202,7 +196,7 @@ export default function SoapStorySection({
               <div className="relative z-20 max-w-[610px]">
                 <div
                   className="inline-flex items-center gap-3 rounded-full border border-brown/8 bg-white/76 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-[#9f8269] shadow-[0_10px_22px_rgba(72,49,30,0.05)]"
-                  style={revealStyle(progress, 0.02, {
+                  style={revealStyle(resolvedProgress, 0.02, {
                     x: -18,
                     y: 24,
                     scaleFrom: 0.94,
@@ -215,7 +209,7 @@ export default function SoapStorySection({
 
                 <div
                   className="mt-5"
-                  style={revealStyle(progress, 0.06, {
+                  style={revealStyle(resolvedProgress, 0.06, {
                     x: -24,
                     y: 28,
                     scaleFrom: 0.96,
@@ -236,7 +230,7 @@ export default function SoapStorySection({
 
                   <div
                     className="mt-6 flex items-center gap-4"
-                    style={revealStyle(progress, 0.11, {
+                    style={revealStyle(resolvedProgress, 0.11, {
                       x: -14,
                       y: 20,
                       scaleFrom: 0.98,
@@ -259,7 +253,7 @@ export default function SoapStorySection({
                 <div className="mt-7 border-t border-brown/10 pt-6">
                   <p
                     className="max-w-[520px] text-[17px] leading-[1.9] text-[#6e5949] md:text-[19px]"
-                    style={revealStyle(progress, 0.14, {
+                    style={revealStyle(resolvedProgress, 0.14, {
                       x: -18,
                       y: 24,
                       scaleFrom: 0.98,
@@ -271,7 +265,7 @@ export default function SoapStorySection({
                   <div className="mt-6 grid gap-6 md:grid-cols-[minmax(0,1fr)_220px] md:items-start">
                     <p
                       className="text-[14px] leading-[2] text-[#7b6657] md:text-[15px]"
-                      style={revealStyle(progress, 0.2, {
+                      style={revealStyle(resolvedProgress, 0.2, {
                         x: -12,
                         y: 26,
                         scaleFrom: 0.99,
@@ -282,7 +276,7 @@ export default function SoapStorySection({
 
                     <div
                       className="rounded-[26px] border border-white/68 bg-[linear-gradient(180deg,rgba(255,252,248,0.92),rgba(247,239,232,0.82))] p-5 shadow-[0_16px_30px_rgba(105,81,61,0.08)] backdrop-blur-xl"
-                      style={revealStyle(progress, 0.24, {
+                      style={revealStyle(resolvedProgress, 0.24, {
                         x: 18,
                         y: 22,
                         scaleFrom: 0.94,
@@ -301,14 +295,14 @@ export default function SoapStorySection({
 
                 <p
                   className="mt-9 max-w-[420px] font-serif text-[1.9rem] leading-[1.22] text-[#5f4433] italic md:text-[2.2rem]"
-                  style={revealStyle(progress, 0.3, {
+                  style={revealStyle(resolvedProgress, 0.3, {
                     x: -8,
                     y: 18,
                     scaleFrom: 0.97,
                     blurFrom: 8,
                   })}
                 >
-                  "{copy.closing}"
+                  &quot;{copy.closing}&quot;
                 </p>
               </div>
 

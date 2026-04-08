@@ -1,24 +1,53 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { defaultLocale, isValidLocale } from "@/i18n/config";
+import {
+  defaultLocale,
+  getLocaleCandidates,
+  isValidLocale,
+  localePreferenceCookieName,
+  locales,
+} from "@/i18n/config";
 import type { Locale } from "@/i18n/config";
 import { isAdminAuthenticatedRequest } from "@/modules/admin-auth/session";
 
+function withLocalePreference(response: NextResponse, locale: string) {
+  response.cookies.set(localePreferenceCookieName, locale, {
+    path: "/",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 365,
+  });
+
+  return response;
+}
+
 function getLocaleFromRequest(request: NextRequest): Locale {
+  const cookieLocale = request.cookies.get(localePreferenceCookieName)?.value;
+
+  if (cookieLocale) {
+    const cookieCandidates = getLocaleCandidates(cookieLocale);
+
+    for (const candidate of cookieCandidates) {
+      if (locales.includes(candidate)) {
+        return candidate;
+      }
+    }
+
+    const [exactCookieLocale] = cookieCandidates;
+
+    if (exactCookieLocale && isValidLocale(exactCookieLocale)) {
+      return exactCookieLocale;
+    }
+  }
+
   const acceptLanguage = request.headers.get("accept-language") ?? "";
 
-  const langMap: Record<string, Locale> = {
-    en: "en",
-    tr: "tr",
-    de: "de",
-    fa: "fa",
-    ar: "ar",
-  };
+  for (const language of acceptLanguage.split(",")) {
+    const [rawLocale] = language.split(";");
 
-  for (const lang of acceptLanguage.split(",")) {
-    const code = lang.split(";")[0].trim().toLowerCase().slice(0, 2);
-    if (langMap[code]) {
-      return langMap[code];
+    for (const candidate of getLocaleCandidates(rawLocale ?? "")) {
+      if (locales.includes(candidate)) {
+        return candidate;
+      }
     }
   }
 
@@ -34,12 +63,17 @@ export async function proxy(request: NextRequest) {
 
   const pathnameHasLocale = hasLocalePrefix(pathname);
 
-  if (pathnameHasLocale) return;
+  if (pathnameHasLocale) {
+    const locale = getPathLocale(pathname);
+    return locale
+      ? withLocalePreference(NextResponse.next(), locale)
+      : NextResponse.next();
+  }
 
   const locale = getLocaleFromRequest(request);
   request.nextUrl.pathname = `/${locale}${pathname}`;
 
-  return NextResponse.redirect(request.nextUrl);
+  return withLocalePreference(NextResponse.redirect(request.nextUrl), locale);
 }
 
 function getPathLocale(pathname: string): string | null {
@@ -61,6 +95,7 @@ function isAdminLoginPath(pathname: string): boolean {
 
 async function enforceAdminAuth(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const locale = pathname.split("/")[1] || defaultLocale;
   const isAuthenticated = await isAdminAuthenticatedRequest(request);
 
   if (isAdminLoginPath(pathname)) {
@@ -68,21 +103,20 @@ async function enforceAdminAuth(request: NextRequest) {
       const redirectUrl = request.nextUrl.clone();
       redirectUrl.pathname = pathname.replace(/\/login$/, "");
       redirectUrl.search = "";
-      return NextResponse.redirect(redirectUrl);
+      return withLocalePreference(NextResponse.redirect(redirectUrl), locale);
     }
 
-    return NextResponse.next();
+    return withLocalePreference(NextResponse.next(), locale);
   }
 
   if (!isAuthenticated) {
     const redirectUrl = request.nextUrl.clone();
-    const locale = pathname.split("/")[1] || defaultLocale;
     redirectUrl.pathname = `/${locale}/admin/login`;
     redirectUrl.searchParams.set("next", pathname);
-    return NextResponse.redirect(redirectUrl);
+    return withLocalePreference(NextResponse.redirect(redirectUrl), locale);
   }
 
-  return NextResponse.next();
+  return withLocalePreference(NextResponse.next(), locale);
 }
 
 export const config = {

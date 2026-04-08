@@ -9,6 +9,7 @@ import {
   type ElementType,
   type ReactNode,
 } from "react";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 type RevealDirection = "up" | "down" | "left" | "right";
 
@@ -61,17 +62,11 @@ export default function ViewportReveal<T extends ElementType = "div">({
 }: ViewportRevealProps<T>) {
   const Component = (as ?? "div") as ElementType;
   const ref = useRef<HTMLElement | null>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    if (mediaQuery.matches) {
-      setVisible(true);
+    if (typeof window === "undefined" || prefersReducedMotion) {
       return;
     }
 
@@ -108,14 +103,15 @@ export default function ViewportReveal<T extends ElementType = "div">({
     observer.observe(node);
 
     return () => observer.disconnect();
-  }, [once, threshold]);
+  }, [once, prefersReducedMotion, threshold]);
 
   const offset = getOffset(direction, distance);
+  const isVisible = prefersReducedMotion || visible;
   const motionStyle: CSSProperties = {
     ...style,
-    opacity: visible ? 1 : 0,
-    transform: `translate3d(${visible ? 0 : offset.x}px, ${visible ? 0 : offset.y}px, 0) scale(${visible ? 1 : scaleFrom})`,
-    filter: `blur(${visible ? 0 : blur}px)`,
+    opacity: isVisible ? 1 : 0,
+    transform: `translate3d(${isVisible ? 0 : offset.x}px, ${isVisible ? 0 : offset.y}px, 0) scale(${isVisible ? 1 : scaleFrom})`,
+    filter: `blur(${isVisible ? 0 : blur}px)`,
     transitionProperty: "transform, opacity, filter",
     transitionDuration: `${duration}ms`,
     transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",

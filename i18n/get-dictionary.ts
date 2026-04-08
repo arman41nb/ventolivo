@@ -4,7 +4,7 @@ import de from "./dictionaries/de.json";
 import en from "./dictionaries/en.json";
 import fa from "./dictionaries/fa.json";
 import tr from "./dictionaries/tr.json";
-import type { Locale } from "./config";
+import { defaultLocale, getLocaleCandidates, type Locale } from "./config";
 import type { Dictionary } from "./types";
 
 function normalizeDictionary(dictionary: unknown): Dictionary {
@@ -111,5 +111,13 @@ const dictionaries: Record<string, Dictionary> = {
 };
 
 export const getDictionary = cache(async (locale: Locale): Promise<Dictionary> => {
-  return dictionaries[locale] ?? dictionaries.en;
+  for (const candidate of getLocaleCandidates(locale)) {
+    const dictionary = dictionaries[candidate];
+
+    if (dictionary) {
+      return dictionary;
+    }
+  }
+
+  return dictionaries[defaultLocale];
 });

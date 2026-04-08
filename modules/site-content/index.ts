@@ -1,3 +1,4 @@
+export type { SiteContentRepository } from "./contracts";
 export {
   getSiteLocales,
   isSupportedSiteLocale,
