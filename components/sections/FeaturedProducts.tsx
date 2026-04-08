@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ViewportReveal from "@/components/animation/ViewportReveal";
 import ProductGrid from "@/components/products/ProductGrid";
 import type { Product } from "@/types";
 import type { Locale } from "@/i18n/config";
@@ -28,23 +29,30 @@ export default function FeaturedProducts({
           <span className="ambient-orb right-12 top-6 h-24 w-24 bg-white/28" />
           <span className="ambient-orb bottom-6 left-16 h-16 w-16 bg-olive/12 [animation-delay:1.4s]" />
 
-          <div className="animate-rise mb-9 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-[720px]">
-            <h2 className="font-serif text-[2.8rem] leading-[0.98] text-dark md:text-[4.2rem]">
-              {title}
-            </h2>
-            </div>
-            <Link
-              href={productsHref}
-              className="w-fit border-b border-brown pb-1 text-[14px] text-brown no-underline transition-colors hover:text-dark hover:border-dark"
+          <div className="mb-9 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <ViewportReveal
+              className="max-w-[720px]"
+              delay={20}
+              distance={26}
+              duration={520}
             >
-              {viewAllLabel}
-            </Link>
+              <h2 className="font-serif text-[2.8rem] leading-[0.98] text-dark md:text-[4.2rem]">
+                {title}
+              </h2>
+            </ViewportReveal>
+            <ViewportReveal delay={90} distance={18} duration={460}>
+              <Link
+                href={productsHref}
+                className="w-fit border-b border-brown pb-1 text-[14px] text-brown no-underline transition-colors hover:text-dark hover:border-dark"
+              >
+                {viewAllLabel}
+              </Link>
+            </ViewportReveal>
           </div>
 
-          <div className="animate-rise animate-rise-delay-1">
+          <ViewportReveal delay={120} distance={22} duration={520}>
             <ProductGrid products={products} orderLabel={orderLabel} locale={locale} />
-          </div>
+          </ViewportReveal>
         </div>
       </div>
     </section>

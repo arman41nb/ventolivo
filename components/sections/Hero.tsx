@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import ViewportReveal from "@/components/animation/ViewportReveal";
 import HeroVisualStage from "@/components/sections/HeroVisualStage";
 import type { Dictionary } from "@/i18n";
 import type { Locale } from "@/i18n/config";
@@ -104,7 +105,13 @@ export default function Hero({ dict, locale, siteSettings }: HeroProps) {
 
         <div className="relative grid gap-10 px-5 py-6 md:px-8 md:py-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(620px,1.2fr)] lg:items-center lg:gap-4 lg:px-12 lg:py-12 xl:px-14 xl:py-14">
           <div className="relative z-10 flex flex-col justify-center lg:pe-6">
-            <div className="animate-rise flex flex-wrap items-center gap-3">
+            <ViewportReveal
+              className="flex flex-wrap items-center gap-3"
+              delay={40}
+              distance={20}
+              blur={8}
+              duration={520}
+            >
               <p className="inline-flex items-center gap-3 rounded-full border border-brown/8 bg-white/82 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-[#9c826a] shadow-[0_10px_25px_rgba(72,49,30,0.05)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-olive" />
                 {subtitle}
@@ -112,22 +119,34 @@ export default function Hero({ dict, locale, siteSettings }: HeroProps) {
               <span className="rounded-full border border-brown/8 bg-white/74 px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-[#9c826a]">
                 {badgeValue} {badgeLabel}
               </span>
-            </div>
+            </ViewportReveal>
 
-            <div className="mt-6 max-w-[620px]">
-              <h1 className="animate-rise animate-rise-delay-1 font-serif text-[3.55rem] leading-[0.88] tracking-[-0.03em] text-[#3f2c1f] md:text-[5.1rem] xl:text-[6.3rem]">
+            <ViewportReveal
+              className="mt-6 max-w-[620px]"
+              delay={110}
+              distance={28}
+              blur={10}
+              duration={560}
+            >
+              <h1 className="font-serif text-[3.55rem] leading-[0.88] tracking-[-0.03em] text-[#3f2c1f] md:text-[5.1rem] xl:text-[6.3rem]">
                 <span className="block">{title.line1}</span>
                 <span className="mt-1 block text-[#a07d62]">
                   <em className="font-medium italic">{title.line2}</em>
                 </span>
                 <span className="block">{title.line3}</span>
               </h1>
-              <p className="animate-rise animate-rise-delay-2 mt-8 max-w-[430px] text-[15px] leading-[1.9] text-[#6f5a49] md:text-[17px]">
+              <p className="mt-8 max-w-[430px] text-[15px] leading-[1.9] text-[#6f5a49] md:text-[17px]">
                 {description}
               </p>
-            </div>
+            </ViewportReveal>
 
-            <div className="animate-rise animate-rise-delay-3 mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <ViewportReveal
+              className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+              delay={190}
+              distance={24}
+              blur={8}
+              duration={500}
+            >
               <Link
                 href={productsHref}
                 className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] px-7 py-4 text-[13px] font-medium uppercase tracking-[0.16em] text-white shadow-[0_16px_34px_rgba(93,61,39,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_38px_rgba(93,61,39,0.24)] no-underline"
@@ -140,9 +159,15 @@ export default function Hero({ dict, locale, siteSettings }: HeroProps) {
               >
                 {ourStory}
               </Link>
-            </div>
+            </ViewportReveal>
 
-            <div className="animate-rise animate-rise-delay-4 mt-8 flex flex-wrap gap-3">
+            <ViewportReveal
+              className="mt-8 flex flex-wrap gap-3"
+              delay={250}
+              distance={18}
+              blur={6}
+              duration={460}
+            >
               {trustPills.map((item) => (
                 <span
                   key={item}
@@ -151,7 +176,7 @@ export default function Hero({ dict, locale, siteSettings }: HeroProps) {
                   {item}
                 </span>
               ))}
-            </div>
+            </ViewportReveal>
           </div>
 
           <div className="relative z-10 min-h-[500px] lg:min-h-[680px]">
@@ -160,14 +185,18 @@ export default function Hero({ dict, locale, siteSettings }: HeroProps) {
                 brandName={brandName}
                 media={heroMedia}
                 transforms={heroScene}
+                heroImageMotionClassName="lux-product-reveal"
+                accentImageMotionClassName="lux-accent-reveal"
               />
               <div className="relative z-30 flex flex-col justify-center gap-6 pb-[16%] pt-[20%] sm:py-[18%] lg:py-[20%]">
                 {insightCards.map((card, index) => (
-                  <div
+                  <ViewportReveal
                     key={card.key}
-                    className={`animate-rise ${
-                      index === 0 ? "animate-rise-delay-3" : "animate-rise-delay-4"
-                    } rounded-[30px] border border-white/60 ${card.toneClass} p-5 shadow-[0_22px_45px_rgba(105,81,61,0.08)] backdrop-blur-xl transition-transform duration-300`}
+                    className={`rounded-[30px] border border-white/60 ${card.toneClass} p-5 shadow-[0_22px_45px_rgba(105,81,61,0.08)] backdrop-blur-xl transition-transform duration-300`}
+                    delay={260 + index * 80}
+                    distance={26}
+                    blur={10}
+                    duration={520}
                     style={{ transform: card.transform }}
                   >
                     <small className="block text-[11px] uppercase tracking-[0.18em] text-[#c2a78f]">
@@ -177,7 +206,7 @@ export default function Hero({ dict, locale, siteSettings }: HeroProps) {
                       {card.title}
                     </strong>
                     <p className="mt-4 text-[13px] leading-[1.95] text-[#806b59]">{card.text}</p>
-                  </div>
+                  </ViewportReveal>
                 ))}
               </div>
             </div>

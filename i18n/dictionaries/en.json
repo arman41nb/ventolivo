@@ -22,6 +22,20 @@
       "label": "Natural"
     }
   },
+  "storySection": {
+    "eyebrow": "Inspired by nature",
+    "title": "Nature, memory, and the rituals we turn into soap.",
+    "lead": "We design from scenes that stay with us, drawn equally from nature and human life.",
+    "body": "A dried leaf carried by a narrow stream, a sandstorm across the desert, a bay that feels like paradise, an emerald seam, life beneath the sea, a carefully brewed coffee, the grain of a wooden table, confetti suspended in the air. What we love to watch, touch, and taste becomes part of our handmade soaps, always in harmony with nature and human life.",
+    "closing": "Your skin deserves the best. So does your soul.",
+    "ritualLabel": "Handmade ritual",
+    "momentsLabel": "Sensory notes",
+    "momentsValue": "Leaf, desert, bay, emerald, coffee, wood, confetti.",
+    "detailLabel": "Organic composition",
+    "detailText": "Layered with calm motion, mineral warmth, and tactile detail.",
+    "studyLabel": "Sensory study",
+    "studyText": "Crafted for skin and soul"
+  },
   "stripBanner": {
     "items": ["Handcrafted", "Natural Ingredients", "No Chemicals", "Made in Denizli"]
   },

@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import ViewportReveal from "@/components/animation/ViewportReveal";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import type { Dictionary } from "@/i18n";
 import type { Locale } from "@/i18n/config";
@@ -52,8 +53,16 @@ export default function Navbar({
     <header className="sticky top-0 z-40">
       <div className="bg-[linear-gradient(180deg,#694733_0%,#5d3d27_100%)] px-4 py-2.5 text-center text-[10px] uppercase tracking-[0.24em] text-cream/88 md:px-6">
         <div className="mx-auto flex max-w-[1380px] flex-wrap items-center justify-center gap-x-8 gap-y-2">
-          {stripItems.map((item) => (
-            <span key={item}>{item}</span>
+          {stripItems.map((item, index) => (
+            <ViewportReveal
+              key={item}
+              as="span"
+              delay={index * 55}
+              distance={12}
+              duration={420}
+            >
+              {item}
+            </ViewportReveal>
           ))}
         </div>
       </div>
@@ -64,23 +73,31 @@ export default function Navbar({
         aria-label="Main navigation"
       >
         <div className="mx-auto flex max-w-[1380px] flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <Link
-            href={locale ? `/${locale}` : "/"}
-            className="font-serif text-[2rem] tracking-[0.06em] text-[#8f735d] no-underline"
-            aria-label={`${siteSettings?.brandName ?? "Ventolivo"} - Home`}
-          >
-            {siteSettings?.logoMode === "image" && siteSettings.logoImageUrl ? (
-              <img
-                src={siteSettings.logoImageUrl}
-                alt={siteSettings.logoAltText || siteSettings.brandName}
-                className="h-11 w-auto object-contain"
-              />
-            ) : (
-              siteSettings?.logoText ?? "Ventolivo"
-            )}
-          </Link>
+          <ViewportReveal delay={40} distance={18} duration={460}>
+            <Link
+              href={locale ? `/${locale}` : "/"}
+              className="font-serif text-[2rem] tracking-[0.06em] text-[#8f735d] no-underline"
+              aria-label={`${siteSettings?.brandName ?? "Ventolivo"} - Home`}
+            >
+              {siteSettings?.logoMode === "image" && siteSettings.logoImageUrl ? (
+                <img
+                  src={siteSettings.logoImageUrl}
+                  alt={siteSettings.logoAltText || siteSettings.brandName}
+                  className="h-11 w-auto object-contain"
+                />
+              ) : (
+                siteSettings?.logoText ?? "Ventolivo"
+              )}
+            </Link>
+          </ViewportReveal>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 lg:gap-7" role="menubar">
+          <ViewportReveal
+            className="flex flex-wrap items-center justify-center gap-4 lg:gap-7"
+            role="menubar"
+            delay={110}
+            distance={18}
+            duration={480}
+          >
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -91,9 +108,14 @@ export default function Navbar({
                 {link.label}
               </Link>
             ))}
-          </div>
+          </ViewportReveal>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 lg:justify-end">
+          <ViewportReveal
+            className="flex flex-wrap items-center justify-center gap-3 lg:justify-end"
+            delay={170}
+            distance={18}
+            duration={500}
+          >
             <LanguageSwitcher locales={supportedLocales} />
             <Link
               href={prefix("/#contact")}
@@ -102,7 +124,7 @@ export default function Navbar({
             >
               {siteSettings?.navbarCtaLabel ?? dict?.navbar.cta ?? "Order Now"}
             </Link>
-          </div>
+          </ViewportReveal>
         </div>
       </nav>
     </header>

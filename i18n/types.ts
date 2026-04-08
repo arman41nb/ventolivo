@@ -22,6 +22,20 @@ export interface Dictionary {
       label: string;
     };
   };
+  storySection: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    body: string;
+    closing: string;
+    ritualLabel: string;
+    momentsLabel: string;
+    momentsValue: string;
+    detailLabel: string;
+    detailText: string;
+    studyLabel: string;
+    studyText: string;
+  };
   stripBanner: {
     items: string[];
   };

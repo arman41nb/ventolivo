@@ -1,4 +1,5 @@
 import { buildWhatsAppLink } from "@/lib/utils";
+import ViewportReveal from "@/components/animation/ViewportReveal";
 import type { Dictionary } from "@/i18n";
 import type { SiteContentSettings } from "@/types";
 
@@ -29,14 +30,23 @@ export default function CTASection({ dict, siteSettings }: CTASectionProps) {
       className="px-4 py-20 md:px-6"
     >
       <div className="mx-auto grid max-w-[1380px] gap-6 lg:grid-cols-[0.88fr_1.12fr]">
-        <div className="animate-rise rounded-[32px] border border-brown/8 bg-[rgba(255,251,246,0.75)] p-8 shadow-[0_14px_32px_rgba(72,49,30,0.08)] md:p-10">
+        <ViewportReveal
+          className="rounded-[32px] border border-brown/8 bg-[rgba(255,251,246,0.75)] p-8 shadow-[0_14px_32px_rgba(72,49,30,0.08)] md:p-10"
+          distance={28}
+          duration={540}
+        >
           <div className="font-serif text-[5rem] leading-[0.7] text-[#a77f58]">&quot;</div>
           <p className="mt-2 font-serif text-[2rem] leading-[1.08] text-[#5d3d27] md:text-[2.35rem]">
             {quote}
           </p>
-        </div>
+        </ViewportReveal>
 
-        <div className="animate-rise animate-rise-delay-2 relative rounded-[32px] border border-brown/8 bg-[radial-gradient(circle_at_top_right,rgba(167,127,88,0.12),transparent_26%),linear-gradient(135deg,rgba(255,252,247,0.88),rgba(239,228,215,0.92))] p-8 shadow-[0_14px_32px_rgba(72,49,30,0.08)] md:p-10">
+        <ViewportReveal
+          className="relative rounded-[32px] border border-brown/8 bg-[radial-gradient(circle_at_top_right,rgba(167,127,88,0.12),transparent_26%),linear-gradient(135deg,rgba(255,252,247,0.88),rgba(239,228,215,0.92))] p-8 shadow-[0_14px_32px_rgba(72,49,30,0.08)] md:p-10"
+          delay={80}
+          distance={32}
+          duration={560}
+        >
           <span className="ambient-orb right-10 top-8 h-20 w-20 bg-white/26" />
           <div className="mb-3 text-[12px] uppercase tracking-[0.2em] text-olive">
             {dict?.navbar.links.contact ?? "Contact"}
@@ -60,7 +70,7 @@ export default function CTASection({ dict, siteSettings }: CTASectionProps) {
             </svg>
             {button}
           </a>
-        </div>
+        </ViewportReveal>
       </div>
     </section>
   );

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ViewportReveal from "@/components/animation/ViewportReveal";
 import { siteConfig, socialLinks } from "@/config";
 import type { Dictionary } from "@/i18n";
 import type { Locale } from "@/i18n/config";
@@ -31,7 +32,7 @@ export default function Footer({ dict, siteSettings, locale }: FooterProps) {
     >
       <div className="mx-auto max-w-[1380px]">
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.7fr_0.7fr_0.9fr]">
-          <div>
+          <ViewportReveal delay={0} distance={26} duration={520}>
             <Link
               href={homeHref}
               className="font-serif text-[2.4rem] text-cream no-underline"
@@ -42,9 +43,9 @@ export default function Footer({ dict, siteSettings, locale }: FooterProps) {
             <p className="mt-4 max-w-[420px] text-[14px] leading-[1.9] text-cream/75">
               {siteSettings?.heroDescription ?? siteConfig.description}
             </p>
-          </div>
+          </ViewportReveal>
 
-          <div>
+          <ViewportReveal delay={70} distance={24} duration={500}>
             <h5 className="mb-3 text-[13px] uppercase tracking-[0.18em] text-white">{productLabel}</h5>
             <div className="grid gap-2 text-[14px] text-cream/75">
               <Link href={locale ? `/${locale}/products` : "/products"} className="no-underline hover:text-white">
@@ -57,18 +58,18 @@ export default function Footer({ dict, siteSettings, locale }: FooterProps) {
                 {contactLabel}
               </Link>
             </div>
-          </div>
+          </ViewportReveal>
 
-          <div>
+          <ViewportReveal delay={130} distance={22} duration={500}>
             <h5 className="mb-3 text-[13px] uppercase tracking-[0.18em] text-white">{aboutLabel}</h5>
             <div className="grid gap-2 text-[14px] text-cream/75">
               {featureLabels.map((label) => (
                 <span key={label}>{label}</span>
               ))}
             </div>
-          </div>
+          </ViewportReveal>
 
-          <div>
+          <ViewportReveal delay={180} distance={20} duration={500}>
             <h5 className="mb-3 text-[13px] uppercase tracking-[0.18em] text-white">
               Social
             </h5>
@@ -86,15 +87,20 @@ export default function Footer({ dict, siteSettings, locale }: FooterProps) {
                 </a>
               ))}
             </nav>
-          </div>
+          </ViewportReveal>
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6 text-[13px] text-cream/65">
+        <ViewportReveal
+          className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6 text-[13px] text-cream/65"
+          delay={90}
+          distance={18}
+          duration={460}
+        >
           <p>
             &copy; {new Date().getFullYear()} {brandName}. {copyright}
           </p>
           <p>Designed for a premium handmade care brand.</p>
-        </div>
+        </ViewportReveal>
       </div>
     </footer>
   );

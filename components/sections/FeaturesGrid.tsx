@@ -1,3 +1,4 @@
+import ViewportReveal from "@/components/animation/ViewportReveal";
 import type { Dictionary } from "@/i18n";
 import type { SiteContentSettings } from "@/types";
 
@@ -87,21 +88,23 @@ export default function FeaturesGrid({
       <div className="mx-auto max-w-[1380px]">
         <div className="grid gap-5 md:grid-cols-3">
           {features.map((feature, index) => (
-            <article
+            <ViewportReveal
               key={feature.key}
-              className={`animate-rise rounded-[28px] border border-brown/8 bg-[rgba(255,253,249,0.7)] p-6 shadow-[0_12px_28px_rgba(72,49,30,0.06)] ${
+              className={`group rounded-[28px] border border-brown/8 bg-[rgba(255,253,249,0.7)] p-6 shadow-[0_12px_28px_rgba(72,49,30,0.06)] transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_18px_34px_rgba(72,49,30,0.09)] ${
                 index === 1 ? "translate-y-4 md:translate-y-8" : ""
               }`}
-              style={{ animationDelay: `${index * 120}ms` }}
+              delay={index * 90}
+              distance={30}
+              duration={520}
             >
-              <div className="mb-4 grid h-[54px] w-[54px] place-items-center rounded-[18px] bg-[linear-gradient(135deg,#dfe5d4,#eef2e8)] text-olive">
+              <div className="mb-4 grid h-[54px] w-[54px] place-items-center rounded-[18px] bg-[linear-gradient(135deg,#dfe5d4,#eef2e8)] text-olive transition-transform duration-300 group-hover:scale-105">
                 {feature.icon}
               </div>
               <p className="mb-2 font-serif text-[1.6rem] text-dark">
                 {feature.title}
               </p>
               <p className="text-[14px] leading-[1.85] text-muted">{feature.text}</p>
-            </article>
+            </ViewportReveal>
           ))}
         </div>
       </div>

@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import ViewportReveal from "@/components/animation/ViewportReveal";
 import Button from "@/components/ui/Button";
 import type { Dictionary } from "@/i18n";
 import type { SiteContentSettings } from "@/types";
@@ -37,21 +38,30 @@ export default function AboutSection({
       className="px-4 py-20 md:px-6"
     >
       <div className="mx-auto grid max-w-[1380px] gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="animate-rise relative min-h-[520px] overflow-hidden rounded-[32px] bg-[linear-gradient(135deg,#dbcdbd,#cbb89d)] shadow-[0_14px_36px_rgba(72,49,30,0.08)]">
+        <ViewportReveal
+          className="relative min-h-[520px] overflow-hidden rounded-[32px] bg-[linear-gradient(135deg,#dbcdbd,#cbb89d)] shadow-[0_14px_36px_rgba(72,49,30,0.08)]"
+          distance={36}
+          duration={560}
+        >
           <span className="ambient-orb left-8 top-8 h-24 w-24 bg-white/24" />
           <span className="ambient-orb bottom-8 right-8 h-20 w-20 bg-brown/10 [animation-delay:1s]" />
           {siteSettings?.aboutImageUrl ? (
             <img
               src={siteSettings.aboutImageUrl}
               alt={siteSettings.aboutImageAlt || siteSettings.brandName}
-              className="h-full w-full object-cover transition-transform duration-[1400ms] hover:scale-[1.03]"
+              className="h-full w-full object-cover transition-transform duration-[900ms] hover:scale-[1.04] hover:-translate-y-1"
             />
           ) : (
             <div className="relative h-full w-full bg-[linear-gradient(180deg,rgba(93,61,39,0.05),rgba(93,61,39,0.28)),radial-gradient(circle_at_top,rgba(255,255,255,0.25),transparent_28%),linear-gradient(135deg,#d9cab7_0%,#bea887_100%)]" />
           )}
-        </div>
+        </ViewportReveal>
 
-        <div className="animate-rise animate-rise-delay-2 relative flex flex-col justify-center rounded-[32px] border border-brown/8 bg-[linear-gradient(135deg,rgba(255,252,247,0.86),rgba(239,228,215,0.92))] p-8 shadow-[0_14px_36px_rgba(72,49,30,0.08)] md:p-12">
+        <ViewportReveal
+          className="relative flex flex-col justify-center rounded-[32px] border border-brown/8 bg-[linear-gradient(135deg,rgba(255,252,247,0.86),rgba(239,228,215,0.92))] p-8 shadow-[0_14px_36px_rgba(72,49,30,0.08)] md:p-12"
+          delay={90}
+          distance={30}
+          duration={560}
+        >
           <span className="ambient-orb right-10 top-8 h-16 w-16 bg-olive/12 [animation-delay:1.6s]" />
           <p className="mb-4 text-[12px] uppercase tracking-[0.2em] text-olive">
             {subtitle}
@@ -65,17 +75,21 @@ export default function AboutSection({
             {description}
           </p>
           <div className="mb-7 flex flex-wrap gap-3">
-            {chips.map((chip) => (
-              <span
+            {chips.map((chip, index) => (
+              <ViewportReveal
                 key={chip}
+                as="span"
+                delay={160 + index * 70}
+                distance={14}
+                duration={420}
                 className="rounded-full border border-brown/10 bg-white/65 px-4 py-3 text-[12px] uppercase tracking-[0.14em] text-[#5d3d27]"
               >
                 {chip}
-              </span>
+              </ViewportReveal>
             ))}
           </div>
           <Button variant="primary">{learnMore}</Button>
-        </div>
+        </ViewportReveal>
       </div>
     </section>
   );

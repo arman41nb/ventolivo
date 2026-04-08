@@ -28,11 +28,12 @@ export default function ProductCard({
 
   return (
     <article
-      className="group animate-rise overflow-hidden rounded-[28px] border border-brown/8 bg-[rgba(255,251,246,0.7)] shadow-[0_12px_28px_rgba(72,49,30,0.08)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_22px_42px_rgba(72,49,30,0.12)]"
+      className="group overflow-hidden rounded-[28px] border border-brown/8 bg-[rgba(255,251,246,0.7)] shadow-[0_12px_28px_rgba(72,49,30,0.08)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_22px_42px_rgba(72,49,30,0.12)]"
       aria-label={`${product.name} - ${formatPrice(product.price)}`}
     >
       <Link href={productHref} className="block">
         <div className="relative aspect-[0.92] overflow-hidden bg-[linear-gradient(135deg,#ebdfd0,#dac8b2)]">
+          <span className="pointer-events-none absolute inset-x-[18%] bottom-4 h-12 rounded-full bg-[radial-gradient(circle,rgba(109,77,53,0.18),rgba(109,77,53,0.04)_52%,transparent_78%)] blur-xl transition-transform duration-500 group-hover:scale-110" />
           <span className="absolute right-4 top-4 z-10 rounded-full border border-brown/10 bg-[rgba(255,250,244,0.92)] px-3 py-2 text-[11px] uppercase tracking-[0.14em] text-[#5d3d27]">
             {product.tag}
           </span>
@@ -40,14 +41,14 @@ export default function ProductCard({
             <img
               src={media.url}
               alt={media.alt ?? product.name}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.08] group-hover:-translate-y-1"
             />
           ) : media?.type === "video" ? (
             <div className="relative h-full w-full">
               <img
                 src={media.thumbnailUrl || media.url}
                 alt={media.alt ?? product.name}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.08] group-hover:-translate-y-1"
               />
               <span className="absolute inset-0 flex items-center justify-center bg-dark/20 text-xs uppercase tracking-[0.16em] text-white">
                 Video
@@ -56,7 +57,7 @@ export default function ProductCard({
           ) : (
             <div className="flex h-full items-center justify-center">
               <div
-                className="h-[76px] w-[76px] rounded-[12px] transition-transform duration-500 group-hover:scale-110"
+                className="h-[76px] w-[76px] rounded-[12px] transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-1"
                 style={{ backgroundColor: product.color }}
               />
             </div>

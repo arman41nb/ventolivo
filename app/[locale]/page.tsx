@@ -1,5 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
+import SoapStorySection from "@/components/sections/SoapStorySection";
 import FeaturedProducts from "@/components/sections/FeaturedProducts";
 import AboutSection from "@/components/sections/AboutSection";
 import FeaturesGrid from "@/components/sections/FeaturesGrid";
@@ -42,6 +43,7 @@ export default async function Home({
       />
       <main>
         <Hero dict={dict} locale={currentLocale} siteSettings={siteSettings} />
+        <SoapStorySection dict={dict} siteSettings={siteSettings} />
         <FeaturedProducts
           products={featured}
           title={

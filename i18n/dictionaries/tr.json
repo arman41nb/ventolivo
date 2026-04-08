@@ -22,6 +22,20 @@
       "label": "Dogal"
     }
   },
+  "storySection": {
+    "eyebrow": "Dogadan ilham",
+    "title": "Dogayi, hayati ve rituele donusen anlari sabuna tasiyoruz.",
+    "lead": "Urunlerimizi tasarlarken dogadan ve insan hayatindan kalan sahneler bize rehberlik eder.",
+    "body": "Dar bir suyun akisina kapilan kuru bir yaprak, coldeki kum firtinasi, cennet gibi gorunen bir koy, bir zumrut damari, denizin dibindeki canlilar, ozenle hazirlanmis bir fincan kahve, ahsap bir masanin dokusu, havada asili kalan konfetiler... Izlemeyi, dokunmayi ve tadini hatirlamayi sevdigimiz her seyi, el yapimi sabunlarimizda doga ve insan hayatiyla uyum icinde bir araya getiriyoruz.",
+    "closing": "Cildiniz en iyisini hak eder. Ruhunuz da.",
+    "ritualLabel": "El yapimi rituel",
+    "momentsLabel": "Duyusal notlar",
+    "momentsValue": "Yaprak, col, koy, zumrut, kahve, ahsap, konfeti.",
+    "detailLabel": "Organik kompozisyon",
+    "detailText": "Sakin hareket, mineral sicakligi ve dokunsal ayrintilarla katmanlandi.",
+    "studyLabel": "Duyusal calisma",
+    "studyText": "Cilt ve ruh icin tasarlandi"
+  },
   "stripBanner": {
     "items": ["El Yapimi", "Dogal Icerikler", "Kimyasal Yok", "Denizli'de Uretildi"]
   },

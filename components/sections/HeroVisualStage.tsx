@@ -26,6 +26,8 @@ interface HeroVisualStageProps {
   renderHeroImage?: HeroStageSlotRenderer;
   renderAccentImage?: HeroStageSlotRenderer;
   renderBrandBadge?: HeroStageSlotRenderer;
+  heroImageMotionClassName?: string;
+  accentImageMotionClassName?: string;
 }
 
 function renderSlot(
@@ -51,6 +53,8 @@ export default function HeroVisualStage({
   renderHeroImage,
   renderAccentImage,
   renderBrandBadge,
+  heroImageMotionClassName = "hero-product-reveal",
+  accentImageMotionClassName = "",
 }: HeroVisualStageProps) {
   const layerOrder = getHeroSceneLayerOrder(media.heroForegroundMedia);
 
@@ -83,7 +87,7 @@ export default function HeroVisualStage({
           alt={media.heroAccentImageAlt}
           label="Accent image"
           hint="Use the framing controls to move and scale this layer."
-          imageClassName="h-full w-full object-contain opacity-95 drop-shadow-[0_24px_36px_rgba(93,61,39,0.16)]"
+          imageClassName={`${accentImageMotionClassName} h-full w-full object-contain opacity-95 drop-shadow-[0_24px_36px_rgba(93,61,39,0.16)]`.trim()}
           placeholderClassName="aspect-square drop-shadow-[0_24px_36px_rgba(93,61,39,0.12)]"
         />,
         {
@@ -105,7 +109,7 @@ export default function HeroVisualStage({
           alt={media.heroImageAlt}
           label="Hero image"
           hint="Use the framing controls to move and scale this layer."
-          imageClassName="hero-product-reveal w-full object-contain drop-shadow-[0_42px_60px_rgba(78,54,37,0.28)]"
+          imageClassName={`${heroImageMotionClassName} w-full object-contain drop-shadow-[0_42px_60px_rgba(78,54,37,0.28)]`.trim()}
           placeholderClassName="aspect-[4/3] w-full drop-shadow-[0_42px_60px_rgba(78,54,37,0.14)]"
         />,
         {

@@ -22,6 +22,20 @@
       "label": "Naturlich"
     }
   },
+  "storySection": {
+    "eyebrow": "Von der Natur inspiriert",
+    "title": "Wir tragen Natur, Leben und bleibende Momente in jede Seife.",
+    "lead": "Beim Gestalten unserer Produkte leiten uns Bilder aus der Natur und aus dem menschlichen Leben.",
+    "body": "Ein trockenes Blatt im Strom eines kleinen Bachs, ein Sandsturm in der Wuste, eine Bucht wie ein Paradies, ein Smaragdgang, Wesen am Grund des Meeres, eine sorgfaltig zubereitete Tasse Kaffee, die Maserung eines Holztischs, Konfetti in der Luft... Was wir gerne betrachten, beruhren und schmecken, verweben wir in unsere handgemachten Seifen, im Einklang mit Natur und menschlichem Leben.",
+    "closing": "Ihre Haut verdient das Beste. Ihre Seele auch.",
+    "ritualLabel": "Handgemachtes Ritual",
+    "momentsLabel": "Sinnliche Noten",
+    "momentsValue": "Blatt, Wuste, Bucht, Smaragd, Kaffee, Holz, Konfetti.",
+    "detailLabel": "Organische Komposition",
+    "detailText": "Geschichtet mit ruhiger Bewegung, mineralischer Warme und taktiler Tiefe.",
+    "studyLabel": "Sinnesstudie",
+    "studyText": "Fur Haut und Seele komponiert"
+  },
   "stripBanner": {
     "items": ["Handgefertigt", "Naturliche Zutaten", "Keine Chemikalien", "Hergestellt in Denizli"]
   },
