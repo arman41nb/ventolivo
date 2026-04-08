@@ -17,20 +17,10 @@ export default function ProductGrid({
   locale,
 }: ProductGridProps) {
   return (
-    <div
-      className={`grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4 ${className}`}
-    >
+    <div className={`grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4 ${className}`}>
       {products.map((product, index) => (
-        <ViewportReveal
-          key={product.id}
-          delay={index * 75}
-          distance={24}
-          duration={500}
-        >
-          <div
-            className="luxe-product-shell"
-            style={{ animationDelay: `${index * 180}ms` }}
-          >
+        <ViewportReveal key={product.id} delay={index * 75} distance={24} duration={500}>
+          <div className="luxe-product-shell" style={{ animationDelay: `${index * 180}ms` }}>
             <ProductCard product={product} orderLabel={orderLabel} locale={locale} />
           </div>
         </ViewportReveal>

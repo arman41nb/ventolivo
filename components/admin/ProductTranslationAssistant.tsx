@@ -2,10 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Dictionary } from "@/i18n/types";
-import {
-  getSiteLocaleFlag,
-  getSiteLocaleNativeLabel,
-} from "@/modules/site-content/locales";
+import { getSiteLocaleFlag, getSiteLocaleNativeLabel } from "@/modules/site-content";
 import type { SiteLocaleConfig } from "@/types";
 
 interface ProductTranslationAssistantProps {
@@ -21,9 +18,7 @@ export default function ProductTranslationAssistant({
 }: ProductTranslationAssistantProps) {
   const [sourceLocale, setSourceLocale] = useState(currentLocale);
   const [selectedLocales, setSelectedLocales] = useState<string[]>(
-    locales
-      .map((locale) => locale.code)
-      .filter((locale) => locale !== currentLocale),
+    locales.map((locale) => locale.code).filter((locale) => locale !== currentLocale),
   );
   const [onlyEmptyFields, setOnlyEmptyFields] = useState(true);
   const [status, setStatus] = useState<string>("");
@@ -35,16 +30,12 @@ export default function ProductTranslationAssistant({
 
   function toggleLocale(locale: string) {
     setSelectedLocales((current) =>
-      current.includes(locale)
-        ? current.filter((item) => item !== locale)
-        : [...current, locale],
+      current.includes(locale) ? current.filter((item) => item !== locale) : [...current, locale],
     );
     setStatus("");
   }
 
-  async function handleTranslate(
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) {
+  async function handleTranslate(event: React.MouseEvent<HTMLButtonElement>) {
     const form = event.currentTarget.closest("form");
 
     if (!form) {
@@ -52,12 +43,8 @@ export default function ProductTranslationAssistant({
     }
 
     const getValue = (name: string) =>
-      (
-        form.querySelector(`[name="${name}"]`) as
-          | HTMLInputElement
-          | HTMLTextAreaElement
-          | null
-      )?.value ?? "";
+      (form.querySelector(`[name="${name}"]`) as HTMLInputElement | HTMLTextAreaElement | null)
+        ?.value ?? "";
 
     const payload = {
       sourceLocale,
@@ -96,9 +83,7 @@ export default function ProductTranslationAssistant({
       });
 
       const result = (await response.json()) as {
-        translations?: Partial<
-          Record<string, { name: string; tag: string; description: string }>
-        >;
+        translations?: Partial<Record<string, { name: string; tag: string; description: string }>>;
         providers?: Partial<Record<string, "libretranslate" | "mymemory">>;
         error?: string;
       };
@@ -132,10 +117,7 @@ export default function ProductTranslationAssistant({
           tagField.value = translation.tag;
         }
 
-        if (
-          descriptionField &&
-          (!onlyEmptyFields || !descriptionField.value.trim())
-        ) {
+        if (descriptionField && (!onlyEmptyFields || !descriptionField.value.trim())) {
           descriptionField.value = translation.description;
         }
       }
@@ -144,9 +126,7 @@ export default function ProductTranslationAssistant({
         ? Array.from(new Set(Object.values(result.providers)))
         : [];
       const providerLabel =
-        providers.length > 0
-          ? ` ${dictionary.providerPrefix}: ${providers.join(", ")}.`
-          : "";
+        providers.length > 0 ? ` ${dictionary.providerPrefix}: ${providers.join(", ")}.` : "";
 
       setStatus(`${dictionary.updated}${providerLabel}`);
     } catch {
@@ -181,8 +161,7 @@ export default function ProductTranslationAssistant({
           >
             {locales.map((locale) => (
               <option key={locale.code} value={locale.code}>
-                {getSiteLocaleFlag(locale.code)} {locale.label} (
-                {locale.code.toUpperCase()})
+                {getSiteLocaleFlag(locale.code)} {locale.label} ({locale.code.toUpperCase()})
               </option>
             ))}
           </select>
@@ -244,9 +223,7 @@ export default function ProductTranslationAssistant({
           </button>
         </div>
       </div>
-      {status ? (
-        <p className="mt-3 text-sm text-text/75">{status}</p>
-      ) : null}
+      {status ? <p className="mt-3 text-sm text-text/75">{status}</p> : null}
     </div>
   );
 }

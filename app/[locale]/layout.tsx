@@ -5,7 +5,7 @@ import type { Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 import { I18nProvider } from "@/hooks/useI18n";
 import { generatePageMetadata } from "@/lib/seo";
-import { getSiteLocales } from "@/modules/site-content";
+import { getSiteLocales } from "@/modules/site-content/server";
 import "../globals.css";
 
 export const dynamic = "force-dynamic";
@@ -53,10 +53,7 @@ export default async function LocaleLayout({
   }
 
   const locale = rawLocale as Locale;
-  const [siteLocales, dictionary] = await Promise.all([
-    getSiteLocales(),
-    getDictionary(locale),
-  ]);
+  const [siteLocales, dictionary] = await Promise.all([getSiteLocales(), getDictionary(locale)]);
   const localeConfig = siteLocales.find((siteLocale) => siteLocale.code === locale);
 
   if (!localeConfig) {

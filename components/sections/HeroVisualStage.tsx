@@ -2,11 +2,8 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import SceneImage from "@/components/media/SceneImage";
-import type {
-  HeroSceneMediaState,
-  HeroSceneTransforms,
-} from "@/modules/site-content/hero-scene";
-import { getHeroSceneLayerOrder } from "@/modules/site-content/hero-scene";
+import type { HeroSceneMediaState, HeroSceneTransforms } from "@/modules/site-content";
+import { getHeroSceneLayerOrder } from "@/modules/site-content";
 
 interface HeroStageSlotProps {
   className: string;
@@ -14,10 +11,7 @@ interface HeroStageSlotProps {
   style?: CSSProperties;
 }
 
-type HeroStageSlotRenderer = (
-  content: ReactNode,
-  props: HeroStageSlotProps,
-) => ReactNode;
+type HeroStageSlotRenderer = (content: ReactNode, props: HeroStageSlotProps) => ReactNode;
 
 interface HeroVisualStageProps {
   brandName: string;

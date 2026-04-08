@@ -18,13 +18,11 @@ function normalizeDictionary(dictionary: unknown): Dictionary {
   const inventory = admin.inventory ?? en.admin.inventory;
   const form = admin.form ?? en.admin.form;
   const shell = admin.shell ?? en.admin.shell;
-  const translationAssistant =
-    admin.translationAssistant ?? en.admin.translationAssistant;
+  const translationAssistant = admin.translationAssistant ?? en.admin.translationAssistant;
   const productEditor = admin.productEditor ?? en.admin.productEditor;
   const siteTranslationAssistant =
     admin.siteTranslationAssistant ?? en.admin.siteTranslationAssistant;
-  const siteLocalesManager =
-    admin.siteLocalesManager ?? en.admin.siteLocalesManager;
+  const siteLocalesManager = admin.siteLocalesManager ?? en.admin.siteLocalesManager;
   const mediaManager = admin.mediaManager ?? en.admin.mediaManager;
   const status = admin.status ?? en.admin.status;
 

@@ -3,10 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { mediaAssetSchema } from "@/lib/validations";
-import {
-  recordAdminAuditLog,
-  requireAdminSession,
-} from "@/modules/admin-auth/server";
+import { recordAdminAuditLog, requireAdminSession } from "@/modules/admin-auth";
 import { createMediaAsset, deleteMediaAsset, updateMediaAsset } from "@/modules/media";
 
 function getStringValue(formData: FormData, key: string): string {

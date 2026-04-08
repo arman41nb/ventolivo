@@ -26,7 +26,11 @@ export function ProductCardSkeleton() {
 
 export function ProductGridSkeleton({ count = 4 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[1.5rem]" role="status" aria-label="Loading products">
+    <div
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[1.5rem]"
+      role="status"
+      aria-label="Loading products"
+    >
       {Array.from({ length: count }, (_, i) => (
         <ProductCardSkeleton key={i} />
       ))}
@@ -36,7 +40,11 @@ export function ProductGridSkeleton({ count = 4 }: { count?: number }) {
 
 export function HeroSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 min-h-[480px]" role="status" aria-label="Loading hero">
+    <div
+      className="grid grid-cols-1 md:grid-cols-2 min-h-[480px]"
+      role="status"
+      aria-label="Loading hero"
+    >
       <div className="bg-warm px-[3rem] py-[4rem] flex flex-col justify-center space-y-4">
         <Skeleton className="h-3 w-32" />
         <div className="space-y-2">

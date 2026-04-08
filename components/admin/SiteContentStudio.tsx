@@ -14,16 +14,8 @@ import ProductGrid from "@/components/products/ProductGrid";
 import { siteConfig, socialLinks } from "@/config";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
-import {
-  getHeroSceneMediaState,
-  getHeroSceneTransforms,
-} from "@/modules/site-content/hero-scene";
-import type {
-  MediaLibraryAsset,
-  Product,
-  SiteContentSettings,
-  SiteLocaleConfig,
-} from "@/types";
+import { getHeroSceneMediaState, getHeroSceneTransforms } from "@/modules/site-content";
+import type { MediaLibraryAsset, Product, SiteContentSettings, SiteLocaleConfig } from "@/types";
 
 type EditableSectionId =
   | "header"
@@ -80,16 +72,8 @@ type EditableFieldId =
   | "ctaButtonLabel"
   | "footerCopyrightText";
 
-type AssetFieldKey =
-  | "logoImageUrl"
-  | "heroImageUrl"
-  | "heroAccentImageUrl"
-  | "aboutImageUrl";
-type AssetAltFieldKey =
-  | "logoAltText"
-  | "heroImageAlt"
-  | "heroAccentImageAlt"
-  | "aboutImageAlt";
+type AssetFieldKey = "logoImageUrl" | "heroImageUrl" | "heroAccentImageUrl" | "aboutImageUrl";
+type AssetAltFieldKey = "logoAltText" | "heroImageAlt" | "heroAccentImageAlt" | "aboutImageAlt";
 
 type EditableFieldMeta = {
   id: EditableFieldId;
@@ -149,8 +133,7 @@ const workspacePanelMeta: Record<
   languages: {
     label: "Languages",
     title: "Manage the storefront language registry",
-    description:
-      "Add, remove, and tune locale settings without leaving the homepage editor.",
+    description: "Add, remove, and tune locale settings without leaving the homepage editor.",
   },
   workflow: {
     label: "Workspace",
@@ -188,8 +171,7 @@ const editableFields: Record<EditableFieldId, EditableFieldMeta> = {
       urlKey: "logoImageUrl",
       altKey: "logoAltText",
       assetTitle: "Logo image",
-      helper:
-        "Upload a logo, pick one from the library, or use an existing site path.",
+      helper: "Upload a logo, pick one from the library, or use an existing site path.",
     },
   },
   navbarLinkProducts: {
@@ -427,8 +409,7 @@ const editableFields: Record<EditableFieldId, EditableFieldMeta> = {
       urlKey: "aboutImageUrl",
       altKey: "aboutImageAlt",
       assetTitle: "About image",
-      helper:
-        "This image supports the story section and can be reused elsewhere later.",
+      helper: "This image supports the story section and can be reused elsewhere later.",
     },
   },
   feature1Title: {
@@ -522,37 +503,31 @@ const editableFields: Record<EditableFieldId, EditableFieldMeta> = {
 };
 
 const featureIcons: ReactNode[] = [
-  (
-    <svg
-      key="feature-icon-clock"
-      viewBox="0 0 24 24"
-      className="h-4 w-4 stroke-brown fill-none"
-      strokeWidth={1.5}
-    >
-      <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z" />
-      <path d="M12 6v6l4 2" />
-    </svg>
-  ),
-  (
-    <svg
-      key="feature-icon-home"
-      viewBox="0 0 24 24"
-      className="h-4 w-4 stroke-brown fill-none"
-      strokeWidth={1.5}
-    >
-      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-    </svg>
-  ),
-  (
-    <svg
-      key="feature-icon-heart"
-      viewBox="0 0 24 24"
-      className="h-4 w-4 stroke-brown fill-none"
-      strokeWidth={1.5}
-    >
-      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-    </svg>
-  ),
+  <svg
+    key="feature-icon-clock"
+    viewBox="0 0 24 24"
+    className="h-4 w-4 stroke-brown fill-none"
+    strokeWidth={1.5}
+  >
+    <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z" />
+    <path d="M12 6v6l4 2" />
+  </svg>,
+  <svg
+    key="feature-icon-home"
+    viewBox="0 0 24 24"
+    className="h-4 w-4 stroke-brown fill-none"
+    strokeWidth={1.5}
+  >
+    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+  </svg>,
+  <svg
+    key="feature-icon-heart"
+    viewBox="0 0 24 24"
+    className="h-4 w-4 stroke-brown fill-none"
+    strokeWidth={1.5}
+  >
+    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+  </svg>,
 ];
 
 function PanelInput({
@@ -782,16 +757,10 @@ function EditableElement({
   );
 }
 
-function mergeAssets(
-  currentAssets: MediaLibraryAsset[],
-  uploadedAssets: MediaLibraryAsset[],
-) {
+function mergeAssets(currentAssets: MediaLibraryAsset[], uploadedAssets: MediaLibraryAsset[]) {
   const uploadedIds = new Set(uploadedAssets.map((asset) => asset.id));
 
-  return [
-    ...uploadedAssets,
-    ...currentAssets.filter((asset) => !uploadedIds.has(asset.id)),
-  ];
+  return [...uploadedAssets, ...currentAssets.filter((asset) => !uploadedIds.has(asset.id))];
 }
 
 function AssetPicker({
@@ -823,9 +792,7 @@ function AssetPicker({
     <div className="grid gap-5 rounded-[24px] border border-brown/10 bg-cream/35 p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-[12px] uppercase tracking-[0.2em] text-muted">
-            {title}
-          </p>
+          <p className="text-[12px] uppercase tracking-[0.2em] text-muted">{title}</p>
           <p className="mt-2 text-sm text-text/75">{helper}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -858,9 +825,7 @@ function AssetPicker({
             alt={selectedAlt || title}
             className="aspect-[16/9] w-full object-cover"
           />
-          <div className="px-4 py-3 text-xs text-text/70">
-            {selectedAlt || selectedUrl}
-          </div>
+          <div className="px-4 py-3 text-xs text-text/70">{selectedAlt || selectedUrl}</div>
         </div>
       ) : null}
 
@@ -889,9 +854,7 @@ function AssetPicker({
                   <p className="text-xs font-medium uppercase tracking-[0.14em] text-dark">
                     {asset.label || "Untitled asset"}
                   </p>
-                  <p className="text-xs text-text/70">
-                    {asset.altText || asset.url}
-                  </p>
+                  <p className="text-xs text-text/70">{asset.altText || asset.url}</p>
                 </div>
               </button>
             );
@@ -986,9 +949,7 @@ function PreviewNavbar({
             label={editableFields[link.id].label}
             className="w-fit"
           >
-            <span className="text-[12px] uppercase tracking-[1.5px] text-muted">
-              {link.value}
-            </span>
+            <span className="text-[12px] uppercase tracking-[1.5px] text-muted">{link.value}</span>
           </EditableElement>
         ))}
         <span className="rounded-full border border-brown/15 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-brown">
@@ -1037,8 +998,7 @@ function PreviewHero({
   const brandName = draft.brandName || siteConfig.name;
   const processTitle = draft.feature1Title || dictionary.features.items.coldProcess.title;
   const processText = draft.feature1Text || dictionary.features.items.coldProcess.text;
-  const batchTitle =
-    draft.feature2Title || dictionary.features.items.smallBatches.title;
+  const batchTitle = draft.feature2Title || dictionary.features.items.smallBatches.title;
   const naturalTitle = draft.feature3Title || dictionary.features.items.natural.title;
   const naturalText = draft.feature3Text || dictionary.features.items.natural.text;
   const heroMedia = getHeroSceneMediaState(draft, brandName);
@@ -1113,9 +1073,7 @@ function PreviewHero({
                   label="Hero line 2"
                   className="mb-1 w-fit"
                 >
-                  <em className="block font-medium italic text-[#a07d62]">
-                    {title.line2}
-                  </em>
+                  <em className="block font-medium italic text-[#a07d62]">{title.line2}</em>
                 </EditableElement>
                 <EditableElement
                   fieldId="heroTitleLine3"
@@ -1258,9 +1216,7 @@ function PreviewHero({
                     label="Feature 1 text"
                     className="mt-4 block"
                   >
-                    <p className="text-[13px] leading-[1.95] text-[#806b59]">
-                      {processText}
-                    </p>
+                    <p className="text-[13px] leading-[1.95] text-[#806b59]">{processText}</p>
                   </EditableElement>
                 </div>
 
@@ -1306,9 +1262,7 @@ function PreviewHero({
                     label="Feature 3 text"
                     className="mt-4 block"
                   >
-                    <p className="text-[13px] leading-[1.95] text-[#806b59]">
-                      {naturalText}
-                    </p>
+                    <p className="text-[13px] leading-[1.95] text-[#806b59]">{naturalText}</p>
                   </EditableElement>
                 </div>
               </div>
@@ -1410,8 +1364,7 @@ function PreviewFeaturedProducts({
           className="w-fit"
         >
           <span className="border-b border-brown text-[12px] tracking-[1px] text-brown">
-            {draft.featuredProductsViewAllLabel ||
-              dictionary.featuredProducts.viewAll}
+            {draft.featuredProductsViewAllLabel || dictionary.featuredProducts.viewAll}
           </span>
         </EditableElement>
       </div>
@@ -1540,8 +1493,7 @@ function PreviewFeatures({
     {
       titleId: "feature2Title" as const,
       textId: "feature2Text" as const,
-      title:
-        draft.feature2Title || dictionary.features.items.smallBatches.title,
+      title: draft.feature2Title || dictionary.features.items.smallBatches.title,
       text: draft.feature2Text || dictionary.features.items.smallBatches.text,
       icon: featureIcons[1],
     },
@@ -1559,9 +1511,7 @@ function PreviewFeatures({
       {items.map((item, index) => (
         <div
           key={item.titleId}
-          className={`p-[2.5rem] ${
-            index < items.length - 1 ? "border-r border-brown/[0.15]" : ""
-          }`}
+          className={`p-[2.5rem] ${index < items.length - 1 ? "border-r border-brown/[0.15]" : ""}`}
         >
           <div className="mb-[1rem] flex h-[32px] w-[32px] items-center justify-center border border-brown">
             {item.icon}
@@ -1684,17 +1634,13 @@ function PreviewFooter({
         className="max-w-[440px]"
       >
         <p className="text-[12px] text-muted">
-          &copy; {new Date().getFullYear()} {brandName}.{" "}
-          {draft.footerCopyrightText}
+          &copy; {new Date().getFullYear()} {brandName}. {draft.footerCopyrightText}
         </p>
       </EditableElement>
 
       <nav className="flex gap-[1rem]">
         {socialLinks.map((link) => (
-          <span
-            key={link.label}
-            className="text-[11px] uppercase tracking-[1px] text-muted"
-          >
+          <span key={link.label} className="text-[11px] uppercase tracking-[1px] text-muted">
             {link.label}
           </span>
         ))}
@@ -1712,16 +1658,14 @@ export default function SiteContentStudio({
   featuredProducts,
   supportedLocales,
 }: SiteContentStudioProps) {
-  const [selectedField, setSelectedField] =
-    useState<EditableFieldId>("heroTitleLine1");
+  const [selectedField, setSelectedField] = useState<EditableFieldId>("heroTitleLine1");
   const [activeWorkspacePanel, setActiveWorkspacePanel] =
     useState<WorkspacePanelId>("translations");
   const [draft, setDraft] = useState<SiteContentSettings>(settings);
   const [assets, setAssets] = useState(mediaLibrary);
   const selectedMeta = editableFields[selectedField];
   const relatedFields = Object.values(editableFields).filter(
-    (field) =>
-      field.section === selectedMeta.section && field.id !== selectedField,
+    (field) => field.section === selectedMeta.section && field.id !== selectedField,
   );
   const imageAssets = assets.filter((asset) => asset.kind === "image");
   const activeWorkspace = workspacePanelMeta[activeWorkspacePanel];
@@ -1777,10 +1721,7 @@ export default function SiteContentStudio({
           value={draft[editor.key] as string | undefined}
           placeholder={editor.placeholder}
           onChange={(value) =>
-            updateField(
-              editor.key,
-              value as SiteContentSettings[typeof editor.key],
-            )
+            updateField(editor.key, value as SiteContentSettings[typeof editor.key])
           }
         />
       );
@@ -1794,10 +1735,7 @@ export default function SiteContentStudio({
           value={draft[editor.key] as string | undefined}
           placeholder={editor.placeholder}
           onChange={(value) =>
-            updateField(
-              editor.key,
-              value as SiteContentSettings[typeof editor.key],
-            )
+            updateField(editor.key, value as SiteContentSettings[typeof editor.key])
           }
         />
       );
@@ -1807,16 +1745,11 @@ export default function SiteContentStudio({
       return (
         <div className="grid gap-5">
           <label className="flex flex-col gap-2 text-sm">
-            <span className="uppercase tracking-[0.16em] text-muted">
-              Logo mode
-            </span>
+            <span className="uppercase tracking-[0.16em] text-muted">Logo mode</span>
             <select
               value={draft.logoMode}
               onChange={(event) =>
-                updateField(
-                  "logoMode",
-                  event.target.value === "image" ? "image" : "text",
-                )
+                updateField("logoMode", event.target.value === "image" ? "image" : "text")
               }
               className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown"
             >
@@ -1837,16 +1770,11 @@ export default function SiteContentStudio({
       <div className="grid gap-5">
         {editor.urlKey === "logoImageUrl" ? (
           <label className="flex flex-col gap-2 text-sm">
-            <span className="uppercase tracking-[0.16em] text-muted">
-              Logo mode
-            </span>
+            <span className="uppercase tracking-[0.16em] text-muted">Logo mode</span>
             <select
               value={draft.logoMode}
               onChange={(event) =>
-                updateField(
-                  "logoMode",
-                  event.target.value === "image" ? "image" : "text",
-                )
+                updateField("logoMode", event.target.value === "image" ? "image" : "text")
               }
               className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown"
             >
@@ -1862,36 +1790,24 @@ export default function SiteContentStudio({
           selectedUrl={draft[editor.urlKey] as string | undefined}
           selectedAlt={draft[editor.altKey] as string | undefined}
           onSelectAsset={(asset) => {
-            updateField(
-              editor.urlKey,
-              asset.url as SiteContentSettings[typeof editor.urlKey],
-            );
+            updateField(editor.urlKey, asset.url as SiteContentSettings[typeof editor.urlKey]);
             updateField(
               editor.altKey,
-              (asset.altText || asset.label || draft.brandName || "") as SiteContentSettings[typeof editor.altKey],
+              (asset.altText ||
+                asset.label ||
+                draft.brandName ||
+                "") as SiteContentSettings[typeof editor.altKey],
             );
           }}
           onClearSelection={() => {
-            updateField(
-              editor.urlKey,
-              "" as SiteContentSettings[typeof editor.urlKey],
-            );
-            updateField(
-              editor.altKey,
-              "" as SiteContentSettings[typeof editor.altKey],
-            );
+            updateField(editor.urlKey, "" as SiteContentSettings[typeof editor.urlKey]);
+            updateField(editor.altKey, "" as SiteContentSettings[typeof editor.altKey]);
           }}
           onAltChange={(value) =>
-            updateField(
-              editor.altKey,
-              value as SiteContentSettings[typeof editor.altKey],
-            )
+            updateField(editor.altKey, value as SiteContentSettings[typeof editor.altKey])
           }
           onUrlChange={(value) =>
-            updateField(
-              editor.urlKey,
-              value as SiteContentSettings[typeof editor.urlKey],
-            )
+            updateField(editor.urlKey, value as SiteContentSettings[typeof editor.urlKey])
           }
           onUploadedAssets={(uploadedAssets) =>
             applyUploadedAsset(uploadedAssets, editor.urlKey, editor.altKey)
@@ -1901,29 +1817,18 @@ export default function SiteContentStudio({
           <div className="grid gap-4 rounded-[24px] border border-brown/10 bg-cream/35 p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-[12px] uppercase tracking-[0.2em] text-muted">
-                  Hero framing
-                </p>
+                <p className="text-[12px] uppercase tracking-[0.2em] text-muted">Hero framing</p>
                 <p className="mt-2 text-sm text-text/75">
-                  Tune the product placement directly from this panel and watch
-                  the live preview update instantly.
+                  Tune the product placement directly from this panel and watch the live preview
+                  update instantly.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => {
-                  updateField(
-                    "heroImageOffsetX",
-                    MEDIA_FRAMING_LIMITS.offset.defaultValue,
-                  );
-                  updateField(
-                    "heroImageOffsetY",
-                    MEDIA_FRAMING_LIMITS.offset.defaultValue,
-                  );
-                  updateField(
-                    "heroImageScale",
-                    MEDIA_FRAMING_LIMITS.scale.defaultValue,
-                  );
+                  updateField("heroImageOffsetX", MEDIA_FRAMING_LIMITS.offset.defaultValue);
+                  updateField("heroImageOffsetY", MEDIA_FRAMING_LIMITS.offset.defaultValue);
+                  updateField("heroImageScale", MEDIA_FRAMING_LIMITS.scale.defaultValue);
                 }}
                 className="rounded-full border border-brown/20 px-3 py-2 text-xs uppercase tracking-[0.14em] text-brown transition-colors hover:bg-brown/5"
               >
@@ -1936,10 +1841,7 @@ export default function SiteContentStudio({
               min={MEDIA_FRAMING_LIMITS.offset.min}
               max={MEDIA_FRAMING_LIMITS.offset.max}
               step={MEDIA_FRAMING_LIMITS.offset.step}
-              value={
-                draft.heroImageOffsetX ??
-                MEDIA_FRAMING_LIMITS.offset.defaultValue
-              }
+              value={draft.heroImageOffsetX ?? MEDIA_FRAMING_LIMITS.offset.defaultValue}
               onChange={(value) => updateField("heroImageOffsetX", value)}
             />
             <PanelRange
@@ -1947,10 +1849,7 @@ export default function SiteContentStudio({
               min={MEDIA_FRAMING_LIMITS.offset.min}
               max={MEDIA_FRAMING_LIMITS.offset.max}
               step={MEDIA_FRAMING_LIMITS.offset.step}
-              value={
-                draft.heroImageOffsetY ??
-                MEDIA_FRAMING_LIMITS.offset.defaultValue
-              }
+              value={draft.heroImageOffsetY ?? MEDIA_FRAMING_LIMITS.offset.defaultValue}
               onChange={(value) => updateField("heroImageOffsetY", value)}
             />
             <PanelRange
@@ -1958,10 +1857,7 @@ export default function SiteContentStudio({
               min={MEDIA_FRAMING_LIMITS.scale.min}
               max={MEDIA_FRAMING_LIMITS.scale.max}
               step={MEDIA_FRAMING_LIMITS.scale.step}
-              value={
-                draft.heroImageScale ??
-                MEDIA_FRAMING_LIMITS.scale.defaultValue
-              }
+              value={draft.heroImageScale ?? MEDIA_FRAMING_LIMITS.scale.defaultValue}
               suffix="%"
               inputStep={1}
               onChange={(value) => updateField("heroImageScale", value)}
@@ -1970,10 +1866,7 @@ export default function SiteContentStudio({
               label="Layer order"
               value={draft.heroForegroundMedia}
               onChange={(value) =>
-                updateField(
-                  "heroForegroundMedia",
-                  value === "accent" ? "accent" : "hero",
-                )
+                updateField("heroForegroundMedia", value === "accent" ? "accent" : "hero")
               }
               options={[
                 { label: "Main image on top", value: "hero" },
@@ -1986,29 +1879,18 @@ export default function SiteContentStudio({
           <div className="grid gap-4 rounded-[24px] border border-brown/10 bg-cream/35 p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-[12px] uppercase tracking-[0.2em] text-muted">
-                  Accent framing
-                </p>
+                <p className="text-[12px] uppercase tracking-[0.2em] text-muted">Accent framing</p>
                 <p className="mt-2 text-sm text-text/75">
-                  Move the candle freely inside the live preview so the storefront
-                  mock stays close to the final hero composition.
+                  Move the candle freely inside the live preview so the storefront mock stays close
+                  to the final hero composition.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => {
-                  updateField(
-                    "heroAccentImageOffsetX",
-                    MEDIA_FRAMING_LIMITS.offset.defaultValue,
-                  );
-                  updateField(
-                    "heroAccentImageOffsetY",
-                    MEDIA_FRAMING_LIMITS.offset.defaultValue,
-                  );
-                  updateField(
-                    "heroAccentImageScale",
-                    MEDIA_FRAMING_LIMITS.scale.defaultValue,
-                  );
+                  updateField("heroAccentImageOffsetX", MEDIA_FRAMING_LIMITS.offset.defaultValue);
+                  updateField("heroAccentImageOffsetY", MEDIA_FRAMING_LIMITS.offset.defaultValue);
+                  updateField("heroAccentImageScale", MEDIA_FRAMING_LIMITS.scale.defaultValue);
                 }}
                 className="rounded-full border border-brown/20 px-3 py-2 text-xs uppercase tracking-[0.14em] text-brown transition-colors hover:bg-brown/5"
               >
@@ -2021,10 +1903,7 @@ export default function SiteContentStudio({
               min={MEDIA_FRAMING_LIMITS.offset.min}
               max={MEDIA_FRAMING_LIMITS.offset.max}
               step={MEDIA_FRAMING_LIMITS.offset.step}
-              value={
-                draft.heroAccentImageOffsetX ??
-                MEDIA_FRAMING_LIMITS.offset.defaultValue
-              }
+              value={draft.heroAccentImageOffsetX ?? MEDIA_FRAMING_LIMITS.offset.defaultValue}
               onChange={(value) => updateField("heroAccentImageOffsetX", value)}
             />
             <PanelRange
@@ -2032,10 +1911,7 @@ export default function SiteContentStudio({
               min={MEDIA_FRAMING_LIMITS.offset.min}
               max={MEDIA_FRAMING_LIMITS.offset.max}
               step={MEDIA_FRAMING_LIMITS.offset.step}
-              value={
-                draft.heroAccentImageOffsetY ??
-                MEDIA_FRAMING_LIMITS.offset.defaultValue
-              }
+              value={draft.heroAccentImageOffsetY ?? MEDIA_FRAMING_LIMITS.offset.defaultValue}
               onChange={(value) => updateField("heroAccentImageOffsetY", value)}
             />
             <PanelRange
@@ -2043,10 +1919,7 @@ export default function SiteContentStudio({
               min={MEDIA_FRAMING_LIMITS.scale.min}
               max={MEDIA_FRAMING_LIMITS.scale.max}
               step={MEDIA_FRAMING_LIMITS.scale.step}
-              value={
-                draft.heroAccentImageScale ??
-                MEDIA_FRAMING_LIMITS.scale.defaultValue
-              }
+              value={draft.heroAccentImageScale ?? MEDIA_FRAMING_LIMITS.scale.defaultValue}
               suffix="%"
               inputStep={1}
               onChange={(value) => updateField("heroAccentImageScale", value)}
@@ -2055,10 +1928,7 @@ export default function SiteContentStudio({
               label="Layer order"
               value={draft.heroForegroundMedia}
               onChange={(value) =>
-                updateField(
-                  "heroForegroundMedia",
-                  value === "accent" ? "accent" : "hero",
-                )
+                updateField("heroForegroundMedia", value === "accent" ? "accent" : "hero")
               }
               options={[
                 { label: "Main image on top", value: "hero" },
@@ -2094,16 +1964,14 @@ export default function SiteContentStudio({
 
     return (
       <section className="rounded-[32px] border border-brown/15 bg-white p-6 shadow-sm">
-        <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
-          Publishing flow
-        </p>
+        <p className="text-[12px] uppercase tracking-[0.24em] text-muted">Publishing flow</p>
         <h3 className="mt-2 font-serif text-2xl text-dark">
           Keep the homepage edits calm and reviewable
         </h3>
         <p className="mt-3 text-sm text-text/75">
-          Pick the exact field from the preview, make the change on the right,
-          stage translations or locale edits only when needed, then save once.
-          This keeps the content workflow predictable even as the panel grows.
+          Pick the exact field from the preview, make the change on the right, stage translations or
+          locale edits only when needed, then save once. This keeps the content workflow predictable
+          even as the panel grows.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
@@ -2125,9 +1993,7 @@ export default function SiteContentStudio({
       <section className="sticky top-0 z-20 rounded-[24px] border border-brown/15 bg-[#f7f0e6]/96 p-3 backdrop-blur">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-brown/12 bg-white/92 px-4 py-3 shadow-sm">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.18em] text-muted">
-              Editor actions
-            </p>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-muted">Editor actions</p>
             <p className="mt-1 text-sm text-text/70">
               Save the current draft or restore the last saved version.
             </p>
@@ -2148,15 +2014,9 @@ export default function SiteContentStudio({
       <section className="rounded-[28px] border border-brown/15 bg-white p-6 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
-              Selected field
-            </p>
-            <h2 className="mt-2 font-serif text-3xl text-dark">
-              {selectedMeta.title}
-            </h2>
-            <p className="mt-2 text-sm text-text/75">
-              {selectedMeta.description}
-            </p>
+            <p className="text-[12px] uppercase tracking-[0.24em] text-muted">Selected field</p>
+            <h2 className="mt-2 font-serif text-3xl text-dark">{selectedMeta.title}</h2>
+            <p className="mt-2 text-sm text-text/75">{selectedMeta.description}</p>
           </div>
         </div>
 
@@ -2171,9 +2031,7 @@ export default function SiteContentStudio({
 
         {relatedFields.length > 0 ? (
           <div className="mt-6">
-            <p className="text-[12px] uppercase tracking-[0.18em] text-muted">
-              Nearby items
-            </p>
+            <p className="text-[12px] uppercase tracking-[0.18em] text-muted">Nearby items</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {relatedFields.map((field) => (
                 <button
@@ -2195,19 +2053,15 @@ export default function SiteContentStudio({
       </section>
 
       <section className="rounded-[28px] border border-brown/15 bg-white p-6 shadow-sm">
-        <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
-          Workspace
-        </p>
-        <h3 className="mt-2 font-serif text-2xl text-dark">
-          {activeWorkspace.title}
-        </h3>
-        <p className="mt-3 text-sm text-text/75">
-          {activeWorkspace.description}
-        </p>
+        <p className="text-[12px] uppercase tracking-[0.24em] text-muted">Workspace</p>
+        <h3 className="mt-2 font-serif text-2xl text-dark">{activeWorkspace.title}</h3>
+        <p className="mt-3 text-sm text-text/75">{activeWorkspace.description}</p>
         <div className="mt-5 flex flex-wrap gap-2">
-          {(Object.entries(workspacePanelMeta) as Array<
-            [WorkspacePanelId, (typeof workspacePanelMeta)[WorkspacePanelId]]
-          >).map(([panelId, panel]) => (
+          {(
+            Object.entries(workspacePanelMeta) as Array<
+              [WorkspacePanelId, (typeof workspacePanelMeta)[WorkspacePanelId]]
+            >
+          ).map(([panelId, panel]) => (
             <button
               key={panelId}
               type="button"
@@ -2229,10 +2083,7 @@ export default function SiteContentStudio({
   );
 
   return (
-    <form
-      action={action}
-      className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_430px]"
-    >
+    <form action={action} className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_430px]">
       <input type="hidden" name="locale" value={locale} />
       {(
         Object.entries(draft) as Array<
@@ -2245,16 +2096,14 @@ export default function SiteContentStudio({
       <section className="rounded-[32px] border border-brown/15 bg-white/80 p-5 shadow-sm backdrop-blur">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
-              Live preview
-            </p>
+            <p className="text-[12px] uppercase tracking-[0.24em] text-muted">Live preview</p>
             <h2 className="mt-2 font-serif text-3xl text-dark">
               Edit the homepage by clicking the exact element
             </h2>
             <p className="mt-2 max-w-2xl text-sm text-text/75">
-              The preview covers the full homepage flow. Click any text, image,
-              or button and the right side will jump straight to the matching
-              field instead of making you hunt for it manually.
+              The preview covers the full homepage flow. Click any text, image, or button and the
+              right side will jump straight to the matching field instead of making you hunt for it
+              manually.
             </p>
           </div>
           <Link

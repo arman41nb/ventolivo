@@ -20,11 +20,7 @@ export function I18nProvider({
   dictionary: Dictionary;
   locale: Locale;
 }) {
-  return (
-    <I18nContext.Provider value={{ dictionary, locale }}>
-      {children}
-    </I18nContext.Provider>
-  );
+  return <I18nContext.Provider value={{ dictionary, locale }}>{children}</I18nContext.Provider>;
 }
 
 export function useI18n(): I18nContextValue {

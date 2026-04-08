@@ -9,10 +9,7 @@ interface AboutSectionProps {
   siteSettings?: SiteContentSettings;
 }
 
-export default function AboutSection({
-  dict,
-  siteSettings,
-}: AboutSectionProps) {
+export default function AboutSection({ dict, siteSettings }: AboutSectionProps) {
   const subtitle = siteSettings?.aboutSubtitle ?? dict?.about.subtitle ?? "Our Story";
   const title = dict?.about.title ?? {
     line1: "Made by hand,",
@@ -24,8 +21,7 @@ export default function AboutSection({
     siteSettings?.aboutDescription ??
     dict?.about.description ??
     "Every Ventolivo soap is crafted in small batches using cold-process methods and the finest natural ingredients. No shortcuts, no chemicals — just pure, honest skincare.";
-  const learnMore =
-    siteSettings?.aboutButtonLabel ?? dict?.about.learnMore ?? "Learn More";
+  const learnMore = siteSettings?.aboutButtonLabel ?? dict?.about.learnMore ?? "Learn More";
   const chips = [
     siteSettings?.stripBannerItem1 ?? dict?.stripBanner.items?.[0] ?? "Handcrafted",
     siteSettings?.stripBannerItem2 ?? dict?.stripBanner.items?.[1] ?? "Natural Oils",
@@ -33,10 +29,7 @@ export default function AboutSection({
   ];
 
   return (
-    <section
-      id="about"
-      className="px-4 py-20 md:px-6"
-    >
+    <section id="about" className="px-4 py-20 md:px-6">
       <div className="mx-auto grid max-w-[1380px] gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <ViewportReveal
           className="relative min-h-[520px] overflow-hidden rounded-[32px] bg-[linear-gradient(135deg,#dbcdbd,#cbb89d)] shadow-[0_14px_36px_rgba(72,49,30,0.08)]"
@@ -81,9 +74,7 @@ export default function AboutSection({
               <br />
               {line2}
             </h2>
-            <p className="mb-5 mt-6 text-[15px] leading-[1.95] text-muted">
-              {description}
-            </p>
+            <p className="mb-5 mt-6 text-[15px] leading-[1.95] text-muted">{description}</p>
             <div className="mb-7 flex flex-wrap gap-3">
               {chips.map((chip, index) => (
                 <ViewportReveal

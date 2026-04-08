@@ -19,16 +19,10 @@ export default function CTASection({ dict, siteSettings }: CTASectionProps) {
     "Send us a message and we'll get back to you within hours";
   const button = siteSettings?.ctaButtonLabel ?? dict?.cta.button ?? "Order on WhatsApp";
   const whatsappLink = buildWhatsAppLink("");
-  const quote =
-    siteSettings?.aboutDescription ??
-    dict?.about.description ??
-    description;
+  const quote = siteSettings?.aboutDescription ?? dict?.about.description ?? description;
 
   return (
-    <section
-      id="contact"
-      className="px-4 py-20 md:px-6"
-    >
+    <section id="contact" className="px-4 py-20 md:px-6">
       <div className="mx-auto grid max-w-[1380px] gap-6 lg:grid-cols-[0.88fr_1.12fr]">
         <ViewportReveal
           className="relative overflow-hidden rounded-[32px] border border-brown/8 bg-[rgba(255,251,246,0.75)] p-8 shadow-[0_14px_32px_rgba(72,49,30,0.08)] md:p-10"

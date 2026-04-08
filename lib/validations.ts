@@ -1,8 +1,5 @@
 import { z } from "zod";
-import {
-  baseSiteLocaleCode,
-  isValidSiteLocaleCode,
-} from "@/modules/site-content/locales";
+import { baseSiteLocaleCode, isValidSiteLocaleCode } from "@/modules/site-content";
 import { MEDIA_FRAMING_LIMITS } from "@/modules/media/framing";
 
 function isValidAssetReference(value: string): boolean {
@@ -25,10 +22,7 @@ function isValidAssetReference(value: string): boolean {
 export const assetPathSchema = z
   .string()
   .trim()
-  .refine(
-    (value) => isValidAssetReference(value),
-    "Must be a valid URL or a site asset path",
-  );
+  .refine((value) => isValidAssetReference(value), "Must be a valid URL or a site asset path");
 
 export const requiredAssetPathSchema = z
   .string()
@@ -40,7 +34,11 @@ export const requiredAssetPathSchema = z
   );
 
 export const productQuerySchema = z.object({
-  slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
+  slug: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
 });
 
 export const productFilterSchema = z.object({
@@ -52,7 +50,10 @@ export const productFilterSchema = z.object({
 export const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
   email: z.string().email("Invalid email address").optional(),
-  phone: z.string().regex(/^\+?[\d\s-]{7,20}$/, "Invalid phone number").optional(),
+  phone: z
+    .string()
+    .regex(/^\+?[\d\s-]{7,20}$/, "Invalid phone number")
+    .optional(),
   message: z.string().min(10, "Message must be at least 10 characters").max(1000),
   productId: z.number().int().positive().optional(),
 });

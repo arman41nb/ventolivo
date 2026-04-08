@@ -1,15 +1,11 @@
 import { defaultSiteContentSettings } from "./defaults";
-import {
-  buildMediaTransform,
-  buildTranslateScaleTransform,
-} from "@/modules/media/transform";
+import { buildMediaTransform, buildTranslateScaleTransform } from "@/modules/media/transform";
 import { MEDIA_FRAMING_LIMITS } from "@/modules/media/framing";
 import type { HeroForegroundMedia, SiteContentSettings } from "@/types";
 
 const fallbackHeroImageUrl =
   "/uploads/media/1775316749688-6ecaa607-e084-4337-91d8-84fe7c998834-natural-yogurt-soap-from-ventolivo-removebg-preview.png";
-const fallbackAccentImageUrl =
-  "/uploads/media/pastel-pink-candle-holder-removebg-preview.png";
+const fallbackAccentImageUrl = "/uploads/media/pastel-pink-candle-holder-removebg-preview.png";
 
 type HeroMediaInput = Partial<
   Pick<
@@ -76,27 +72,19 @@ export function getHeroSceneMediaState(
       settings?.heroAccentImageAlt ||
       defaultSiteContentSettings.heroAccentImageAlt ||
       `${brandName} accent product`,
-    heroImageOffsetX:
-      settings?.heroImageOffsetX ?? MEDIA_FRAMING_LIMITS.offset.defaultValue,
-    heroImageOffsetY:
-      settings?.heroImageOffsetY ?? MEDIA_FRAMING_LIMITS.offset.defaultValue,
-    heroImageScale:
-      settings?.heroImageScale ?? MEDIA_FRAMING_LIMITS.scale.defaultValue,
+    heroImageOffsetX: settings?.heroImageOffsetX ?? MEDIA_FRAMING_LIMITS.offset.defaultValue,
+    heroImageOffsetY: settings?.heroImageOffsetY ?? MEDIA_FRAMING_LIMITS.offset.defaultValue,
+    heroImageScale: settings?.heroImageScale ?? MEDIA_FRAMING_LIMITS.scale.defaultValue,
     heroAccentImageOffsetX:
-      settings?.heroAccentImageOffsetX ??
-      MEDIA_FRAMING_LIMITS.offset.defaultValue,
+      settings?.heroAccentImageOffsetX ?? MEDIA_FRAMING_LIMITS.offset.defaultValue,
     heroAccentImageOffsetY:
-      settings?.heroAccentImageOffsetY ??
-      MEDIA_FRAMING_LIMITS.offset.defaultValue,
-    heroAccentImageScale:
-      settings?.heroAccentImageScale ?? MEDIA_FRAMING_LIMITS.scale.defaultValue,
+      settings?.heroAccentImageOffsetY ?? MEDIA_FRAMING_LIMITS.offset.defaultValue,
+    heroAccentImageScale: settings?.heroAccentImageScale ?? MEDIA_FRAMING_LIMITS.scale.defaultValue,
     heroForegroundMedia: settings?.heroForegroundMedia ?? "hero",
   };
 }
 
-export function getHeroSceneLayerOrder(
-  foregroundMedia: HeroForegroundMedia | undefined,
-) {
+export function getHeroSceneLayerOrder(foregroundMedia: HeroForegroundMedia | undefined) {
   const heroOnTop = foregroundMedia !== "accent";
 
   return {

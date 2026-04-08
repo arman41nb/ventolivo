@@ -4,3 +4,5 @@ build
 dist
 coverage
 package-lock.json
+Dockerfile
+prisma/**/*.prisma

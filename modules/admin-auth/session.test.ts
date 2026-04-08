@@ -31,9 +31,7 @@ describe("admin session auth", () => {
   it("creates verifiable session tokens when the admin secret is strong", async () => {
     process.env.ADMIN_SESSION_SECRET = "0123456789abcdef0123456789abcdef";
 
-    const { createAdminSessionToken, verifyAdminSessionToken } = await import(
-      "./session"
-    );
+    const { createAdminSessionToken, verifyAdminSessionToken } = await import("./session");
 
     const token = await createAdminSessionToken("admin");
     const session = await verifyAdminSessionToken(token);
@@ -45,14 +43,35 @@ describe("admin session auth", () => {
   it("rejects tampered session tokens", async () => {
     process.env.ADMIN_SESSION_SECRET = "0123456789abcdef0123456789abcdef";
 
-    const { createAdminSessionToken, verifyAdminSessionToken } = await import(
-      "./session"
-    );
+    const { createAdminSessionToken, verifyAdminSessionToken } = await import("./session");
 
     const token = await createAdminSessionToken("admin");
     const [payload] = token.split(".");
     const tamperedToken = `${payload}.invalid-signature`;
 
     await expect(verifyAdminSessionToken(tamperedToken)).resolves.toBeNull();
+  });
+
+  it("exposes consistent cookie options for set and clear operations", async () => {
+    process.env.NEXT_PUBLIC_SITE_URL = "https://ventolivo.com";
+
+    const { getAdminSessionCookieOptions, getExpiredAdminSessionCookieOptions } =
+      await import("./session");
+
+    expect(getAdminSessionCookieOptions()).toMatchObject({
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+      sameSite: "lax",
+      secure: true,
+    });
+    expect(getExpiredAdminSessionCookieOptions()).toMatchObject({
+      httpOnly: true,
+      maxAge: 0,
+      path: "/",
+      sameSite: "lax",
+      secure: true,
+    });
+    expect(getExpiredAdminSessionCookieOptions().expires).toBeInstanceOf(Date);
   });
 });

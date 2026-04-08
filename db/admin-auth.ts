@@ -27,10 +27,7 @@ export async function dbGetAdminUserByUsername(username: string) {
   });
 }
 
-export async function dbCreateAdminUser(input: {
-  username: string;
-  passwordHash: string;
-}) {
+export async function dbCreateAdminUser(input: { username: string; passwordHash: string }) {
   return prisma.adminUser.create({
     data: {
       username: input.username,

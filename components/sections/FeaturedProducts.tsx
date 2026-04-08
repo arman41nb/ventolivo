@@ -33,12 +33,7 @@ export default function FeaturedProducts({
           <span className="ambient-orb bottom-6 left-16 h-16 w-16 bg-olive/12 [animation-delay:1.4s]" />
 
           <div className="mb-9 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <ViewportReveal
-              className="max-w-[720px]"
-              delay={20}
-              distance={26}
-              duration={520}
-            >
+            <ViewportReveal className="max-w-[720px]" delay={20} distance={26} duration={520}>
               <h2 className="font-serif text-[2.8rem] leading-[0.98] text-dark md:text-[4.2rem] luxe-heading-glide">
                 {title}
               </h2>

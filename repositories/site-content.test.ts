@@ -16,9 +16,7 @@ describe("site content repository", () => {
     await expect(repository.getSiteContentSettings()).resolves.toEqual(
       defaultsModule.defaultSiteContentSettings,
     );
-    await expect(repository.getSiteLocales()).resolves.toEqual(
-      defaultsModule.defaultSiteLocales,
-    );
+    await expect(repository.getSiteLocales()).resolves.toEqual(defaultsModule.defaultSiteLocales);
   });
 
   it("rejects writes when persistence is unavailable", async () => {
@@ -33,8 +31,6 @@ describe("site content repository", () => {
         ...defaultsModule.defaultSiteContentSettings,
         siteLocales: defaultsModule.defaultSiteLocales,
       }),
-    ).rejects.toThrow(
-      "Site content updates require DATABASE_URL so changes can be persisted.",
-    );
+    ).rejects.toThrow("Site content updates require DATABASE_URL so changes can be persisted.");
   });
 });

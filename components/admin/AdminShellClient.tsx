@@ -103,12 +103,8 @@ function SidebarContent({
             <p className="text-[11px] uppercase tracking-[0.22em] text-white/48">
               {activeItemLabel ?? title}
             </p>
-            <p className="mt-3 text-sm font-medium text-white/90">
-              {sessionSummary.username}
-            </p>
-            <p className="mt-2 text-xs leading-5 text-white/58">
-              {sessionSummary.expiresLabel}
-            </p>
+            <p className="mt-3 text-sm font-medium text-white/90">{sessionSummary.username}</p>
+            <p className="mt-2 text-xs leading-5 text-white/58">{sessionSummary.expiresLabel}</p>
           </div>
         ) : null}
       </div>
@@ -153,9 +149,7 @@ function SidebarContent({
         <p className="text-[11px] uppercase tracking-[0.22em] text-white/48">
           {dictionary.admin.dataSourceLabel}
         </p>
-        <p className="mt-3 font-serif text-3xl text-white/94">
-          {activeItemLabel ?? title}
-        </p>
+        <p className="mt-3 font-serif text-3xl text-white/94">{activeItemLabel ?? title}</p>
         <p className="mt-3 text-sm leading-7 text-white/70">{description}</p>
       </div>
     </>
@@ -205,7 +199,9 @@ export default function AdminShellClient({
 
       <div
         className={`mx-auto mt-4 w-full max-w-[1540px] gap-4 ${
-          immersivePreview ? "relative" : "grid min-h-[calc(100vh-6rem)] lg:grid-cols-[300px_minmax(0,1fr)]"
+          immersivePreview
+            ? "relative"
+            : "grid min-h-[calc(100vh-6rem)] lg:grid-cols-[300px_minmax(0,1fr)]"
         }`}
       >
         {immersivePreview ? (
@@ -219,9 +215,7 @@ export default function AdminShellClient({
             />
             <aside
               className={`fixed bottom-4 left-4 top-4 z-40 flex h-auto w-[min(320px,calc(100vw-2rem))] flex-col overflow-hidden rounded-[38px] border border-white/8 bg-[linear-gradient(180deg,#352419_0%,#2c1f14_48%,#23180f_100%)] p-5 text-white shadow-[0_30px_80px_rgba(44,31,20,0.24)] transition-transform duration-300 ${
-                isSidebarOpen
-                  ? "translate-x-0"
-                  : "-translate-x-[calc(100%+1.5rem)]"
+                isSidebarOpen ? "translate-x-0" : "-translate-x-[calc(100%+1.5rem)]"
               }`}
             >
               <SidebarContent
@@ -304,9 +298,7 @@ export default function AdminShellClient({
                     <p className="text-[11px] uppercase tracking-[0.22em] text-muted">
                       {dictionary.admin.dashboard.sessionExpires}
                     </p>
-                    <p className="mt-3 font-serif text-3xl text-dark">
-                      {sessionSummary.username}
-                    </p>
+                    <p className="mt-3 font-serif text-3xl text-dark">{sessionSummary.username}</p>
                     <p className="mt-3 text-sm leading-7 text-text/72">
                       {sessionSummary.expiresLabel}
                     </p>

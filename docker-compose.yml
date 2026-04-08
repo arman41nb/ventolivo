@@ -10,9 +10,10 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_SITE_URL=http://localhost:3000
-      - DATABASE_URL=file:./dev.db
+      - DATABASE_URL=file:./data/dev.db
+      - PRODUCTS_DATA_SOURCE=database
     volumes:
-      - db-data:/app/prisma
+      - db-data:/app/data
     restart: unless-stopped
 
 volumes:

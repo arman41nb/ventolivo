@@ -23,7 +23,9 @@ export default function ProductCard({
 }: ProductCardProps) {
   const message = buildProductWhatsAppMessage(product.name, product.price);
   const whatsappLink = buildWhatsAppLink(message);
-  const productHref = locale ? localePath(locale, `/products/${product.slug}`) : `/products/${product.slug}`;
+  const productHref = locale
+    ? localePath(locale, `/products/${product.slug}`)
+    : `/products/${product.slug}`;
   const media = getPrimaryProductMedia(product);
 
   return (

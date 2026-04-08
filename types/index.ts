@@ -1,8 +1,4 @@
-export type {
-  AdminAuditLogEntry,
-  AdminSessionIdentity,
-  AdminUser,
-} from "./admin";
+export type { AdminAuditLogEntry, AdminSessionIdentity, AdminUser } from "./admin";
 export type {
   LocalizedFieldMap,
   Product,

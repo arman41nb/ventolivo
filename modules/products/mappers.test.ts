@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  mapDbProductRecord,
-  normalizeProductTag,
-  parseProductIngredients,
-} from "./mappers";
+import { mapDbProductRecord, normalizeProductTag, parseProductIngredients } from "./mappers";
 
 describe("normalizeProductTag", () => {
   it("normalizes case and surrounding whitespace", () => {
@@ -21,10 +17,7 @@ describe("parseProductIngredients", () => {
   });
 
   it("returns validated ingredient arrays", () => {
-    expect(parseProductIngredients('["olive oil", "mint"]')).toEqual([
-      "olive oil",
-      "mint",
-    ]);
+    expect(parseProductIngredients('["olive oil", "mint"]')).toEqual(["olive oil", "mint"]);
   });
 });
 
@@ -52,11 +45,11 @@ describe("mapDbProductRecord", () => {
       price: 120,
       color: "#fff",
       description: "Fresh and clean",
-        ingredients: ["mint oil", "olive oil"],
-        weight: "100g",
-        featured: true,
-        media: undefined,
-      });
+      ingredients: ["mint oil", "olive oil"],
+      weight: "100g",
+      featured: true,
+      media: undefined,
+    });
   });
 
   it("drops invalid ingredient payloads instead of throwing", () => {
@@ -82,11 +75,11 @@ describe("mapDbProductRecord", () => {
       price: 150,
       color: "#fdd",
       description: "Soft floral bar",
-        ingredients: undefined,
-        weight: undefined,
-        featured: false,
-        media: undefined,
-      });
+      ingredients: undefined,
+      weight: undefined,
+      featured: false,
+      media: undefined,
+    });
   });
 
   it("accepts site asset paths for linked media", () => {

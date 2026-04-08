@@ -19,10 +19,7 @@ export default function Input({
   return (
     <div className="flex flex-col gap-[0.4rem]">
       {label && (
-        <label
-          htmlFor={inputId}
-          className="text-[12px] tracking-[1px] uppercase text-muted"
-        >
+        <label htmlFor={inputId} className="text-[12px] tracking-[1px] uppercase text-muted">
           {label}
         </label>
       )}

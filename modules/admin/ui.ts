@@ -1,10 +1,6 @@
 import type { Locale } from "@/i18n/config";
 
-export type AdminSectionKey =
-  | "dashboard"
-  | "products"
-  | "media"
-  | "siteContent";
+export type AdminSectionKey = "dashboard" | "products" | "media" | "siteContent";
 
 export interface AdminNavigationLabels {
   dashboard: string;

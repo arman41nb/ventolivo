@@ -1,8 +1,4 @@
-import {
-  baseSiteLocaleCode,
-  getDefaultSiteLocales,
-  getSiteLocaleFlag,
-} from "@/modules/site-content/locales";
+import { baseSiteLocaleCode, getDefaultSiteLocales, getSiteLocaleFlag } from "@/modules/site-content";
 
 const defaultSiteLocales = getDefaultSiteLocales();
 const defaultSiteLocaleCodes = defaultSiteLocales.map((locale) => locale.code);
@@ -58,8 +54,6 @@ export function getLocaleCandidates(locale: string): Locale[] {
   const [baseLocale] = normalizedLocale.split("-");
 
   return Array.from(
-    new Set(
-      [normalizedLocale, baseLocale, defaultLocale].filter(Boolean) as Locale[],
-    ),
+    new Set([normalizedLocale, baseLocale, defaultLocale].filter(Boolean) as Locale[]),
   );
 }

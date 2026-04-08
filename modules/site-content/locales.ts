@@ -153,18 +153,14 @@ const localeCatalog: SiteLocalePreset[] = [
 ];
 
 const defaultLocalePresets: SiteLocaleConfig[] = localeCatalog
-  .filter((locale) =>
-    ["en", "tr", "de", "fa", "ar"].includes(locale.code),
-  )
+  .filter((locale) => ["en", "tr", "de", "fa", "ar"].includes(locale.code))
   .map(({ code, label, direction }) => ({
     code,
     label,
     direction,
   }));
 
-const localePresetByCode = new Map(
-  localeCatalog.map((locale) => [locale.code, locale]),
-);
+const localePresetByCode = new Map(localeCatalog.map((locale) => [locale.code, locale]));
 
 const localeLabelByCode = new Map(
   defaultLocalePresets.map((locale) => [locale.code, locale.label]),
@@ -185,8 +181,7 @@ export function isValidSiteLocaleCode(code: string): boolean {
 export function inferSiteLocaleLabel(code: string): string {
   const normalizedCode = normalizeSiteLocaleCode(code);
   const presetLabel =
-    getSiteLocalePreset(normalizedCode)?.label ||
-    localeLabelByCode.get(normalizedCode);
+    getSiteLocalePreset(normalizedCode)?.label || localeLabelByCode.get(normalizedCode);
 
   if (presetLabel) {
     return presetLabel;
@@ -198,13 +193,10 @@ export function inferSiteLocaleLabel(code: string): string {
     .join(" / ");
 }
 
-export function inferSiteLocaleDirection(
-  code: string,
-): SiteLocaleDirection {
+export function inferSiteLocaleDirection(code: string): SiteLocaleDirection {
   const normalizedCode = normalizeSiteLocaleCode(code);
   const presetDirection =
-    getSiteLocalePreset(normalizedCode)?.direction ||
-    localeDirectionByCode.get(normalizedCode);
+    getSiteLocalePreset(normalizedCode)?.direction || localeDirectionByCode.get(normalizedCode);
 
   if (presetDirection) {
     return presetDirection;
@@ -225,9 +217,7 @@ export function getSiteLocaleCatalog(): SiteLocalePreset[] {
   return localeCatalog.map((locale) => ({ ...locale }));
 }
 
-export function getSiteLocalePreset(
-  code: string,
-): SiteLocalePreset | undefined {
+export function getSiteLocalePreset(code: string): SiteLocalePreset | undefined {
   return localePresetByCode.get(normalizeSiteLocaleCode(code));
 }
 
@@ -239,9 +229,7 @@ export function getSiteLocaleNativeLabel(code: string): string {
   return getSiteLocalePreset(code)?.nativeLabel ?? inferSiteLocaleLabel(code);
 }
 
-export function normalizeSiteLocales(
-  locales: SiteLocaleConfig[] | undefined,
-): SiteLocaleConfig[] {
+export function normalizeSiteLocales(locales: SiteLocaleConfig[] | undefined): SiteLocaleConfig[] {
   const normalizedEntries: SiteLocaleConfig[] = (locales ?? [])
     .map((locale) => ({
       code: normalizeSiteLocaleCode(locale.code),
@@ -253,9 +241,7 @@ export function normalizeSiteLocales(
     }))
     .filter(
       (locale) =>
-        locale.code.length > 0 &&
-        locale.label.length > 0 &&
-        isValidSiteLocaleCode(locale.code),
+        locale.code.length > 0 && locale.label.length > 0 && isValidSiteLocaleCode(locale.code),
     );
 
   const uniqueByCode = new Map<string, SiteLocaleConfig>();

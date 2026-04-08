@@ -14,7 +14,7 @@ import {
   isValidSiteLocaleCode,
   normalizeSiteLocaleCode,
   type SiteLocalePreset,
-} from "@/modules/site-content/locales";
+} from "@/modules/site-content";
 import type { SiteLocaleConfig, SiteLocaleDirection } from "@/types";
 
 interface SiteLocalesManagerProps {
@@ -37,22 +37,14 @@ function sortLocales(locales: SiteLocaleConfig[]): SiteLocaleConfig[] {
   });
 }
 
-function matchesLocalePresetSearch(
-  preset: SiteLocalePreset,
-  query: string,
-): boolean {
+function matchesLocalePresetSearch(preset: SiteLocalePreset, query: string): boolean {
   const normalizedQuery = query.trim().toLowerCase();
 
   if (!normalizedQuery) {
     return true;
   }
 
-  return [
-    preset.code,
-    preset.label,
-    preset.nativeLabel,
-    ...(preset.aliases ?? []),
-  ]
+  return [preset.code, preset.label, preset.nativeLabel, ...(preset.aliases ?? [])]
     .join(" ")
     .toLowerCase()
     .includes(normalizedQuery);
@@ -63,21 +55,15 @@ export default function SiteLocalesManager({
   locales,
   dictionary,
 }: SiteLocalesManagerProps) {
-  const [draftLocales, setDraftLocales] = useState<SiteLocaleConfig[]>(
-    sortLocales(locales),
-  );
+  const [draftLocales, setDraftLocales] = useState<SiteLocaleConfig[]>(sortLocales(locales));
   const [searchQuery, setSearchQuery] = useState("");
   const [manualMode, setManualMode] = useState(false);
   const [newCode, setNewCode] = useState("");
   const [newLabel, setNewLabel] = useState("");
-  const [newDirection, setNewDirection] =
-    useState<SiteLocaleDirection>("ltr");
+  const [newDirection, setNewDirection] = useState<SiteLocaleDirection>("ltr");
   const [error, setError] = useState("");
 
-  const normalizedJson = useMemo(
-    () => JSON.stringify(sortLocales(draftLocales)),
-    [draftLocales],
-  );
+  const normalizedJson = useMemo(() => JSON.stringify(sortLocales(draftLocales)), [draftLocales]);
   const localeCatalog = useMemo(() => getSiteLocaleCatalog(), []);
   const selectedPreset = getSiteLocalePreset(newCode);
   const stagedLocaleCodes = useMemo(
@@ -145,9 +131,7 @@ export default function SiteLocalesManager({
       return;
     }
 
-    setDraftLocales((currentLocales) =>
-      currentLocales.filter((locale) => locale.code !== code),
-    );
+    setDraftLocales((currentLocales) => currentLocales.filter((locale) => locale.code !== code));
   }
 
   function updateLocale(code: string, patch: Partial<SiteLocaleConfig>) {
@@ -171,15 +155,9 @@ export default function SiteLocalesManager({
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
-            {dictionary.badge}
-          </p>
-          <h3 className="mt-2 font-serif text-2xl text-dark">
-            {dictionary.title}
-          </h3>
-          <p className="mt-3 max-w-2xl text-sm text-text/75">
-            {dictionary.description}
-          </p>
+          <p className="text-[12px] uppercase tracking-[0.24em] text-muted">{dictionary.badge}</p>
+          <h3 className="mt-2 font-serif text-2xl text-dark">{dictionary.title}</h3>
+          <p className="mt-3 max-w-2xl text-sm text-text/75">{dictionary.description}</p>
         </div>
         <span className="rounded-full bg-amber-50 px-4 py-2 text-xs uppercase tracking-[0.16em] text-amber-900">
           {dictionary.stagedUntilSave}
@@ -223,17 +201,13 @@ export default function SiteLocalesManager({
                       </span>
                     ) : null}
                   </div>
-                  <h4 className="mt-3 font-serif text-xl text-dark">
-                    {locale.label}
-                  </h4>
+                  <h4 className="mt-3 font-serif text-xl text-dark">{locale.label}</h4>
                   <p className="mt-1 text-sm text-text/70">
                     {nativeLabel !== locale.label
                       ? `${nativeLabel} • ${locale.direction.toUpperCase()}`
                       : locale.direction.toUpperCase()}
                   </p>
-                  <p className="mt-2 text-sm text-text/75">
-                    {dictionary.localeHelp}
-                  </p>
+                  <p className="mt-2 text-sm text-text/75">{dictionary.localeHelp}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Link
@@ -256,15 +230,11 @@ export default function SiteLocalesManager({
 
               <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_140px]">
                 <label className="flex flex-col gap-2 text-sm">
-                  <span className="uppercase tracking-[0.16em] text-muted">
-                    {dictionary.label}
-                  </span>
+                  <span className="uppercase tracking-[0.16em] text-muted">{dictionary.label}</span>
                   <input
                     value={locale.label}
                     disabled={isBaseLocale}
-                    onChange={(event) =>
-                      updateLocale(locale.code, { label: event.target.value })
-                    }
+                    onChange={(event) => updateLocale(locale.code, { label: event.target.value })}
                     className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown disabled:bg-cream/60"
                   />
                 </label>
@@ -276,8 +246,7 @@ export default function SiteLocalesManager({
                     value={locale.direction}
                     onChange={(event) =>
                       updateLocale(locale.code, {
-                        direction:
-                          event.target.value === "rtl" ? "rtl" : "ltr",
+                        direction: event.target.value === "rtl" ? "rtl" : "ltr",
                       })
                     }
                     className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown"
@@ -298,9 +267,7 @@ export default function SiteLocalesManager({
             <p className="text-[12px] uppercase tracking-[0.16em] text-muted">
               {dictionary.addLanguage}
             </p>
-            <h4 className="mt-2 font-serif text-xl text-dark">
-              {dictionary.addLanguageTitle}
-            </h4>
+            <h4 className="mt-2 font-serif text-xl text-dark">{dictionary.addLanguageTitle}</h4>
             <p className="mt-2 max-w-2xl text-sm text-text/75">
               {dictionary.addLanguageDescription}
             </p>
@@ -352,9 +319,7 @@ export default function SiteLocalesManager({
                         <p className="text-sm font-medium text-dark">
                           {preset.flag} {preset.label}
                         </p>
-                        <p className="mt-1 text-sm text-text/70">
-                          {preset.nativeLabel}
-                        </p>
+                        <p className="mt-1 text-sm text-text/70">{preset.nativeLabel}</p>
                       </div>
                       <span className="rounded-full bg-cream px-3 py-1 text-xs uppercase tracking-[0.14em] text-brown">
                         {preset.code}
@@ -387,14 +352,11 @@ export default function SiteLocalesManager({
                   </p>
                   <p className="mt-1 text-sm text-text/70">
                     {getSiteLocaleNativeLabel(newCode)} •{" "}
-                    {normalizeSiteLocaleCode(newCode).toUpperCase()} •{" "}
-                    {newDirection.toUpperCase()}
+                    {normalizeSiteLocaleCode(newCode).toUpperCase()} • {newDirection.toUpperCase()}
                   </p>
                 </div>
               ) : (
-                <p className="mt-2 text-sm text-text/70">
-                  {dictionary.draftPlaceholder}
-                </p>
+                <p className="mt-2 text-sm text-text/70">{dictionary.draftPlaceholder}</p>
               )}
             </div>
             {newCode ? (
@@ -410,9 +372,7 @@ export default function SiteLocalesManager({
 
           <div className="mt-4 grid gap-4 md:grid-cols-[140px_minmax(0,1fr)_140px_auto]">
             <label className="flex flex-col gap-2 text-sm">
-              <span className="uppercase tracking-[0.16em] text-muted">
-                {dictionary.code}
-              </span>
+              <span className="uppercase tracking-[0.16em] text-muted">{dictionary.code}</span>
               <input
                 value={newCode}
                 readOnly={Boolean(selectedPreset) && !manualMode}
@@ -431,9 +391,7 @@ export default function SiteLocalesManager({
               />
             </label>
             <label className="flex flex-col gap-2 text-sm">
-              <span className="uppercase tracking-[0.16em] text-muted">
-                {dictionary.label}
-              </span>
+              <span className="uppercase tracking-[0.16em] text-muted">{dictionary.label}</span>
               <input
                 value={newLabel}
                 onChange={(event) => {
@@ -445,16 +403,10 @@ export default function SiteLocalesManager({
               />
             </label>
             <label className="flex flex-col gap-2 text-sm">
-              <span className="uppercase tracking-[0.16em] text-muted">
-                {dictionary.direction}
-              </span>
+              <span className="uppercase tracking-[0.16em] text-muted">{dictionary.direction}</span>
               <select
                 value={newDirection}
-                onChange={(event) =>
-                  setNewDirection(
-                    event.target.value === "rtl" ? "rtl" : "ltr",
-                  )
-                }
+                onChange={(event) => setNewDirection(event.target.value === "rtl" ? "rtl" : "ltr")}
                 className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown"
               >
                 <option value="ltr">LTR</option>
@@ -476,9 +428,7 @@ export default function SiteLocalesManager({
         {error ? (
           <p className="mt-3 text-sm text-red-700">{error}</p>
         ) : (
-          <p className="mt-3 text-sm text-text/70">
-            {dictionary.draftSavedHint}
-          </p>
+          <p className="mt-3 text-sm text-text/70">{dictionary.draftSavedHint}</p>
         )}
       </div>
     </section>

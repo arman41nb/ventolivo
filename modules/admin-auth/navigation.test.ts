@@ -1,14 +1,9 @@
 import { describe, expect, it } from "vitest";
-import {
-  getAdminSessionRecoveryPath,
-  getSafeAdminNextPath,
-} from "./navigation";
+import { getAdminSessionRecoveryPath, getSafeAdminNextPath } from "./navigation";
 
 describe("getSafeAdminNextPath", () => {
   it("keeps locale-scoped admin paths", () => {
-    expect(getSafeAdminNextPath("/fa/admin/products", "fa")).toBe(
-      "/fa/admin/products",
-    );
+    expect(getSafeAdminNextPath("/fa/admin/products", "fa")).toBe("/fa/admin/products");
   });
 
   it("falls back to the locale admin root for unsafe paths", () => {
@@ -27,8 +22,6 @@ describe("getAdminSessionRecoveryPath", () => {
         locale: "tr",
         next: "/tr/admin/media",
       }),
-    ).toBe(
-      "/api/admin/session/clear?locale=tr&next=%2Ftr%2Fadmin%2Fmedia",
-    );
+    ).toBe("/api/admin/session/clear?locale=tr&next=%2Ftr%2Fadmin%2Fmedia");
   });
 });

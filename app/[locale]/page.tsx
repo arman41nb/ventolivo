@@ -6,8 +6,8 @@ import AboutSection from "@/components/sections/AboutSection";
 import FeaturesGrid from "@/components/sections/FeaturesGrid";
 import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
-import { getSiteContentSettings, getSiteLocales } from "@/modules/site-content";
-import { getFeaturedProducts } from "@/services/products";
+import { getSiteContentSettings, getSiteLocales } from "@/modules/site-content/server";
+import { getFeaturedProducts } from "@/modules/products";
 import { getDictionary } from "@/i18n";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { notFound } from "next/navigation";
@@ -15,11 +15,7 @@ import { notFound } from "next/navigation";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function Home({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isValidLocale(locale)) {
     notFound();
@@ -46,13 +42,8 @@ export default async function Home({
         <SoapStorySection dict={dict} siteSettings={siteSettings} />
         <FeaturedProducts
           products={featured}
-          title={
-            siteSettings.featuredProductsTitle || dict.featuredProducts.title
-          }
-          viewAllLabel={
-            siteSettings.featuredProductsViewAllLabel ||
-            dict.featuredProducts.viewAll
-          }
+          title={siteSettings.featuredProductsTitle || dict.featuredProducts.title}
+          viewAllLabel={siteSettings.featuredProductsViewAllLabel || dict.featuredProducts.viewAll}
           orderLabel={dict.products.card.orderVia}
           locale={currentLocale}
         />

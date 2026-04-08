@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { Dictionary } from "@/i18n/types";
 import type { Locale } from "@/i18n/config";
 import { logoutAdminAction } from "@/app/[locale]/admin/actions";
-import { getSiteLocales } from "@/modules/site-content";
+import { getSiteLocales } from "@/modules/site-content/server";
 import AdminShellClient from "@/components/admin/AdminShellClient";
 
 interface AdminShellProps {

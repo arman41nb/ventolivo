@@ -6,13 +6,12 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Dictionary } from "@/i18n";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { clampProgress } from "@/modules/media/transform";
-import { getHeroSceneMediaState } from "@/modules/site-content/hero-scene";
+import { getHeroSceneMediaState } from "@/modules/site-content";
 import type { SiteContentSettings } from "@/types";
 
 const secondaryImageUrl =
   "/uploads/media/1775602871044-24e66b75-50aa-4814-8038-6aa81de42954-natural-handmade-soap-with-ingredients-list.png";
-const secondaryImageAlt =
-  "Illustrated ingredient composition behind the main handcrafted soap";
+const secondaryImageAlt = "Illustrated ingredient composition behind the main handcrafted soap";
 
 interface SoapStorySectionProps {
   dict?: Dictionary;
@@ -53,10 +52,7 @@ function revealStyle(
   };
 }
 
-export default function SoapStorySection({
-  dict,
-  siteSettings,
-}: SoapStorySectionProps) {
+export default function SoapStorySection({ dict, siteSettings }: SoapStorySectionProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const frameRef = useRef(0);
   const initializedRef = useRef(false);
@@ -140,8 +136,7 @@ export default function SoapStorySection({
     eyebrow: "Inspired by nature",
     title: "Nature, memory, and the rituals we turn into soap.",
     lead: "We design from scenes that stay with us, drawn equally from nature and human life.",
-    body:
-      "A dried leaf carried by a narrow stream, a sandstorm across the desert, a bay that feels like paradise, an emerald seam, life beneath the sea, a carefully brewed coffee, the grain of a wooden table, confetti suspended in the air. What we love to watch, touch, and taste becomes part of our handmade soaps, always in harmony with nature and human life.",
+    body: "A dried leaf carried by a narrow stream, a sandstorm across the desert, a bay that feels like paradise, an emerald seam, life beneath the sea, a carefully brewed coffee, the grain of a wooden table, confetti suspended in the air. What we love to watch, touch, and taste becomes part of our handmade soaps, always in harmony with nature and human life.",
     closing: "Your skin deserves the best. So does your soul.",
     ritualLabel: "Handmade ritual",
     momentsLabel: "Sensory notes",
@@ -180,10 +175,7 @@ export default function SoapStorySection({
   const momentsFloat = mix(36, -14, visualProgress);
 
   return (
-    <section
-      ref={sectionRef}
-      className="px-4 pb-10 pt-2 md:px-6 md:pb-12"
-    >
+    <section ref={sectionRef} className="px-4 pb-10 pt-2 md:px-6 md:pb-12">
       <div className="mx-auto max-w-[1380px]">
         <div className="relative overflow-hidden rounded-[42px] border border-white/55 bg-[linear-gradient(180deg,rgba(255,250,245,0.98),rgba(242,233,223,0.94))] shadow-[0_28px_90px_rgba(109,82,58,0.14)]">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_18%,rgba(255,255,255,0.96),transparent_18%),radial-gradient(circle_at_80%_16%,rgba(255,255,255,0.72),transparent_15%),radial-gradient(circle_at_50%_82%,rgba(198,178,156,0.18),transparent_26%)]" />
@@ -414,9 +406,7 @@ export default function SoapStorySection({
                     <p className="text-[10px] uppercase tracking-[0.2em] text-[#b39078]">
                       {copy.ritualLabel}
                     </p>
-                    <p className="mt-2 text-[12px] leading-[1.75] text-[#7d6757]">
-                      {brandName}
-                    </p>
+                    <p className="mt-2 text-[12px] leading-[1.75] text-[#7d6757]">{brandName}</p>
                   </div>
 
                   <div
@@ -447,9 +437,7 @@ export default function SoapStorySection({
                       opacity: soapReveal,
                       transform: `translate3d(${soapX.toFixed(2)}px, ${soapY.toFixed(
                         2,
-                      )}px, 0) rotate(${soapRotate.toFixed(2)}deg) scale(${soapScale.toFixed(
-                        4,
-                      )})`,
+                      )}px, 0) rotate(${soapRotate.toFixed(2)}deg) scale(${soapScale.toFixed(4)})`,
                       willChange: "transform, opacity",
                     }}
                   >

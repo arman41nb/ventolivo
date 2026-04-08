@@ -4,11 +4,10 @@ import ProductEditorForm from "@/components/admin/ProductEditorForm";
 import { getDictionary } from "@/i18n";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { env } from "@/lib/env";
-import { getAdminSessionRecoveryPath } from "@/modules/admin-auth/navigation";
-import { getAdminSession } from "@/modules/admin-auth/server";
+import { getAdminSession, getAdminSessionRecoveryPath } from "@/modules/admin-auth";
 import { getAdminNavItems } from "@/modules/admin/ui";
 import { getAllMediaAssets } from "@/modules/media";
-import { getSiteLocales } from "@/modules/site-content";
+import { getSiteLocales } from "@/modules/site-content/server";
 import { createProductAction } from "../actions";
 
 export default async function AdminNewProductPage({
@@ -45,8 +44,7 @@ export default async function AdminNewProductPage({
     getSiteLocales(),
   ]);
   const isDatabaseMode = env.PRODUCTS_DATA_SOURCE === "database";
-  const errorMessage =
-    error === "slug-conflict" ? dictionary.admin.errors.slugConflict : null;
+  const errorMessage = error === "slug-conflict" ? dictionary.admin.errors.slugConflict : null;
 
   return (
     <AdminShell

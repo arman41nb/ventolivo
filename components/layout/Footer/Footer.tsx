@@ -46,9 +46,14 @@ export default function Footer({ dict, siteSettings, locale }: FooterProps) {
           </ViewportReveal>
 
           <ViewportReveal delay={70} distance={24} duration={500}>
-            <h5 className="mb-3 text-[13px] uppercase tracking-[0.18em] text-white">{productLabel}</h5>
+            <h5 className="mb-3 text-[13px] uppercase tracking-[0.18em] text-white">
+              {productLabel}
+            </h5>
             <div className="grid gap-2 text-[14px] text-cream/75">
-              <Link href={locale ? `/${locale}/products` : "/products"} className="no-underline hover:text-white">
+              <Link
+                href={locale ? `/${locale}/products` : "/products"}
+                className="no-underline hover:text-white"
+              >
                 {productLabel}
               </Link>
               <Link href={`${homeHref}#about`} className="no-underline hover:text-white">
@@ -61,7 +66,9 @@ export default function Footer({ dict, siteSettings, locale }: FooterProps) {
           </ViewportReveal>
 
           <ViewportReveal delay={130} distance={22} duration={500}>
-            <h5 className="mb-3 text-[13px] uppercase tracking-[0.18em] text-white">{aboutLabel}</h5>
+            <h5 className="mb-3 text-[13px] uppercase tracking-[0.18em] text-white">
+              {aboutLabel}
+            </h5>
             <div className="grid gap-2 text-[14px] text-cream/75">
               {featureLabels.map((label) => (
                 <span key={label}>{label}</span>
@@ -70,9 +77,7 @@ export default function Footer({ dict, siteSettings, locale }: FooterProps) {
           </ViewportReveal>
 
           <ViewportReveal delay={180} distance={20} duration={500}>
-            <h5 className="mb-3 text-[13px] uppercase tracking-[0.18em] text-white">
-              Social
-            </h5>
+            <h5 className="mb-3 text-[13px] uppercase tracking-[0.18em] text-white">Social</h5>
             <nav className="grid gap-2 text-[14px] text-cream/75" aria-label="Social links">
               {socialLinks.map((link) => (
                 <a

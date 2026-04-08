@@ -1,0 +1,48 @@
+import { type Locale } from "@/i18n/config";
+import type { Product, ProductUpsertInput } from "@/types";
+import { resolveLocalizedProduct, normalizeProductMedia, normalizeProductTag, normalizeProductTranslations } from "../domain/mappers";
+import { getProductRepository } from "../infrastructure/get-product-repository";
+
+export async function getAllProducts(locale?: Locale): Promise<Product[]> {
+  const products = await getProductRepository().getAllProducts();
+  return products.map((product) => resolveLocalizedProduct(product, locale));
+}
+
+export async function getFeaturedProducts(count = 4, locale?: Locale): Promise<Product[]> {
+  const products = await getProductRepository().getFeaturedProducts(count);
+  return products.map((product) => resolveLocalizedProduct(product, locale));
+}
+
+export async function getProductBySlug(slug: string, locale?: Locale): Promise<Product | null> {
+  const product = await getProductRepository().getProductBySlug(slug);
+  return product ? resolveLocalizedProduct(product, locale) : null;
+}
+
+export async function getProductById(id: number): Promise<Product | null> {
+  return getProductRepository().getProductById(id);
+}
+
+export async function getProductsByTag(tag: string, locale?: Locale): Promise<Product[]> {
+  const products = await getProductRepository().getProductsByTag(normalizeProductTag(tag));
+  return products.map((product) => resolveLocalizedProduct(product, locale));
+}
+
+export async function createProduct(input: ProductUpsertInput): Promise<Product> {
+  return getProductRepository().createProduct({
+    ...input,
+    media: normalizeProductMedia(input.media),
+    translations: normalizeProductTranslations(input.translations),
+  });
+}
+
+export async function updateProduct(id: number, input: ProductUpsertInput): Promise<Product> {
+  return getProductRepository().updateProduct(id, {
+    ...input,
+    media: normalizeProductMedia(input.media),
+    translations: normalizeProductTranslations(input.translations),
+  });
+}
+
+export async function deleteProduct(id: number): Promise<void> {
+  return getProductRepository().deleteProduct(id);
+}

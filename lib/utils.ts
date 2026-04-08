@@ -19,10 +19,7 @@ export function buildWhatsAppLink(message: string): string {
   return `${siteConfig.whatsapp.baseUrl}/?text=${encoded}`;
 }
 
-export function buildProductWhatsAppMessage(
-  productName: string,
-  price: number
-): string {
+export function buildProductWhatsAppMessage(productName: string, price: number): string {
   return `Hello! I'd like to order: ${productName} (${formatPrice(price)})`;
 }
 

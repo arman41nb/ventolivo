@@ -55,9 +55,7 @@ export default function Modal({ isOpen, onClose, title, children, className }: M
           className,
         )}
       >
-        {title && (
-          <h2 className="font-serif text-[24px] text-dark mb-[1rem]">{title}</h2>
-        )}
+        {title && <h2 className="font-serif text-[24px] text-dark mb-[1rem]">{title}</h2>}
         <button
           onClick={onClose}
           className="absolute top-[1rem] right-[1rem] w-[32px] h-[32px] flex items-center justify-center border-none bg-transparent text-muted hover:text-dark cursor-pointer transition-colors"

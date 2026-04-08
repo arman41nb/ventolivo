@@ -1,12 +1,10 @@
 import { prisma } from "./client";
 import {
+  SITE_LOCALE_CONTENT_KEY,
   defaultSiteContentSettings,
   defaultSiteLocales,
-} from "@/modules/site-content/defaults";
-import {
-  SITE_LOCALE_CONTENT_KEY,
   normalizeSiteLocales,
-} from "@/modules/site-content/locales";
+} from "@/modules/site-content";
 import type {
   SiteContentInput,
   SiteContentLocaleInput,
@@ -53,9 +51,7 @@ const localizedJsonKeys = [
   "feature3Text",
 ] as const;
 
-function parseRawContentJson(
-  value: string | null | undefined,
-): Record<string, unknown> {
+function parseRawContentJson(value: string | null | undefined): Record<string, unknown> {
   if (!value) {
     return {};
   }
@@ -68,9 +64,7 @@ function parseRawContentJson(
   }
 }
 
-function parseContentJson(
-  value: string | null | undefined,
-): Partial<SiteContentSettings> {
+function parseContentJson(value: string | null | undefined): Partial<SiteContentSettings> {
   const rawContent = parseRawContentJson(value);
 
   return Object.fromEntries(
@@ -78,9 +72,7 @@ function parseContentJson(
   ) as Partial<SiteContentSettings>;
 }
 
-function parseSiteLocales(
-  value: string | null | undefined,
-): SiteLocaleConfig[] {
+function parseSiteLocales(value: string | null | undefined): SiteLocaleConfig[] {
   const rawContent = parseRawContentJson(value);
   const rawLocales = rawContent[SITE_LOCALE_CONTENT_KEY];
 
@@ -130,34 +122,22 @@ function getBaseColumnValues(input: Partial<SiteContentSettings>) {
     logoText: input.logoText ?? defaultSiteContentSettings.logoText,
     logoImageUrl: input.logoImageUrl ?? defaultSiteContentSettings.logoImageUrl,
     logoAltText: input.logoAltText ?? defaultSiteContentSettings.logoAltText,
-    navbarCtaLabel:
-      input.navbarCtaLabel ?? defaultSiteContentSettings.navbarCtaLabel,
+    navbarCtaLabel: input.navbarCtaLabel ?? defaultSiteContentSettings.navbarCtaLabel,
     heroSubtitle: input.heroSubtitle ?? defaultSiteContentSettings.heroSubtitle,
-    heroTitleLine1:
-      input.heroTitleLine1 ?? defaultSiteContentSettings.heroTitleLine1,
-    heroTitleLine2:
-      input.heroTitleLine2 ?? defaultSiteContentSettings.heroTitleLine2,
-    heroTitleLine3:
-      input.heroTitleLine3 ?? defaultSiteContentSettings.heroTitleLine3,
-    heroDescription:
-      input.heroDescription ?? defaultSiteContentSettings.heroDescription,
-    heroBadgeValue:
-      input.heroBadgeValue ?? defaultSiteContentSettings.heroBadgeValue,
-    heroBadgeLabel:
-      input.heroBadgeLabel ?? defaultSiteContentSettings.heroBadgeLabel,
+    heroTitleLine1: input.heroTitleLine1 ?? defaultSiteContentSettings.heroTitleLine1,
+    heroTitleLine2: input.heroTitleLine2 ?? defaultSiteContentSettings.heroTitleLine2,
+    heroTitleLine3: input.heroTitleLine3 ?? defaultSiteContentSettings.heroTitleLine3,
+    heroDescription: input.heroDescription ?? defaultSiteContentSettings.heroDescription,
+    heroBadgeValue: input.heroBadgeValue ?? defaultSiteContentSettings.heroBadgeValue,
+    heroBadgeLabel: input.heroBadgeLabel ?? defaultSiteContentSettings.heroBadgeLabel,
     heroImageUrl: input.heroImageUrl ?? defaultSiteContentSettings.heroImageUrl,
     heroImageAlt: input.heroImageAlt ?? defaultSiteContentSettings.heroImageAlt,
-    ctaTitleLine1:
-      input.ctaTitleLine1 ?? defaultSiteContentSettings.ctaTitleLine1,
-    ctaTitleLine2:
-      input.ctaTitleLine2 ?? defaultSiteContentSettings.ctaTitleLine2,
-    ctaDescription:
-      input.ctaDescription ?? defaultSiteContentSettings.ctaDescription,
-    ctaButtonLabel:
-      input.ctaButtonLabel ?? defaultSiteContentSettings.ctaButtonLabel,
+    ctaTitleLine1: input.ctaTitleLine1 ?? defaultSiteContentSettings.ctaTitleLine1,
+    ctaTitleLine2: input.ctaTitleLine2 ?? defaultSiteContentSettings.ctaTitleLine2,
+    ctaDescription: input.ctaDescription ?? defaultSiteContentSettings.ctaDescription,
+    ctaButtonLabel: input.ctaButtonLabel ?? defaultSiteContentSettings.ctaButtonLabel,
     footerCopyrightText:
-      input.footerCopyrightText ??
-      defaultSiteContentSettings.footerCopyrightText,
+      input.footerCopyrightText ?? defaultSiteContentSettings.footerCopyrightText,
   };
 }
 
@@ -298,24 +278,18 @@ export async function dbGetLocalizedSiteContentSettings(
     ctaTitleLine2: translation.ctaTitleLine2 ?? base.ctaTitleLine2,
     ctaDescription: translation.ctaDescription ?? base.ctaDescription,
     ctaButtonLabel: translation.ctaButtonLabel ?? base.ctaButtonLabel,
-    footerCopyrightText:
-      translation.footerCopyrightText ?? base.footerCopyrightText,
+    footerCopyrightText: translation.footerCopyrightText ?? base.footerCopyrightText,
   };
 }
 
-export async function dbUpsertSiteContentTranslation(
-  input: SiteContentLocaleInput,
-): Promise<void> {
+export async function dbUpsertSiteContentTranslation(input: SiteContentLocaleInput): Promise<void> {
   await prisma.siteContentSettings.upsert({
     where: { id: 1 },
     update: {},
     create: {
       id: 1,
       ...getBaseColumnValues(defaultSiteContentSettings),
-      contentJson: serializeSiteContentConfig(
-        defaultSiteContentSettings,
-        defaultSiteLocales,
-      ),
+      contentJson: serializeSiteContentConfig(defaultSiteContentSettings, defaultSiteLocales),
     },
   });
 

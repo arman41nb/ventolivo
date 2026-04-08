@@ -6,11 +6,11 @@ import { isValidLocale, type Locale } from "@/i18n/config";
 import { env } from "@/lib/env";
 import {
   getAdminSession,
+  getAdminSessionRecoveryPath,
   getRecentAdminAuditLogEntries,
-} from "@/modules/admin-auth/server";
-import { getAdminSessionRecoveryPath } from "@/modules/admin-auth/navigation";
+} from "@/modules/admin-auth";
 import { getAdminNavItems } from "@/modules/admin/ui";
-import { getAllProducts, getFeaturedProducts } from "@/services/products";
+import { getAllProducts, getFeaturedProducts } from "@/modules/products";
 
 export default async function AdminDashboardPage({
   params,
@@ -24,10 +24,7 @@ export default async function AdminDashboardPage({
   }
 
   const locale = rawLocale as Locale;
-  const [dictionary, session] = await Promise.all([
-    getDictionary(locale),
-    getAdminSession(),
-  ]);
+  const [dictionary, session] = await Promise.all([getDictionary(locale), getAdminSession()]);
 
   if (!session) {
     redirect(
@@ -50,20 +47,17 @@ export default async function AdminDashboardPage({
     {
       label: dictionary.admin.dashboard.stats.products,
       value: products.length.toString().padStart(2, "0"),
-      accent:
-        "bg-[linear-gradient(135deg,rgba(255,255,255,0.8),rgba(239,228,215,0.95))]",
+      accent: "bg-[linear-gradient(135deg,rgba(255,255,255,0.8),rgba(239,228,215,0.95))]",
     },
     {
       label: dictionary.admin.dashboard.stats.featured,
       value: featuredProducts.length.toString().padStart(2, "0"),
-      accent:
-        "bg-[linear-gradient(135deg,rgba(223,229,212,0.72),rgba(255,255,255,0.94))]",
+      accent: "bg-[linear-gradient(135deg,rgba(223,229,212,0.72),rgba(255,255,255,0.94))]",
     },
     {
       label: dictionary.admin.dataSourceLabel,
       value: env.PRODUCTS_DATA_SOURCE.toUpperCase(),
-      accent:
-        "bg-[linear-gradient(135deg,rgba(122,86,56,0.12),rgba(255,255,255,0.94))]",
+      accent: "bg-[linear-gradient(135deg,rgba(122,86,56,0.12),rgba(255,255,255,0.94))]",
     },
   ];
 
@@ -123,12 +117,8 @@ export default async function AdminDashboardPage({
                   key={card.label}
                   className={`rounded-[24px] border border-white/45 p-5 shadow-[0_16px_30px_rgba(107,79,58,0.08)] ${card.accent}`}
                 >
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-muted">
-                    {card.label}
-                  </p>
-                  <p className="mt-4 font-serif text-4xl leading-none text-dark">
-                    {card.value}
-                  </p>
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-muted">{card.label}</p>
+                  <p className="mt-4 font-serif text-4xl leading-none text-dark">{card.value}</p>
                 </article>
               ))}
             </div>
@@ -208,9 +198,7 @@ export default async function AdminDashboardPage({
                 </div>
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-3">
-                    <h3 className="truncate font-serif text-3xl text-dark">
-                      {product.name}
-                    </h3>
+                    <h3 className="truncate font-serif text-3xl text-dark">{product.name}</h3>
                     <span className="rounded-full bg-white/75 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-brown/72">
                       {product.tag}
                     </span>

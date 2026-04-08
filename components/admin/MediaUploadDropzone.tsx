@@ -79,11 +79,7 @@ export default function MediaUploadDropzone({
         inputRef.current.value = "";
       }
     } catch (uploadError) {
-      setError(
-        uploadError instanceof Error
-          ? uploadError.message
-          : "Upload failed",
-      );
+      setError(uploadError instanceof Error ? uploadError.message : "Upload failed");
     } finally {
       setIsUploading(false);
       setIsDragging(false);
@@ -102,9 +98,7 @@ export default function MediaUploadDropzone({
   return (
     <div className={compact ? "" : "rounded-[28px] border border-brown/12 bg-white p-6 shadow-sm"}>
       <div className={compact ? "" : "mb-5"}>
-        <p className="text-[12px] uppercase tracking-[0.2em] text-muted">
-          {title}
-        </p>
+        <p className="text-[12px] uppercase tracking-[0.2em] text-muted">{title}</p>
         <p className="mt-2 text-sm text-text/75">{description}</p>
       </div>
 

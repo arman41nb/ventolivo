@@ -4,21 +4,22 @@ Ventolivo is a multilingual e-commerce storefront for an artisan soap brand, bui
 
 ## Tech Stack
 
-| Category | Technology |
-|----------|-------------|
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript (strict mode) |
-| UI Library | React 19 |
-| Styling | Tailwind CSS 4 |
-| Database | SQLite via Prisma ORM |
-| Testing | Vitest + Testing Library |
-| Error Tracking | Sentry |
+| Category             | Technology                    |
+| -------------------- | ----------------------------- |
+| Framework            | Next.js 16 (App Router)       |
+| Language             | TypeScript (strict mode)      |
+| UI Library           | React 19                      |
+| Styling              | Tailwind CSS 4                |
+| Database             | SQLite via Prisma ORM         |
+| Testing              | Vitest + Testing Library      |
+| Error Tracking       | Sentry                        |
 | Internationalization | next-intl compatible approach |
-| Containerization | Docker + Docker Compose |
+| Containerization     | Docker + Docker Compose       |
 
 ## Features
 
 ### Core Functionality
+
 - **Multilingual Support**: 5 languages (EN, TR, DE, FA, AR) with RTL support for Persian and Arabic
 - **Product Catalog**: Dynamic product listing with filtering and search capabilities
 - **Product Details**: Detailed product pages with images, descriptions, and translations
@@ -26,12 +27,14 @@ Ventolivo is a multilingual e-commerce storefront for an artisan soap brand, bui
 - **Responsive Design**: Mobile-first design using Tailwind CSS
 
 ### Content Management
+
 - **Admin Dashboard**: Manage products, media assets, and site content
 - **Site Content Editor**: Visual editing of homepage content (Hero, CTA, Footer, etc.)
 - **Product Management**: Create, update, delete products with full translation support
 - **Media Library**: Upload and manage product images and videos
 
 ### Technical Features
+
 - **Repository-backed Content Access**: Public storefront content can fall back to default site settings when the database is not configured
 - **Dual Data Source**: Switch between mock data and database without changing route logic
 - **Type Safety**: Full TypeScript support with strict mode enabled
@@ -120,18 +123,18 @@ PRODUCTS_DATA_SOURCE=mock
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run typecheck` | Run TypeScript type checking |
-| `npm run format` | Format code with Prettier |
-| `npm run format:check` | Check code formatting |
-| `npm run test` | Run tests in watch mode |
-| `npm run test:run` | Run tests once |
-| `npm run test:coverage` | Run tests with coverage |
+| Command                 | Description                  |
+| ----------------------- | ---------------------------- |
+| `npm run dev`           | Start development server     |
+| `npm run build`         | Build for production         |
+| `npm run start`         | Start production server      |
+| `npm run lint`          | Run ESLint                   |
+| `npm run typecheck`     | Run TypeScript type checking |
+| `npm run format`        | Format code with Prettier    |
+| `npm run format:check`  | Check code formatting        |
+| `npm run test`          | Run tests in watch mode      |
+| `npm run test:run`      | Run tests once               |
+| `npm run test:coverage` | Run tests with coverage      |
 
 ### Database Setup
 
@@ -151,18 +154,21 @@ npx prisma migrate dev --name init
 The application supports two data sources:
 
 ### Mock Data (Default)
+
 - Data stored in `data/products.ts`
 - No database required for product content
 - Site content falls back to built-in defaults when `DATABASE_URL` is not configured
 - Suitable for development and prototyping
 
 ### Database
+
 - Prisma with SQLite backend
 - Set `PRODUCTS_DATA_SOURCE=database` in environment
 - Full CRUD operations supported
 - Required for admin authentication, media storage, audit logs, and persistent site-content editing
 
 To switch to database:
+
 ```bash
 # Add to .env
 PRODUCTS_DATA_SOURCE=database
@@ -181,6 +187,7 @@ docker-compose logs -f app
 ```
 
 ### Dockerfile Features
+
 - Multi-stage build for optimized image size
 - Standalone output for production
 - Non-root user for security
@@ -189,12 +196,13 @@ docker-compose logs -f app
 
 ### Products
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/products` | Get all products (supports `tag`, `featured`, `limit`, `locale` params) |
-| GET | `/api/products/[slug]` | Get single product by slug |
+| Method | Endpoint               | Description                                                             |
+| ------ | ---------------------- | ----------------------------------------------------------------------- |
+| GET    | `/api/products`        | Get all products (supports `tag`, `featured`, `limit`, `locale` params) |
+| GET    | `/api/products/[slug]` | Get single product by slug                                              |
 
 Example:
+
 ```bash
 curl "http://localhost:3000/api/products?featured=true&limit=4"
 ```
@@ -204,16 +212,17 @@ curl "http://localhost:3000/api/products?featured=true&limit=4"
 ### Supported Languages
 
 | Code | Language | Direction |
-|------|----------|-----------|
-| en | English | LTR |
-| tr | Turkish | LTR |
-| de | German | LTR |
-| fa | Persian | RTL |
-| ar | Arabic | RTL |
+| ---- | -------- | --------- |
+| en   | English  | LTR       |
+| tr   | Turkish  | LTR       |
+| de   | German   | LTR       |
+| fa   | Persian  | RTL       |
+| ar   | Arabic   | RTL       |
 
 ### Dictionary Structure
 
 Translation files are located in `i18n/dictionaries/`:
+
 - `en.json`
 - `tr.json`
 - `de.json`
@@ -227,6 +236,7 @@ Locale-aware routing accepts valid locale codes. If a locale does not have a ded
 Access admin at `/[locale]/admin` (e.g., `/en/admin`).
 
 Features:
+
 - Dashboard with statistics
 - Product management (CRUD)
 - Site content editing

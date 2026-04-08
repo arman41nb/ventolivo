@@ -1,16 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  getSiteLocaleFlag,
-  getSiteLocaleNativeLabel,
-} from "@/modules/site-content/locales";
+import { getSiteLocaleFlag, getSiteLocaleNativeLabel } from "@/modules/site-content";
 import type { Dictionary } from "@/i18n/types";
-import { siteContentTranslationKeys } from "@/modules/site-content/translation";
-import type {
-  SiteContentLocaleFields,
-  SiteLocaleConfig,
-} from "@/types";
+import { siteContentTranslationKeys } from "@/modules/site-content";
+import type { SiteContentLocaleFields, SiteLocaleConfig } from "@/types";
 
 interface SiteContentTranslationAssistantProps {
   currentLocale: string;
@@ -18,9 +12,7 @@ interface SiteContentTranslationAssistantProps {
   dictionary: Dictionary["admin"]["siteTranslationAssistant"];
 }
 
-type TranslationProviders = Partial<
-  Record<string, "libretranslate" | "mymemory">
->;
+type TranslationProviders = Partial<Record<string, "libretranslate" | "mymemory">>;
 
 export default function SiteContentTranslationAssistant({
   currentLocale,
@@ -29,9 +21,7 @@ export default function SiteContentTranslationAssistant({
 }: SiteContentTranslationAssistantProps) {
   const [sourceLocale, setSourceLocale] = useState(currentLocale);
   const [selectedLocales, setSelectedLocales] = useState(
-    locales
-      .map((locale) => locale.code)
-      .filter((locale) => locale !== currentLocale),
+    locales.map((locale) => locale.code).filter((locale) => locale !== currentLocale),
   );
   const [onlyEmptyFields, setOnlyEmptyFields] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -40,10 +30,7 @@ export default function SiteContentTranslationAssistant({
     Partial<Record<string, SiteContentLocaleFields>>
   >({});
 
-  const translationsJson = useMemo(
-    () => JSON.stringify(translations),
-    [translations],
-  );
+  const translationsJson = useMemo(() => JSON.stringify(translations), [translations]);
   const targetLocales = useMemo(
     () => selectedLocales.filter((locale) => locale !== sourceLocale),
     [selectedLocales, sourceLocale],
@@ -59,9 +46,7 @@ export default function SiteContentTranslationAssistant({
     setStatus("");
   }
 
-  async function handleTranslate(
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) {
+  async function handleTranslate(event: React.MouseEvent<HTMLButtonElement>) {
     const form = event.currentTarget.closest("form");
 
     if (!form) {
@@ -70,17 +55,16 @@ export default function SiteContentTranslationAssistant({
 
     const fields = Object.fromEntries(
       siteContentTranslationKeys.map((field) => {
-        const element = form.querySelector(
-          `[name="${field}"]`,
-        ) as HTMLInputElement | HTMLTextAreaElement | null;
+        const element = form.querySelector(`[name="${field}"]`) as
+          | HTMLInputElement
+          | HTMLTextAreaElement
+          | null;
 
         return [field, element?.value ?? ""];
       }),
     ) as SiteContentLocaleFields;
 
-    if (
-      siteContentTranslationKeys.some((field) => !fields[field].trim())
-    ) {
+    if (siteContentTranslationKeys.some((field) => !fields[field].trim())) {
       setStatus(dictionary.fillCurrentFields);
       return;
     }
@@ -119,9 +103,7 @@ export default function SiteContentTranslationAssistant({
       setTranslations((currentTranslations) => {
         const nextTranslations = { ...currentTranslations };
 
-        for (const [locale, translatedFields] of Object.entries(
-          result.translations ?? {},
-        )) {
+        for (const [locale, translatedFields] of Object.entries(result.translations ?? {})) {
           if (!translatedFields) {
             continue;
           }
@@ -129,8 +111,7 @@ export default function SiteContentTranslationAssistant({
           nextTranslations[locale] = Object.fromEntries(
             siteContentTranslationKeys.map((field) => [
               field,
-              onlyEmptyFields &&
-              currentTranslations[locale]?.[field]?.trim().length
+              onlyEmptyFields && currentTranslations[locale]?.[field]?.trim().length
                 ? currentTranslations[locale]?.[field]
                 : translatedFields[field],
             ]),
@@ -144,9 +125,7 @@ export default function SiteContentTranslationAssistant({
         ? Array.from(new Set(Object.values(result.providers)))
         : [];
       const providerLabel =
-        providers.length > 0
-          ? ` ${dictionary.providerPrefix}: ${providers.join(", ")}.`
-          : "";
+        providers.length > 0 ? ` ${dictionary.providerPrefix}: ${providers.join(", ")}.` : "";
 
       setStatus(`${dictionary.ready}${providerLabel}`);
     } catch {
@@ -158,21 +137,11 @@ export default function SiteContentTranslationAssistant({
 
   return (
     <section className="rounded-[32px] border border-brown/15 bg-white p-6 shadow-sm">
-      <input
-        type="hidden"
-        name="translatedSiteContentJson"
-        value={translationsJson}
-      />
+      <input type="hidden" name="translatedSiteContentJson" value={translationsJson} />
 
-      <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
-        {dictionary.badge}
-      </p>
-      <h3 className="mt-2 font-serif text-2xl text-dark">
-        {dictionary.title}
-      </h3>
-      <p className="mt-3 text-sm text-text/75">
-        {dictionary.description}
-      </p>
+      <p className="text-[12px] uppercase tracking-[0.24em] text-muted">{dictionary.badge}</p>
+      <h3 className="mt-2 font-serif text-2xl text-dark">{dictionary.title}</h3>
+      <p className="mt-3 text-sm text-text/75">{dictionary.description}</p>
 
       <div className="mt-5 flex flex-wrap gap-2">
         <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
@@ -198,8 +167,7 @@ export default function SiteContentTranslationAssistant({
           >
             {locales.map((locale) => (
               <option key={locale.code} value={locale.code}>
-                {getSiteLocaleFlag(locale.code)} {locale.label} (
-                {locale.code.toUpperCase()})
+                {getSiteLocaleFlag(locale.code)} {locale.label} ({locale.code.toUpperCase()})
               </option>
             ))}
           </select>
@@ -265,9 +233,7 @@ export default function SiteContentTranslationAssistant({
         </div>
       </div>
 
-      {status ? (
-        <p className="mt-4 text-sm text-text/75">{status}</p>
-      ) : null}
+      {status ? <p className="mt-4 text-sm text-text/75">{status}</p> : null}
     </section>
   );
 }

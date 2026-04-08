@@ -1,9 +1,16 @@
-export type { ProductRepository } from "./contracts";
+export type { ProductRepository } from "./domain/contracts";
 export {
   mapDbProductRecord,
+  normalizeProductMedia,
   normalizeProductTag,
+  normalizeProductTranslations,
+  parseLocalizedFieldMap,
   parseProductIngredients,
-} from "./mappers";
+  resolveLocalizedField,
+  resolveLocalizedProduct,
+  serializeLocalizedFieldMap,
+  serializeProductIngredients,
+} from "./domain/mappers";
 export {
   createProduct,
   deleteProduct,
@@ -13,4 +20,5 @@ export {
   getProductBySlug,
   getProductsByTag,
   updateProduct,
-} from "./service";
+} from "./application/service";
+export { getProductRepository } from "./infrastructure/get-product-repository";

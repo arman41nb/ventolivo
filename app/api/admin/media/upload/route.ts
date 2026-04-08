@@ -2,9 +2,9 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { revalidatePath } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
-import { isAdminAuthenticatedRequest } from "@/modules/admin-auth/session";
+import { isAuthenticatedAdminRequest } from "@/modules/admin-auth";
 import { createMediaAsset } from "@/modules/media";
-import { getSiteLocales } from "@/modules/site-content";
+import { getSiteLocales } from "@/modules/site-content/server";
 import { slugify } from "@/lib/utils";
 
 export const runtime = "nodejs";
@@ -49,7 +49,7 @@ function isFileUpload(value: FormDataEntryValue): value is File {
 }
 
 export async function POST(request: NextRequest) {
-  const isAuthenticated = await isAdminAuthenticatedRequest(request);
+  const isAuthenticated = await isAuthenticatedAdminRequest(request);
 
   if (!isAuthenticated) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -59,10 +59,7 @@ export async function POST(request: NextRequest) {
   const files = formData.getAll("files").filter(isFileUpload);
 
   if (files.length === 0) {
-    return NextResponse.json(
-      { error: "Select at least one image file." },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Select at least one image file." }, { status: 400 });
   }
 
   for (const file of files) {
@@ -74,19 +71,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      return NextResponse.json(
-        { error: `${file.name} is larger than 10 MB.` },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: `${file.name} is larger than 10 MB.` }, { status: 400 });
     }
   }
 
-  const uploadDirectory = path.join(
-    process.cwd(),
-    "public",
-    "uploads",
-    "media",
-  );
+  const uploadDirectory = path.join(process.cwd(), "public", "uploads", "media");
 
   await mkdir(uploadDirectory, { recursive: true });
 

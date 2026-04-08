@@ -26,10 +26,7 @@ type ViewportRevealProps<T extends ElementType = "div"> = {
   threshold?: number;
   once?: boolean;
   direction?: RevealDirection;
-} & Omit<
-  ComponentPropsWithoutRef<T>,
-  "as" | "children" | "className" | "style"
->;
+} & Omit<ComponentPropsWithoutRef<T>, "as" | "children" | "className" | "style">;
 
 function getOffset(direction: RevealDirection, distance: number) {
   switch (direction) {
@@ -120,12 +117,7 @@ export default function ViewportReveal<T extends ElementType = "div">({
   };
 
   return (
-    <Component
-      ref={ref as never}
-      className={className}
-      style={motionStyle}
-      {...rest}
-    >
+    <Component ref={ref as never} className={className} style={motionStyle} {...rest}>
       {children}
     </Component>
   );

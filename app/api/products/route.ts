@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAllProducts, getProductsByTag } from "@/services/products";
+import { getAllProducts, getProductsByTag } from "@/modules/products";
 import { productFilterSchema } from "@/lib/validations";
 import { isValidLocale, type Locale } from "@/i18n/config";
 
@@ -35,9 +35,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ products, count: products.length });
   } catch (error) {
     console.error("Error fetching products:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

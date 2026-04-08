@@ -29,10 +29,8 @@ type ButtonProps = ButtonAsLink | ButtonAsButton;
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
     "border-transparent bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] text-white hover:-translate-y-0.5",
-  secondary:
-    "border-brown/15 bg-white/60 text-brown hover:bg-white",
-  ghost:
-    "border-transparent bg-transparent text-muted hover:text-brown",
+  secondary: "border-brown/15 bg-white/60 text-brown hover:bg-white",
+  ghost: "border-transparent bg-transparent text-muted hover:text-brown",
 };
 
 export default function Button({
@@ -54,13 +52,7 @@ export default function Button({
   if (href) {
     if (external) {
       return (
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={baseClasses}
-          {...rest}
-        >
+        <a href={href} target="_blank" rel="noopener noreferrer" className={baseClasses} {...rest}>
           {children}
         </a>
       );

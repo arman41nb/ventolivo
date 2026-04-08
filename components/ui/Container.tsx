@@ -9,9 +9,5 @@ export default function Container({
   className = "",
   as: Component = "div",
 }: ContainerProps) {
-  return (
-    <Component className={`px-[2.5rem] ${className}`}>
-      {children}
-    </Component>
-  );
+  return <Component className={`px-[2.5rem] ${className}`}>{children}</Component>;
 }

@@ -3,15 +3,10 @@ import AdminShell from "@/components/admin/AdminShell";
 import MediaLibraryForm from "@/components/admin/MediaLibraryForm";
 import { getDictionary } from "@/i18n";
 import { isValidLocale, type Locale } from "@/i18n/config";
-import { getAdminSessionRecoveryPath } from "@/modules/admin-auth/navigation";
-import { getAdminSession } from "@/modules/admin-auth/server";
+import { getAdminSession, getAdminSessionRecoveryPath } from "@/modules/admin-auth";
 import { getAdminNavItems } from "@/modules/admin/ui";
 import { getAllMediaAssets } from "@/modules/media";
-import {
-  createMediaAssetAction,
-  deleteMediaAssetAction,
-  updateMediaAssetAction,
-} from "./actions";
+import { createMediaAssetAction, deleteMediaAssetAction, updateMediaAssetAction } from "./actions";
 
 export default async function AdminMediaPage({
   params,

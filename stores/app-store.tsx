@@ -25,16 +25,14 @@ const initialState: AppState = {
 function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
     case "ADD_TO_CART": {
-      const existing = state.cart.find(
-        (item) => item.productId === action.payload.productId
-      );
+      const existing = state.cart.find((item) => item.productId === action.payload.productId);
       if (existing) {
         return {
           ...state,
           cart: state.cart.map((item) =>
             item.productId === action.payload.productId
               ? { ...item, quantity: item.quantity + 1 }
-              : item
+              : item,
           ),
         };
       }
@@ -46,9 +44,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case "REMOVE_FROM_CART":
       return {
         ...state,
-        cart: state.cart.filter(
-          (item) => item.productId !== action.payload.productId
-        ),
+        cart: state.cart.filter((item) => item.productId !== action.payload.productId),
       };
     case "CLEAR_CART":
       return { ...state, cart: [] };
@@ -65,11 +61,7 @@ const AppContext = createContext<{
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
-  return (
-    <AppContext.Provider value={{ state, dispatch }}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={{ state, dispatch }}>{children}</AppContext.Provider>;
 }
 
 export function useApp() {
@@ -84,15 +76,11 @@ export function useCart() {
   const { state, dispatch } = useApp();
   return {
     items: state.cart,
-    addItem: (item: Omit<CartItem, "quantity">) =>
-      dispatch({ type: "ADD_TO_CART", payload: item }),
+    addItem: (item: Omit<CartItem, "quantity">) => dispatch({ type: "ADD_TO_CART", payload: item }),
     removeItem: (productId: number) =>
       dispatch({ type: "REMOVE_FROM_CART", payload: { productId } }),
     clear: () => dispatch({ type: "CLEAR_CART" }),
     totalItems: state.cart.reduce((sum, item) => sum + item.quantity, 0),
-    totalPrice: state.cart.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    ),
+    totalPrice: state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
   };
 }

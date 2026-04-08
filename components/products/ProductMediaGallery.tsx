@@ -40,7 +40,10 @@ export default function ProductMediaGallery({
           )
         ) : (
           <div className="flex aspect-square items-center justify-center rounded-[24px] bg-white/55">
-            <div className="animate-float h-[140px] w-[140px] rounded-[16px]" style={{ backgroundColor: color }} />
+            <div
+              className="animate-float h-[140px] w-[140px] rounded-[16px]"
+              style={{ backgroundColor: color }}
+            />
           </div>
         )}
       </div>

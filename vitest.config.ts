@@ -14,11 +14,18 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./test/setup.ts"],
+    exclude: ["coverage/**", "node_modules/**", "test/e2e/**", ".next/**"],
     include: ["**/*.{test,spec}.{ts,tsx}"],
     coverage: {
       provider: "v8",
-      reporter: ["text", "lcov"],
+      reporter: ["text", "json-summary", "lcov"],
       exclude: ["node_modules/", ".next/", "test/", "**/*.d.ts", "**/*.config.*"],
+      thresholds: {
+        statements: 65,
+        branches: 35,
+        functions: 60,
+        lines: 65,
+      },
     },
   },
 });

@@ -1,11 +1,8 @@
 import { NextResponse } from "next/server";
-import { getProductBySlug } from "@/services/products";
+import { getProductBySlug } from "@/modules/products";
 import { productQuerySchema } from "@/lib/validations";
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ slug: string }> },
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await params;
     const result = productQuerySchema.safeParse({ slug });
@@ -26,9 +23,6 @@ export async function GET(
     return NextResponse.json({ product });
   } catch (error) {
     console.error("Error fetching product:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

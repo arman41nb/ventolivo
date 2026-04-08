@@ -5,10 +5,7 @@ import { useMemo, useState } from "react";
 import ProductTranslationAssistant from "@/components/admin/ProductTranslationAssistant";
 import type { Dictionary } from "@/i18n/types";
 import type { Locale } from "@/i18n/config";
-import {
-  getSiteLocaleFlag,
-  getSiteLocaleNativeLabel,
-} from "@/modules/site-content/locales";
+import { getSiteLocaleFlag, getSiteLocaleNativeLabel } from "@/modules/site-content";
 import type { MediaLibraryAsset, Product, SiteLocaleConfig } from "@/types";
 
 interface ProductEditorFormProps {
@@ -107,12 +104,10 @@ export default function ProductEditorForm({
     supportedLocales.find((entry) => entry.code !== locale)?.code ??
     supportedLocales[0]?.code ??
     locale;
-  const [activeWorkspaceTab, setActiveWorkspaceTab] =
-    useState<ProductWorkspaceTab>(
-      imageAssets.length > 0 || videoAssets.length > 0 ? "library" : "manual",
-    );
-  const [activeTranslationLocale, setActiveTranslationLocale] =
-    useState(defaultTranslationLocale);
+  const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<ProductWorkspaceTab>(
+    imageAssets.length > 0 || videoAssets.length > 0 ? "library" : "manual",
+  );
+  const [activeTranslationLocale, setActiveTranslationLocale] = useState(defaultTranslationLocale);
   const populatedTranslationCount = useMemo(
     () =>
       supportedLocales.filter((translationLocale) =>
@@ -272,9 +267,7 @@ export default function ProductEditorForm({
             <p className="text-[12px] uppercase tracking-[0.16em] text-muted">
               {editorDictionary.libraryCoverTitle}
             </p>
-            <p className="mt-2 text-sm text-text/75">
-              {editorDictionary.libraryCoverDescription}
-            </p>
+            <p className="mt-2 text-sm text-text/75">{editorDictionary.libraryCoverDescription}</p>
             <div className="mt-4 grid gap-3 md:grid-cols-3">
               <label className="rounded-[18px] border border-dashed border-brown/20 bg-cream/20 p-3 text-sm">
                 <input
@@ -309,9 +302,7 @@ export default function ProductEditorForm({
                   <p className="mt-2 text-xs font-medium text-dark">
                     {asset.label || "Untitled asset"}
                   </p>
-                  <p className="mt-1 text-xs text-text/70">
-                    {asset.altText || asset.url}
-                  </p>
+                  <p className="mt-1 text-xs text-text/70">{asset.altText || asset.url}</p>
                 </label>
               ))}
             </div>
@@ -345,9 +336,7 @@ export default function ProductEditorForm({
                   <p className="mt-2 text-xs font-medium text-dark">
                     {asset.label || "Untitled asset"}
                   </p>
-                  <p className="mt-1 text-xs text-text/70">
-                    {asset.altText || asset.url}
-                  </p>
+                  <p className="mt-1 text-xs text-text/70">{asset.altText || asset.url}</p>
                 </label>
               ))}
             </div>
@@ -357,9 +346,7 @@ export default function ProductEditorForm({
             <p className="text-[12px] uppercase tracking-[0.16em] text-muted">
               {editorDictionary.libraryVideoTitle}
             </p>
-            <p className="mt-2 text-sm text-text/75">
-              {editorDictionary.libraryVideoDescription}
-            </p>
+            <p className="mt-2 text-sm text-text/75">{editorDictionary.libraryVideoDescription}</p>
             <div className="mt-4 grid gap-3 md:grid-cols-3">
               <label className="rounded-[18px] border border-dashed border-brown/20 bg-cream/20 p-3 text-sm">
                 <input
@@ -394,9 +381,7 @@ export default function ProductEditorForm({
                   <p className="mt-2 text-xs font-medium text-dark">
                     {asset.label || "Untitled video"}
                   </p>
-                  <p className="mt-1 text-xs text-text/70">
-                    {asset.altText || asset.url}
-                  </p>
+                  <p className="mt-1 text-xs text-text/70">{asset.altText || asset.url}</p>
                 </label>
               ))}
             </div>
@@ -410,9 +395,7 @@ export default function ProductEditorForm({
           <p className="text-[12px] uppercase tracking-[0.16em] text-muted">
             {editorDictionary.manualMediaTitle}
           </p>
-          <p className="mt-2 text-sm text-text/75">
-            {editorDictionary.manualMediaDescription}
-          </p>
+          <p className="mt-2 text-sm text-text/75">{editorDictionary.manualMediaDescription}</p>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <label className="flex flex-col gap-2 text-sm">
               <span className="uppercase tracking-[0.16em] text-muted">
@@ -515,10 +498,8 @@ export default function ProductEditorForm({
 
           <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {supportedLocales.map((translationLocale) => {
-              const translationName =
-                product?.translations?.name?.[translationLocale.code] ?? "";
-              const translationTag =
-                product?.translations?.tag?.[translationLocale.code] ?? "";
+              const translationName = product?.translations?.name?.[translationLocale.code] ?? "";
+              const translationTag = product?.translations?.tag?.[translationLocale.code] ?? "";
               const translationDescription =
                 product?.translations?.description?.[translationLocale.code] ?? "";
               const note = [

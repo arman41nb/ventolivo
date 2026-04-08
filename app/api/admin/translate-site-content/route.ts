@@ -3,7 +3,7 @@ import { z } from "zod";
 import { autoTranslateTextFields } from "@/lib/libretranslate";
 import { siteContentLocaleSchema } from "@/lib/validations";
 import { isValidLocale, type Locale } from "@/i18n/config";
-import { getAdminSession } from "@/modules/admin-auth/server";
+import { getAdminSession } from "@/modules/admin-auth";
 
 const localeSchema = z
   .string()
@@ -28,10 +28,7 @@ export async function POST(request: Request) {
     const result = translateSiteContentSchema.safeParse(body);
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: "Invalid translation request" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Invalid translation request" }, { status: 400 });
     }
 
     const { translations, providers } = await autoTranslateTextFields({

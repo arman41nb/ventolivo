@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  getHeroSceneLayerOrder,
-  getHeroSceneMediaState,
-} from "./hero-scene";
+import { getHeroSceneLayerOrder, getHeroSceneMediaState } from "./hero-scene";
 
 describe("getHeroSceneMediaState", () => {
   it("falls back to the main hero image being on top", () => {

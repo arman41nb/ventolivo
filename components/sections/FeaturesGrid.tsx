@@ -26,28 +26,20 @@ const featureIcons: Record<string, React.ReactNode> = {
   ),
 };
 
-export default function FeaturesGrid({
-  dict,
-  siteSettings,
-}: FeaturesGridProps) {
+export default function FeaturesGrid({ dict, siteSettings }: FeaturesGridProps) {
   const features = dict
     ? [
         {
           key: "coldProcess",
           icon: featureIcons.coldProcess,
-          title:
-            siteSettings?.feature1Title ?? dict.features.items.coldProcess.title,
-          text:
-            siteSettings?.feature1Text ?? dict.features.items.coldProcess.text,
+          title: siteSettings?.feature1Title ?? dict.features.items.coldProcess.title,
+          text: siteSettings?.feature1Text ?? dict.features.items.coldProcess.text,
         },
         {
           key: "smallBatches",
           icon: featureIcons.smallBatches,
-          title:
-            siteSettings?.feature2Title ??
-            dict.features.items.smallBatches.title,
-          text:
-            siteSettings?.feature2Text ?? dict.features.items.smallBatches.text,
+          title: siteSettings?.feature2Title ?? dict.features.items.smallBatches.title,
+          text: siteSettings?.feature2Text ?? dict.features.items.smallBatches.text,
         },
         {
           key: "natural",

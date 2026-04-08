@@ -26,10 +26,7 @@ export default function Select({
   return (
     <div className="flex flex-col gap-[0.4rem]">
       {label && (
-        <label
-          htmlFor={selectId}
-          className="text-[12px] tracking-[1px] uppercase text-muted"
-        >
+        <label htmlFor={selectId} className="text-[12px] tracking-[1px] uppercase text-muted">
           {label}
         </label>
       )}

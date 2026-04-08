@@ -5,10 +5,7 @@ import HeroVisualStage from "@/components/sections/HeroVisualStage";
 import type { Dictionary } from "@/i18n";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
-import {
-  getHeroSceneMediaState,
-  getHeroSceneTransforms,
-} from "@/modules/site-content/hero-scene";
+import { getHeroSceneMediaState, getHeroSceneTransforms } from "@/modules/site-content";
 import type { SiteContentSettings } from "@/types";
 
 interface HeroProps {
@@ -59,13 +56,16 @@ export default function Hero({ dict, locale, siteSettings }: HeroProps) {
     "Handcrafted artisan soaps made with natural oils and botanicals. Each bar is a small act of self-care.";
   const subtitle = siteSettings?.heroSubtitle ?? dict?.hero.subtitle ?? "Soap Atelier - Denizli";
   const shopNow = siteSettings?.heroPrimaryButtonLabel ?? dict?.hero.shopNow ?? "Shop Now";
-  const ourStory =
-    siteSettings?.heroSecondaryButtonLabel ?? dict?.hero.ourStory ?? "Our Story";
+  const ourStory = siteSettings?.heroSecondaryButtonLabel ?? dict?.hero.ourStory ?? "Our Story";
   const badgeValue = siteSettings?.heroBadgeValue ?? dict?.hero.badge.value ?? "100%";
   const badgeLabel = siteSettings?.heroBadgeLabel ?? dict?.hero.badge.label ?? "Natural";
   const brandName = siteSettings?.brandName ?? "Ventolivo";
-  const naturalTitle = siteSettings?.feature3Title ?? dict?.features.items.natural.title ?? "Natural";
-  const naturalText = siteSettings?.feature3Text ?? dict?.features.items.natural.text ?? "Only plant-based oils, butters, and botanicals.";
+  const naturalTitle =
+    siteSettings?.feature3Title ?? dict?.features.items.natural.title ?? "Natural";
+  const naturalText =
+    siteSettings?.feature3Text ??
+    dict?.features.items.natural.text ??
+    "Only plant-based oils, butters, and botanicals.";
   const batchTitle =
     siteSettings?.feature2Title ?? dict?.features.items.smallBatches.title ?? "Small Batches";
   const processTitle =
@@ -84,8 +84,7 @@ export default function Hero({ dict, locale, siteSettings }: HeroProps) {
       title: processTitle,
       text: processText,
       transform: heroScene.processCardTransform,
-      toneClass:
-        "bg-[linear-gradient(180deg,rgba(255,251,246,0.96),rgba(248,243,237,0.84))]",
+      toneClass: "bg-[linear-gradient(180deg,rgba(255,251,246,0.96),rgba(248,243,237,0.84))]",
     },
     {
       key: "natural",
@@ -93,8 +92,7 @@ export default function Hero({ dict, locale, siteSettings }: HeroProps) {
       title: naturalTitle,
       text: naturalText,
       transform: heroScene.naturalCardTransform,
-      toneClass:
-        "bg-[linear-gradient(180deg,rgba(255,248,246,0.96),rgba(247,239,235,0.86))]",
+      toneClass: "bg-[linear-gradient(180deg,rgba(255,248,246,0.96),rgba(247,239,235,0.86))]",
     },
   ];
 
@@ -114,7 +112,10 @@ export default function Hero({ dict, locale, siteSettings }: HeroProps) {
 
         <div className="relative grid gap-10 px-5 py-6 md:px-8 md:py-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(620px,1.2fr)] lg:items-center lg:gap-4 lg:px-12 lg:py-12 xl:px-14 xl:py-14">
           <div className="relative z-10 flex flex-col justify-center lg:pe-6">
-            <div className="flex flex-wrap items-center gap-3 hero-fade-up" style={animationStyle(120)}>
+            <div
+              className="flex flex-wrap items-center gap-3 hero-fade-up"
+              style={animationStyle(120)}
+            >
               <p className="inline-flex items-center gap-3 rounded-full border border-brown/8 bg-white/82 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-[#9c826a] shadow-[0_10px_25px_rgba(72,49,30,0.05)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-olive" />
                 {subtitle}

@@ -3,22 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { defaultLocale } from "@/i18n/config";
-import {
-  siteContentLocaleSchema,
-  siteContentSchema,
-  siteLocalesSchema,
-} from "@/lib/validations";
-import {
-  recordAdminAuditLog,
-  requireAdminSession,
-} from "@/modules/admin-auth/server";
+import { siteContentLocaleSchema, siteContentSchema, siteLocalesSchema } from "@/lib/validations";
+import { recordAdminAuditLog, requireAdminSession } from "@/modules/admin-auth";
 import {
   getSiteContentSettings,
   getSiteLocales,
   pickSiteContentLocaleFields,
   updateSiteContentSettings,
   updateSiteContentTranslation,
-} from "@/modules/site-content";
+} from "@/modules/site-content/server";
 import type { SiteContentLocaleFields, SiteLocaleConfig } from "@/types";
 
 function getStringValue(formData: FormData, key: string): string {
@@ -88,10 +81,7 @@ function parseTranslatedSiteContentInput(
   }
 }
 
-function getRedirectLocale(
-  currentLocale: string,
-  siteLocales: SiteLocaleConfig[],
-): string {
+function getRedirectLocale(currentLocale: string, siteLocales: SiteLocaleConfig[]): string {
   return siteLocales.some((locale) => locale.code === currentLocale)
     ? currentLocale
     : defaultLocale;
@@ -116,10 +106,7 @@ export async function saveSiteContentAction(formData: FormData) {
     heroTitleLine3: getStringValue(formData, "heroTitleLine3"),
     heroDescription: getStringValue(formData, "heroDescription"),
     heroPrimaryButtonLabel: getStringValue(formData, "heroPrimaryButtonLabel"),
-    heroSecondaryButtonLabel: getStringValue(
-      formData,
-      "heroSecondaryButtonLabel",
-    ),
+    heroSecondaryButtonLabel: getStringValue(formData, "heroSecondaryButtonLabel"),
     heroBadgeValue: getStringValue(formData, "heroBadgeValue"),
     heroBadgeLabel: getStringValue(formData, "heroBadgeLabel"),
     heroImageUrl: getStringValue(formData, "heroImageUrl"),
@@ -138,10 +125,7 @@ export async function saveSiteContentAction(formData: FormData) {
     stripBannerItem3: getStringValue(formData, "stripBannerItem3"),
     stripBannerItem4: getStringValue(formData, "stripBannerItem4"),
     featuredProductsTitle: getStringValue(formData, "featuredProductsTitle"),
-    featuredProductsViewAllLabel: getStringValue(
-      formData,
-      "featuredProductsViewAllLabel",
-    ),
+    featuredProductsViewAllLabel: getStringValue(formData, "featuredProductsViewAllLabel"),
     aboutSubtitle: getStringValue(formData, "aboutSubtitle"),
     aboutTitleLine1: getStringValue(formData, "aboutTitleLine1"),
     aboutTitleLine2: getStringValue(formData, "aboutTitleLine2"),
@@ -171,13 +155,8 @@ export async function saveSiteContentAction(formData: FormData) {
     getSiteLocales(),
   ]);
   const siteLocales = parseSiteLocalesInput(formData, currentSiteLocales);
-  const allowedLocaleCodes = new Set(
-    siteLocales.map((siteLocale) => siteLocale.code),
-  );
-  const translatedContent = parseTranslatedSiteContentInput(
-    formData,
-    allowedLocaleCodes,
-  );
+  const allowedLocaleCodes = new Set(siteLocales.map((siteLocale) => siteLocale.code));
+  const translatedContent = parseTranslatedSiteContentInput(formData, allowedLocaleCodes);
   const currentLocaleFields = pickSiteContentLocaleFields(result.data);
   const translatedDefaultLocale = translatedContent[defaultLocale];
 
@@ -211,9 +190,7 @@ export async function saveSiteContentAction(formData: FormData) {
     ...currentLocaleFields,
   });
 
-  for (const [targetLocale, translatedFields] of Object.entries(
-    translatedContent,
-  )) {
+  for (const [targetLocale, translatedFields] of Object.entries(translatedContent)) {
     if (!translatedFields || targetLocale === locale) {
       continue;
     }

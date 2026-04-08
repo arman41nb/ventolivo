@@ -8,9 +8,7 @@ interface TranslationFields extends Record<string, string> {
 }
 
 type TranslationResult = Partial<Record<Locale, TranslationFields>>;
-type TranslationProviders = Partial<
-  Record<Locale, "libretranslate" | "mymemory">
->;
+type TranslationProviders = Partial<Record<Locale, "libretranslate" | "mymemory">>;
 
 type TranslationProvider = "libretranslate" | "mymemory";
 
@@ -33,11 +31,7 @@ function getLibreTranslateUrl(): string {
   return env.LIBRETRANSLATE_URL.replace(/\/$/, "");
 }
 
-async function translateTexts(
-  texts: string[],
-  source: Locale,
-  target: Locale,
-): Promise<string[]> {
+async function translateTexts(texts: string[], source: Locale, target: Locale): Promise<string[]> {
   const normalizedTexts = texts.map((text) => text.trim());
 
   if (source === target) {
@@ -69,8 +63,7 @@ async function translateTexts(
 
   if (!result.translatedText) {
     throw new Error(
-      result.error ||
-        `LibreTranslate returned no translated text from ${getLibreTranslateUrl()}`,
+      result.error || `LibreTranslate returned no translated text from ${getLibreTranslateUrl()}`,
     );
   }
 
@@ -136,9 +129,7 @@ export async function autoTranslateProductFields({
   };
 }
 
-export async function autoTranslateTextFields<
-  TFields extends Record<string, string>,
->({
+export async function autoTranslateTextFields<TFields extends Record<string, string>>({
   sourceLocale,
   targetLocales,
   fields,
@@ -181,10 +172,7 @@ export async function autoTranslateTextFields<
         fieldEntries.map(([key], index) => [key, translatedTexts[index] ?? fields[key]]),
       ) as TFields;
 
-      return [
-        targetLocale,
-        [translatedRecord, provider],
-      ] as const;
+      return [targetLocale, [translatedRecord, provider]] as const;
     }),
   );
 
@@ -198,8 +186,6 @@ export async function autoTranslateTextFields<
     translations: Object.fromEntries(
       translations.map(([locale, [translation]]) => [locale, translation]),
     ),
-    providers: Object.fromEntries(
-      translations.map(([locale, [, provider]]) => [locale, provider]),
-    ),
+    providers: Object.fromEntries(translations.map(([locale, [, provider]]) => [locale, provider])),
   };
 }

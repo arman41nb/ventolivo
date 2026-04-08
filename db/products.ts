@@ -134,9 +134,7 @@ export async function dbCreateProduct(input: ProductUpsertInput): Promise<Produc
       featured: input.featured ?? false,
       nameTranslations: serializeLocalizedFieldMap(input.translations?.name),
       tagTranslations: serializeLocalizedFieldMap(input.translations?.tag),
-      descriptionTranslations: serializeLocalizedFieldMap(
-        input.translations?.description,
-      ),
+      descriptionTranslations: serializeLocalizedFieldMap(input.translations?.description),
       mediaLinks: mapProductMediaCreateInput(input),
     },
     include: productInclude,
@@ -145,10 +143,7 @@ export async function dbCreateProduct(input: ProductUpsertInput): Promise<Produc
   return mapDbProductRecord(product);
 }
 
-export async function dbUpdateProduct(
-  id: number,
-  input: ProductUpsertInput,
-): Promise<Product> {
+export async function dbUpdateProduct(id: number, input: ProductUpsertInput): Promise<Product> {
   const product = await prisma.product.update({
     where: { id },
     data: {
@@ -163,9 +158,7 @@ export async function dbUpdateProduct(
       featured: input.featured ?? false,
       nameTranslations: serializeLocalizedFieldMap(input.translations?.name),
       tagTranslations: serializeLocalizedFieldMap(input.translations?.tag),
-      descriptionTranslations: serializeLocalizedFieldMap(
-        input.translations?.description,
-      ),
+      descriptionTranslations: serializeLocalizedFieldMap(input.translations?.description),
       mediaLinks: {
         deleteMany: {},
         ...(mapProductMediaCreateInput(input) ?? {}),

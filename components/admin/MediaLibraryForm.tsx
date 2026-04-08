@@ -39,16 +39,10 @@ function Field({
   );
 }
 
-function mergeAssets(
-  currentAssets: MediaLibraryAsset[],
-  uploadedAssets: MediaLibraryAsset[],
-) {
+function mergeAssets(currentAssets: MediaLibraryAsset[], uploadedAssets: MediaLibraryAsset[]) {
   const uploadedIds = new Set(uploadedAssets.map((asset) => asset.id));
 
-  return [
-    ...uploadedAssets,
-    ...currentAssets.filter((asset) => !uploadedIds.has(asset.id)),
-  ];
+  return [...uploadedAssets, ...currentAssets.filter((asset) => !uploadedIds.has(asset.id))];
 }
 
 function getAssetPreviewUrl(asset: MediaLibraryAsset) {
@@ -62,13 +56,7 @@ function matchesAssetSearch(asset: MediaLibraryAsset, query: string) {
     return true;
   }
 
-  return [
-    asset.label,
-    asset.altText,
-    asset.url,
-    asset.thumbnailUrl,
-    asset.kind,
-  ]
+  return [asset.label, asset.altText, asset.url, asset.thumbnailUrl, asset.kind]
     .filter(Boolean)
     .join(" ")
     .toLowerCase()
@@ -109,12 +97,8 @@ export default function MediaLibraryForm({
 }: MediaLibraryFormProps) {
   const [libraryAssets, setLibraryAssets] = useState(assets);
   const [searchQuery, setSearchQuery] = useState("");
-  const [kindFilter, setKindFilter] = useState<"all" | "image" | "video">(
-    "all",
-  );
-  const [expandedAssetId, setExpandedAssetId] = useState<string | null>(
-    assets[0]?.id ?? null,
-  );
+  const [kindFilter, setKindFilter] = useState<"all" | "image" | "video">("all");
+  const [expandedAssetId, setExpandedAssetId] = useState<string | null>(assets[0]?.id ?? null);
   const [showExternalComposer, setShowExternalComposer] = useState(false);
   const visibleAssets = useMemo(
     () =>
@@ -135,9 +119,7 @@ export default function MediaLibraryForm({
         description={dictionary.uploadDescription}
         multiple
         onUploaded={(uploadedAssets) => {
-          setLibraryAssets((currentAssets) =>
-            mergeAssets(currentAssets, uploadedAssets),
-          );
+          setLibraryAssets((currentAssets) => mergeAssets(currentAssets, uploadedAssets));
           setExpandedAssetId(uploadedAssets[0]?.id ?? null);
         }}
       />
@@ -148,12 +130,8 @@ export default function MediaLibraryForm({
             <p className="text-[12px] uppercase tracking-[0.2em] text-muted">
               {dictionary.controlsBadge}
             </p>
-            <h2 className="mt-2 font-serif text-3xl text-dark">
-              {dictionary.controlsTitle}
-            </h2>
-            <p className="mt-2 max-w-3xl text-sm text-text/75">
-              {dictionary.controlsDescription}
-            </p>
+            <h2 className="mt-2 font-serif text-3xl text-dark">{dictionary.controlsTitle}</h2>
+            <p className="mt-2 max-w-3xl text-sm text-text/75">{dictionary.controlsDescription}</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
@@ -204,19 +182,18 @@ export default function MediaLibraryForm({
             onClick={() => setShowExternalComposer((current) => !current)}
             className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
           >
-            {showExternalComposer
-              ? dictionary.hideExternalAssetForm
-              : dictionary.addExternalAsset}
+            {showExternalComposer ? dictionary.hideExternalAssetForm : dictionary.addExternalAsset}
           </button>
         </div>
 
         <div hidden={!showExternalComposer}>
-          <form action={createAction} className="mt-5 grid gap-4 rounded-[24px] border border-brown/10 bg-cream/25 p-5 md:grid-cols-2">
+          <form
+            action={createAction}
+            className="mt-5 grid gap-4 rounded-[24px] border border-brown/10 bg-cream/25 p-5 md:grid-cols-2"
+          >
             <input type="hidden" name="locale" value={locale} />
             <label className="flex flex-col gap-2 text-sm">
-              <span className="uppercase tracking-[0.16em] text-muted">
-                {dictionary.assetType}
-              </span>
+              <span className="uppercase tracking-[0.16em] text-muted">{dictionary.assetType}</span>
               <select
                 name="kind"
                 defaultValue="video"
@@ -283,9 +260,7 @@ export default function MediaLibraryForm({
                     <button
                       type="button"
                       onClick={() =>
-                        setExpandedAssetId((current) =>
-                          current === asset.id ? null : asset.id,
-                        )
+                        setExpandedAssetId((current) => (current === asset.id ? null : asset.id))
                       }
                       className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
                     >
@@ -313,7 +288,11 @@ export default function MediaLibraryForm({
                         </select>
                       </label>
                       <Field label={dictionary.assetUrl} name="url" defaultValue={asset.url} />
-                      <Field label={dictionary.altText} name="altText" defaultValue={asset.altText} />
+                      <Field
+                        label={dictionary.altText}
+                        name="altText"
+                        defaultValue={asset.altText}
+                      />
                       <Field
                         label={dictionary.thumbnailUrl}
                         name="thumbnailUrl"

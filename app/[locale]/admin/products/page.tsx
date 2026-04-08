@@ -4,10 +4,9 @@ import AdminShell from "@/components/admin/AdminShell";
 import { getDictionary } from "@/i18n";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { env } from "@/lib/env";
-import { getAdminSessionRecoveryPath } from "@/modules/admin-auth/navigation";
-import { getAdminSession } from "@/modules/admin-auth/server";
+import { getAdminSession, getAdminSessionRecoveryPath } from "@/modules/admin-auth";
 import { getAdminNavItems } from "@/modules/admin/ui";
-import { getAllProducts } from "@/services/products";
+import { getAllProducts } from "@/modules/products";
 import { deleteProductAction } from "./actions";
 
 export default async function AdminProductsPage({
@@ -42,8 +41,7 @@ export default async function AdminProductsPage({
   const allProducts = await getAllProducts(locale);
   const isDatabaseMode = env.PRODUCTS_DATA_SOURCE === "database";
   const searchTerm = (q ?? "").trim().toLocaleLowerCase();
-  const errorMessage =
-    error === "slug-conflict" ? dictionary.admin.errors.slugConflict : null;
+  const errorMessage = error === "slug-conflict" ? dictionary.admin.errors.slugConflict : null;
   const products = searchTerm
     ? allProducts.filter((product) =>
         [product.name, product.slug, product.tag]
@@ -107,9 +105,8 @@ export default async function AdminProductsPage({
               {status ? (
                 <p className="inline-flex rounded-full border border-olive/15 bg-olive/10 px-4 py-2 text-sm text-olive">
                   {dictionary.admin.lastActionLabel}:{" "}
-                  {dictionary.admin.status[
-                    status as keyof typeof dictionary.admin.status
-                  ] ?? status}
+                  {dictionary.admin.status[status as keyof typeof dictionary.admin.status] ??
+                    status}
                 </p>
               ) : null}
               {errorMessage ? (
@@ -188,7 +185,8 @@ export default async function AdminProductsPage({
                       ) : null}
                     </div>
                     <p className="mt-2 text-sm text-text/75">
-                      #{product.id} | {dictionary.admin.inventory.pathLabel}: /products/{product.slug}
+                      #{product.id} | {dictionary.admin.inventory.pathLabel}: /products/
+                      {product.slug}
                     </p>
                     <p className="mt-3 max-w-3xl text-sm leading-7 text-text/70">
                       {product.description}

@@ -5,13 +5,13 @@
 @source "./**/*.{ts,tsx}";
 
 @theme inline {
-  --color-cream: #F5F0E8;
-  --color-warm: #E8DDD0;
-  --color-brown: #6B4F3A;
-  --color-dark: #2C1F14;
-  --color-olive: #7C8C5E;
-  --color-text: #3D2B1F;
-  --color-muted: #9A8878;
+  --color-cream: #f5f0e8;
+  --color-warm: #e8ddd0;
+  --color-brown: #6b4f3a;
+  --color-dark: #2c1f14;
+  --color-olive: #7c8c5e;
+  --color-text: #3d2b1f;
+  --color-muted: #9a8878;
   --font-serif: "Cormorant Garamond", serif;
   --font-sans: "Inter", sans-serif;
 }
@@ -25,13 +25,13 @@ body {
   background:
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.45), transparent 26%),
     linear-gradient(180deg, #f6f0e8 0%, #f1e7dc 48%, #eadfce 100%);
-  color: #3D2B1F;
+  color: #3d2b1f;
   overflow-x: hidden;
 }
 
 ::selection {
   background: rgba(122, 86, 56, 0.18);
-  color: #2C1F14;
+  color: #2c1f14;
 }
 
 .border-thin {

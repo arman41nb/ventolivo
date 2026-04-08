@@ -14,12 +14,7 @@ interface NavbarProps {
   supportedLocales?: SiteLocaleConfig[];
 }
 
-export default function Navbar({
-  dict,
-  locale,
-  siteSettings,
-  supportedLocales = [],
-}: NavbarProps) {
+export default function Navbar({ dict, locale, siteSettings, supportedLocales = [] }: NavbarProps) {
   const prefix = locale ? (p: string) => localePath(locale, p) : (p: string) => p;
   const stripItems = [
     siteSettings?.stripBannerItem1 ?? "Handcrafted",
@@ -54,13 +49,7 @@ export default function Navbar({
       <div className="bg-[linear-gradient(180deg,#694733_0%,#5d3d27_100%)] px-4 py-2.5 text-center text-[10px] uppercase tracking-[0.24em] text-cream/88 md:px-6">
         <div className="mx-auto flex max-w-[1380px] flex-wrap items-center justify-center gap-x-8 gap-y-2">
           {stripItems.map((item, index) => (
-            <ViewportReveal
-              key={item}
-              as="span"
-              delay={index * 55}
-              distance={12}
-              duration={420}
-            >
+            <ViewportReveal key={item} as="span" delay={index * 55} distance={12} duration={420}>
               {item}
             </ViewportReveal>
           ))}
@@ -86,7 +75,7 @@ export default function Navbar({
                   className="h-11 w-auto object-contain"
                 />
               ) : (
-                siteSettings?.logoText ?? "Ventolivo"
+                (siteSettings?.logoText ?? "Ventolivo")
               )}
             </Link>
           </ViewportReveal>

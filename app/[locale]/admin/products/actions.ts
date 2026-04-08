@@ -3,18 +3,11 @@
 import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import {
-  createProduct,
-  deleteProduct,
-  updateProduct,
-} from "@/services/products";
+import { createProduct, deleteProduct, updateProduct } from "@/modules/products";
 import { productAdminSchema } from "@/lib/validations";
-import {
-  recordAdminAuditLog,
-  requireAdminSession,
-} from "@/modules/admin-auth/server";
+import { recordAdminAuditLog, requireAdminSession } from "@/modules/admin-auth";
 import { getMediaAssetsByIds } from "@/modules/media";
-import { getSiteLocales } from "@/modules/site-content";
+import { getSiteLocales } from "@/modules/site-content/server";
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -46,10 +39,7 @@ async function getProductInput(formData: FormData) {
       field,
       Object.fromEntries(
         localeCodes
-          .map((locale) => [
-            locale,
-            getStringValue(formData, `translations.${field}.${locale}`),
-          ])
+          .map((locale) => [locale, getStringValue(formData, `translations.${field}.${locale}`)])
           .filter(([, value]) => value.trim().length > 0),
       ),
     ]),
@@ -185,10 +175,7 @@ async function revalidateProductPages() {
   }
 }
 
-function getAdminProductsPath(
-  locale: string,
-  params?: Record<string, string | undefined>,
-) {
+function getAdminProductsPath(locale: string, params?: Record<string, string | undefined>) {
   const searchParams = new URLSearchParams();
 
   for (const [key, value] of Object.entries(params ?? {})) {
@@ -199,16 +186,11 @@ function getAdminProductsPath(
 
   const query = searchParams.toString();
 
-  return query
-    ? `/${locale}/admin/products?${query}`
-    : `/${locale}/admin/products`;
+  return query ? `/${locale}/admin/products?${query}` : `/${locale}/admin/products`;
 }
 
 function isUniqueSlugError(error: unknown) {
-  return (
-    error instanceof Prisma.PrismaClientKnownRequestError &&
-    error.code === "P2002"
-  );
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002";
 }
 
 export async function createProductAction(formData: FormData) {

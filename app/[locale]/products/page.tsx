@@ -2,17 +2,13 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductGrid from "@/components/products/ProductGrid";
 import Badge from "@/components/ui/Badge";
-import { getSiteContentSettings, getSiteLocales } from "@/modules/site-content";
-import { getAllProducts } from "@/services/products";
+import { getSiteContentSettings, getSiteLocales } from "@/modules/site-content/server";
+import { getAllProducts } from "@/modules/products";
 import { getDictionary } from "@/i18n";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { notFound } from "next/navigation";
 
-export default async function ProductsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+export default async function ProductsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isValidLocale(locale)) {
     notFound();
