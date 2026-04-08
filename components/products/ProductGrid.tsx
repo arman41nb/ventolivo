@@ -27,7 +27,12 @@ export default function ProductGrid({
           distance={24}
           duration={500}
         >
-          <ProductCard product={product} orderLabel={orderLabel} locale={locale} />
+          <div
+            className="luxe-product-shell"
+            style={{ animationDelay: `${index * 180}ms` }}
+          >
+            <ProductCard product={product} orderLabel={orderLabel} locale={locale} />
+          </div>
         </ViewportReveal>
       ))}
     </div>

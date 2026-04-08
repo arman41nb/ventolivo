@@ -27,7 +27,9 @@ interface HeroVisualStageProps {
   renderAccentImage?: HeroStageSlotRenderer;
   renderBrandBadge?: HeroStageSlotRenderer;
   heroImageMotionClassName?: string;
+  heroImageWrapperClassName?: string;
   accentImageMotionClassName?: string;
+  accentImageWrapperClassName?: string;
 }
 
 function renderSlot(
@@ -54,12 +56,17 @@ export default function HeroVisualStage({
   renderAccentImage,
   renderBrandBadge,
   heroImageMotionClassName = "hero-product-reveal",
+  heroImageWrapperClassName = "",
   accentImageMotionClassName = "",
+  accentImageWrapperClassName = "",
 }: HeroVisualStageProps) {
   const layerOrder = getHeroSceneLayerOrder(media.heroForegroundMedia);
 
   return (
     <div className="relative min-h-[420px] sm:min-h-[500px] lg:min-h-[680px]">
+      <div className="pointer-events-none absolute left-[10%] top-[14%] h-[38%] w-[56%] rounded-[999px] bg-[radial-gradient(circle,rgba(255,255,255,0.88),rgba(255,255,255,0.14)_62%,transparent_76%)] hero-stage-atmosphere hero-stage-atmosphere-delay-1" />
+      <div className="pointer-events-none absolute right-[4%] top-[12%] h-[36%] w-[28%] rounded-[999px] bg-[radial-gradient(circle,rgba(233,214,195,0.62),rgba(233,214,195,0.12)_58%,transparent_74%)] hero-stage-atmosphere hero-stage-atmosphere-delay-2" />
+      <div className="pointer-events-none absolute left-[14%] top-[18%] h-px w-[48%] bg-[linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.88),rgba(255,255,255,0))] hero-stage-line" />
       <div
         className="absolute inset-x-[5%] top-[11%] bottom-[14%] rounded-[48px] border border-white/52 bg-[linear-gradient(180deg,rgba(255,255,255,0.54),rgba(246,237,228,0.3))] shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_32px_62px_rgba(109,82,58,0.08)] transition-transform duration-300"
         style={{ transform: transforms.stageTransform }}
@@ -93,7 +100,7 @@ export default function HeroVisualStage({
         {
           className:
             "absolute bottom-[7%] right-[6%] z-[18] aspect-square w-[32%] min-w-[170px] max-w-[250px] transition-transform duration-300",
-          contentClassName: "h-full w-full",
+          contentClassName: `h-full w-full ${accentImageWrapperClassName}`.trim(),
           style: {
             transform: transforms.accentTransform,
             transformOrigin: "bottom right",
@@ -115,7 +122,7 @@ export default function HeroVisualStage({
         {
           className:
             "absolute left-[-5%] top-[-8%] z-20 w-[108%] max-w-[940px] transition-transform duration-300",
-          contentClassName: "w-full",
+          contentClassName: `w-full ${heroImageWrapperClassName}`.trim(),
           style: {
             transform: transforms.imageTransform,
             transformOrigin: "bottom center",

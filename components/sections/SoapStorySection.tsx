@@ -26,7 +26,7 @@ function easeOutCubic(value: number) {
   return 1 - (1 - value) ** 3;
 }
 
-function revealAmount(progress: number, start: number, duration = 0.14) {
+function revealAmount(progress: number, start: number, duration = 0.1) {
   return easeOutCubic(clampProgress((progress - start) / duration));
 }
 
@@ -44,12 +44,11 @@ function revealStyle(
   const x = mix(options?.x ?? 0, 0, amount);
   const y = mix(options?.y ?? 34, 0, amount);
   const scale = mix(options?.scaleFrom ?? 0.98, 1, amount);
-  const blur = mix(options?.blurFrom ?? 10, 0, amount);
 
   return {
     opacity: amount,
     transform: `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`,
-    filter: `blur(${blur.toFixed(2)}px)`,
+    willChange: "transform, opacity",
   };
 }
 
@@ -59,6 +58,7 @@ export default function SoapStorySection({
 }: SoapStorySectionProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const frameRef = useRef(0);
+  const initializedRef = useRef(false);
   const targetProgressRef = useRef(0);
   const currentProgressRef = useRef(0);
   const [progress, setProgress] = useState(0);
@@ -71,6 +71,8 @@ export default function SoapStorySection({
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     if (mediaQuery.matches) {
+      targetProgressRef.current = 1;
+      currentProgressRef.current = 1;
       setProgress(1);
       return;
     }
@@ -84,8 +86,8 @@ export default function SoapStorySection({
 
       const rect = node.getBoundingClientRect();
       const viewportHeight = window.innerHeight || 1;
-      const travel = Math.max(rect.height - viewportHeight * 0.32, 1);
-      const raw = (viewportHeight * 0.74 - rect.top) / travel;
+      const travel = Math.max(rect.height - viewportHeight * 0.42, 1);
+      const raw = (viewportHeight * 0.7 - rect.top) / travel;
 
       return clampProgress(raw);
     };
@@ -100,7 +102,7 @@ export default function SoapStorySection({
       const next =
         Math.abs(nextTarget - current) < 0.0015
           ? nextTarget
-          : current + (nextTarget - current) * 0.18;
+          : current + (nextTarget - current) * 0.34;
 
       currentProgressRef.current = next;
       setProgress(next);
@@ -112,6 +114,13 @@ export default function SoapStorySection({
 
     const requestTick = () => {
       targetProgressRef.current = computeProgress();
+
+      if (!initializedRef.current) {
+        initializedRef.current = true;
+        currentProgressRef.current = targetProgressRef.current;
+        setProgress(targetProgressRef.current);
+        return;
+      }
 
       if (frameRef.current === 0) {
         frameRef.current = window.requestAnimationFrame(animateProgress);
@@ -151,13 +160,13 @@ export default function SoapStorySection({
   };
 
   const visualProgress = easeOutCubic(progress);
-  const lineReveal = revealAmount(progress, 0.1, 0.12);
-  const soapReveal = revealAmount(progress, 0.03, 0.12);
-  const accentReveal = revealAmount(progress, 0.0, 0.12);
-  const ritualReveal = revealAmount(progress, 0.14, 0.12);
-  const detailReveal = revealAmount(progress, 0.22, 0.12);
-  const studyReveal = revealAmount(progress, 0.3, 0.12);
-  const momentsReveal = revealAmount(progress, 0.36, 0.12);
+  const lineReveal = revealAmount(progress, 0.05, 0.08);
+  const soapReveal = revealAmount(progress, 0.0, 0.08);
+  const accentReveal = revealAmount(progress, 0.0, 0.07);
+  const ritualReveal = revealAmount(progress, 0.07, 0.08);
+  const detailReveal = revealAmount(progress, 0.12, 0.08);
+  const studyReveal = revealAmount(progress, 0.17, 0.08);
+  const momentsReveal = revealAmount(progress, 0.21, 0.08);
   const soapX = mix(-68, 24, visualProgress);
   const soapY = mix(64, -32, visualProgress);
   const soapRotate = mix(-18, 1.5, visualProgress);
@@ -188,7 +197,7 @@ export default function SoapStorySection({
           <span className="ambient-orb right-16 top-18 h-20 w-20 bg-[#d7c0aa]/24 [animation-delay:1.2s]" />
           <span className="ambient-orb bottom-10 left-[44%] h-24 w-24 bg-white/28 [animation-delay:2.4s]" />
 
-          <div className="relative min-h-[980px] lg:min-h-[118vh]">
+          <div className="relative min-h-[920px] lg:min-h-[106vh]">
             <div className="grid gap-10 px-5 py-8 md:px-8 md:py-10 lg:sticky lg:top-4 lg:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)] lg:items-center lg:gap-6 lg:px-12 lg:py-12 xl:px-14 xl:py-14">
               <div className="relative z-20 max-w-[610px]">
                 <div
@@ -303,8 +312,8 @@ export default function SoapStorySection({
                 </p>
               </div>
 
-              <div className="relative z-10 min-h-[460px] lg:min-h-[660px]">
-                <div className="relative mx-auto h-full min-h-[460px] max-w-[640px] lg:min-h-[660px]">
+              <div className="relative z-10 min-h-[430px] lg:min-h-[610px]">
+                <div className="relative mx-auto h-full min-h-[430px] max-w-[640px] lg:min-h-[610px]">
                   <div
                     className="absolute inset-x-[7%] top-[11%] bottom-[9%] rounded-[42px] border border-white/56 bg-[linear-gradient(180deg,rgba(255,255,255,0.56),rgba(245,235,224,0.24))] shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_28px_62px_rgba(109,82,58,0.08)]"
                     style={{
@@ -313,12 +322,14 @@ export default function SoapStorySection({
                         1.01,
                         visualProgress,
                       ).toFixed(4)})`,
+                      willChange: "transform",
                     }}
                   />
                   <div
                     className="absolute right-[8%] top-[12%] h-[60%] w-[36%] rounded-[38px] border border-white/52 bg-[linear-gradient(180deg,rgba(255,251,246,0.78),rgba(244,233,224,0.28))] shadow-[inset_0_1px_0_rgba(255,255,255,0.76)]"
                     style={{
                       transform: `translate3d(0, ${(panelShift * 0.7).toFixed(2)}px, 0)`,
+                      willChange: "transform",
                     }}
                   />
                   <div
@@ -329,6 +340,7 @@ export default function SoapStorySection({
                         1.08,
                         visualProgress,
                       ).toFixed(4)}) rotate(${haloRotate.toFixed(2)}deg)`,
+                      willChange: "transform",
                     }}
                   />
                   <div
@@ -339,6 +351,7 @@ export default function SoapStorySection({
                         2,
                       )}px, 0) scaleX(${mix(0.52, 1, lineReveal).toFixed(4)})`,
                       transformOrigin: "left center",
+                      willChange: "transform, opacity",
                     }}
                   />
                   <div
@@ -349,6 +362,7 @@ export default function SoapStorySection({
                         14,
                         visualProgress,
                       ).toFixed(2)}px, ${mix(12, 18, visualProgress).toFixed(2)}px, 0)`,
+                      willChange: "transform",
                     }}
                   />
                   <div
@@ -360,6 +374,7 @@ export default function SoapStorySection({
                         visualProgress,
                       ).toFixed(2)}px, ${mix(18, -8, visualProgress).toFixed(2)}px, 0)`,
                       opacity: accentReveal,
+                      willChange: "transform, opacity",
                     }}
                   />
 
@@ -372,21 +387,18 @@ export default function SoapStorySection({
                       )}px, 0) rotate(${accentRotate.toFixed(2)}deg) scale(${accentScale.toFixed(
                         4,
                       )})`,
-                      clipPath: `inset(${mix(30, 0, accentReveal).toFixed(
-                        2,
-                      )}% 0% 0% 0% round 34px)`,
+                      willChange: "transform, opacity",
                     }}
                   >
                     <img
                       src={secondaryImageUrl}
                       alt={secondaryImageAlt}
                       className="h-full w-full object-contain"
+                      loading="eager"
+                      decoding="async"
                       style={{
-                        filter: `drop-shadow(0 34px 42px rgba(93,61,39,0.18)) blur(${mix(
-                          14,
-                          0,
-                          accentReveal,
-                        ).toFixed(2)}px)`,
+                        filter: "drop-shadow(0 34px 42px rgba(93,61,39,0.18))",
+                        transform: "translateZ(0)",
                       }}
                     />
                   </div>
@@ -402,7 +414,7 @@ export default function SoapStorySection({
                         1,
                         ritualReveal,
                       ).toFixed(4)})`,
-                      filter: `blur(${mix(10, 0, ritualReveal).toFixed(2)}px)`,
+                      willChange: "transform, opacity",
                     }}
                   >
                     <p className="text-[10px] uppercase tracking-[0.2em] text-[#b39078]">
@@ -424,7 +436,7 @@ export default function SoapStorySection({
                         1,
                         detailReveal,
                       ).toFixed(4)})`,
-                      filter: `blur(${mix(10, 0, detailReveal).toFixed(2)}px)`,
+                      willChange: "transform, opacity",
                     }}
                   >
                     <p className="text-[10px] uppercase tracking-[0.2em] text-[#b39078]">
@@ -444,6 +456,7 @@ export default function SoapStorySection({
                       )}px, 0) rotate(${soapRotate.toFixed(2)}deg) scale(${soapScale.toFixed(
                         4,
                       )})`,
+                      willChange: "transform, opacity",
                     }}
                   >
                     {heroMedia.heroImageUrl ? (
@@ -451,12 +464,12 @@ export default function SoapStorySection({
                         src={heroMedia.heroImageUrl}
                         alt={heroMedia.heroImageAlt}
                         className="w-full object-contain"
+                        loading="eager"
+                        decoding="async"
+                        fetchPriority="high"
                         style={{
-                          filter: `drop-shadow(0 48px 64px rgba(78,54,37,0.28)) blur(${mix(
-                            14,
-                            0,
-                            soapReveal,
-                          ).toFixed(2)}px)`,
+                          filter: "drop-shadow(0 48px 64px rgba(78,54,37,0.28))",
+                          transform: "translateZ(0)",
                         }}
                       />
                     ) : (
@@ -475,7 +488,7 @@ export default function SoapStorySection({
                         1,
                         studyReveal,
                       ).toFixed(4)})`,
-                      filter: `blur(${mix(12, 0, studyReveal).toFixed(2)}px)`,
+                      willChange: "transform, opacity",
                     }}
                   >
                     <p className="text-[10px] uppercase tracking-[0.2em] text-[#b39078]">
@@ -497,7 +510,7 @@ export default function SoapStorySection({
                         1,
                         momentsReveal,
                       ).toFixed(4)})`,
-                      filter: `blur(${mix(12, 0, momentsReveal).toFixed(2)}px)`,
+                      willChange: "transform, opacity",
                     }}
                   >
                     <p className="text-[10px] uppercase tracking-[0.22em] text-[#b39078]">
