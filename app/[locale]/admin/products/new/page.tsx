@@ -4,10 +4,10 @@ import ProductEditorForm from "@/components/admin/ProductEditorForm";
 import { getDictionary } from "@/i18n";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { env } from "@/lib/env";
-import { getAdminSession, getAdminSessionRecoveryPath } from "@/modules/admin-auth";
-import { getAdminNavItems } from "@/modules/admin/ui";
-import { getAllMediaAssets } from "@/modules/media";
-import { getSiteLocales } from "@/modules/site-content/server";
+import { getAdminSession, getAdminSessionRecoveryPath } from "@/services/admin-auth";
+import { getAdminNavItems } from "@/services/admin";
+import { getAllMediaAssets } from "@/services/media";
+import { getSiteLocales } from "@/services/site-content";
 import { createProductAction } from "../actions";
 
 export default async function AdminNewProductPage({

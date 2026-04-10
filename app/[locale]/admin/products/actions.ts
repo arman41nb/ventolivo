@@ -3,11 +3,11 @@
 import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createProduct, deleteProduct, updateProduct } from "@/modules/products";
+import { createProduct, deleteProduct, updateProduct } from "@/services/products";
 import { productAdminSchema } from "@/lib/validations";
-import { recordAdminAuditLog, requireAdminSession } from "@/modules/admin-auth";
-import { getMediaAssetsByIds } from "@/modules/media";
-import { getSiteLocales } from "@/modules/site-content/server";
+import { recordAdminAuditLog, requireAdminSession } from "@/services/admin-auth";
+import { getMediaAssetsByIds } from "@/services/media";
+import { getSiteLocales } from "@/services/site-content";
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -35,14 +35,24 @@ async function getProductInput(formData: FormData) {
   const localeCodes = siteLocales.map((locale) => locale.code);
 
   const translations = Object.fromEntries(
-    ["name", "tag", "description"].map((field) => [
-      field,
-      Object.fromEntries(
-        localeCodes
-          .map((locale) => [locale, getStringValue(formData, `translations.${field}.${locale}`)])
-          .filter(([, value]) => value.trim().length > 0),
-      ),
-    ]),
+    ["name", "tag", "description", "weight", "ingredients"].map((field) => {
+      const localizedEntries = localeCodes.flatMap((locale) => {
+        const rawValue = getStringValue(formData, `translations.${field}.${locale}`);
+
+        if (field === "ingredients") {
+          const items = rawValue
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean);
+
+          return items.length > 0 ? [[locale, items]] : [];
+        }
+
+        return rawValue.trim().length > 0 ? [[locale, rawValue.trim()]] : [];
+      });
+
+      return [field, Object.fromEntries(localizedEntries)];
+    }),
   );
 
   const coverImageUrl = getStringValue(formData, "coverImageUrl").trim();

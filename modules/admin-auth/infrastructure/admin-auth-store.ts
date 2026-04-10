@@ -12,7 +12,7 @@ interface CreateAuditLogInput {
   actorLabel?: string;
   targetType?: string;
   targetId?: string;
-  metadata?: string;
+  metadata?: string | Record<string, unknown>;
 }
 
 export async function countAdminUsers(): Promise<number> {

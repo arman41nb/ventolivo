@@ -95,6 +95,7 @@ export interface Dictionary {
     disabledMessage: string;
     navigation: {
       dashboard: string;
+      translations: string;
       products: string;
       media: string;
       siteContent: string;

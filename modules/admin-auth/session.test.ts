@@ -11,7 +11,7 @@ describe("admin session auth", () => {
   });
 
   it("rejects session token creation when the admin secret is missing", async () => {
-    const { createAdminSessionToken } = await import("./session");
+    const { createAdminSessionToken } = await import("./domain/session");
 
     await expect(createAdminSessionToken("admin")).rejects.toThrow(
       "ADMIN_SESSION_SECRET must be set to a long random value before admin auth can be used",
@@ -21,7 +21,7 @@ describe("admin session auth", () => {
   it("rejects session token creation when the admin secret is too short", async () => {
     process.env.ADMIN_SESSION_SECRET = "too-short";
 
-    const { createAdminSessionToken } = await import("./session");
+    const { createAdminSessionToken } = await import("./domain/session");
 
     await expect(createAdminSessionToken("admin")).rejects.toThrow(
       "ADMIN_SESSION_SECRET must be set to a long random value before admin auth can be used",
@@ -31,7 +31,7 @@ describe("admin session auth", () => {
   it("creates verifiable session tokens when the admin secret is strong", async () => {
     process.env.ADMIN_SESSION_SECRET = "0123456789abcdef0123456789abcdef";
 
-    const { createAdminSessionToken, verifyAdminSessionToken } = await import("./session");
+    const { createAdminSessionToken, verifyAdminSessionToken } = await import("./domain/session");
 
     const token = await createAdminSessionToken("admin");
     const session = await verifyAdminSessionToken(token);
@@ -43,7 +43,7 @@ describe("admin session auth", () => {
   it("rejects tampered session tokens", async () => {
     process.env.ADMIN_SESSION_SECRET = "0123456789abcdef0123456789abcdef";
 
-    const { createAdminSessionToken, verifyAdminSessionToken } = await import("./session");
+    const { createAdminSessionToken, verifyAdminSessionToken } = await import("./domain/session");
 
     const token = await createAdminSessionToken("admin");
     const [payload] = token.split(".");
@@ -56,7 +56,7 @@ describe("admin session auth", () => {
     process.env.NEXT_PUBLIC_SITE_URL = "https://ventolivo.com";
 
     const { getAdminSessionCookieOptions, getExpiredAdminSessionCookieOptions } =
-      await import("./session");
+      await import("./domain/session");
 
     expect(getAdminSessionCookieOptions()).toMatchObject({
       httpOnly: true,

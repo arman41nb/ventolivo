@@ -2,11 +2,10 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductDetail from "@/components/products/ProductDetail";
-import { getProductBySlug } from "@/modules/products";
-import { getDictionary } from "@/i18n";
+import { getProductBySlug } from "@/services/products";
 import type { Metadata } from "next";
 import { isValidLocale, type Locale } from "@/i18n/config";
-import { getSiteContentSettings, getSiteLocales } from "@/modules/site-content/server";
+import { getStorefrontData } from "@/services/storefront";
 import { getPrimaryProductMedia } from "@/lib/utils";
 
 export async function generateMetadata({
@@ -41,11 +40,9 @@ export default async function ProductDetailPage({
   }
 
   const currentLocale = rawLocale as Locale;
-  const [dict, product, siteSettings, supportedLocales] = await Promise.all([
-    getDictionary(currentLocale),
+  const [{ content, siteSettings, supportedLocales }, product] = await Promise.all([
+    getStorefrontData(currentLocale),
     getProductBySlug(slug, currentLocale),
-    getSiteContentSettings(currentLocale),
-    getSiteLocales(),
   ]);
 
   if (!product) {
@@ -55,17 +52,27 @@ export default async function ProductDetailPage({
   return (
     <div className="page-shell min-h-screen">
       <Navbar
-        dict={dict}
         locale={currentLocale}
-        siteSettings={siteSettings}
+        brand={{
+          name: content.brandName,
+          logoMode: siteSettings.logoMode,
+          logoText: siteSettings.logoText,
+          logoImageUrl: siteSettings.logoImageUrl,
+          logoAltText: siteSettings.logoAltText,
+        }}
+        content={content.navbar}
         supportedLocales={supportedLocales}
       />
       <main className="px-4 py-10 md:px-6 md:py-14">
         <section className="mx-auto max-w-[1380px]">
-          <ProductDetail product={product} orderLabel={dict.products.card.orderVia} />
+          <ProductDetail
+            product={product}
+            orderLabel={content.products.orderLabel}
+            ingredientsLabel={content.products.ingredientsLabel}
+          />
         </section>
       </main>
-      <Footer dict={dict} siteSettings={siteSettings} locale={currentLocale} />
+      <Footer brandName={content.brandName} content={content.footer} locale={currentLocale} />
     </div>
   );
 }

@@ -1,11 +1,14 @@
 import type { Locale } from "@/i18n/config";
 
 export type LocalizedFieldMap = Partial<Record<Locale, string>>;
+export type LocalizedListFieldMap = Partial<Record<Locale, string[]>>;
 
 export interface ProductTranslations {
   name?: LocalizedFieldMap;
   tag?: LocalizedFieldMap;
   description?: LocalizedFieldMap;
+  weight?: LocalizedFieldMap;
+  ingredients?: LocalizedListFieldMap;
 }
 
 export interface ProductMediaItem {

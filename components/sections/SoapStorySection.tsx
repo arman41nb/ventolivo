@@ -2,20 +2,21 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
-import type { Dictionary } from "@/i18n";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import { clampProgress } from "@/modules/media/transform";
-import { getHeroSceneMediaState } from "@/modules/site-content";
-import type { SiteContentSettings } from "@/types";
+import { clampProgress } from "@/modules/media";
+import { getHeroSceneMediaState, type StorefrontContent } from "@/modules/site-content";
+import type { SiteContentSettings, StorefrontPreviewBindings } from "@/types";
 
 const secondaryImageUrl =
   "/uploads/media/1775602871044-24e66b75-50aa-4814-8038-6aa81de42954-natural-handmade-soap-with-ingredients-list.png";
 const secondaryImageAlt = "Illustrated ingredient composition behind the main handcrafted soap";
 
 interface SoapStorySectionProps {
-  dict?: Dictionary;
-  siteSettings?: SiteContentSettings;
+  siteSettings: SiteContentSettings;
+  content: StorefrontContent["storySection"];
+  previewMode?: boolean;
+  preview?: StorefrontPreviewBindings;
 }
 
 function mix(start: number, end: number, amount: number) {
@@ -52,7 +53,12 @@ function revealStyle(
   };
 }
 
-export default function SoapStorySection({ dict, siteSettings }: SoapStorySectionProps) {
+export default function SoapStorySection({
+  siteSettings,
+  content,
+  previewMode = false,
+  preview,
+}: SoapStorySectionProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const frameRef = useRef(0);
   const initializedRef = useRef(false);
@@ -62,7 +68,7 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (typeof window === "undefined" || prefersReducedMotion) {
+    if (typeof window === "undefined" || prefersReducedMotion || previewMode) {
       return;
     }
 
@@ -128,26 +134,12 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
       window.removeEventListener("scroll", requestTick);
       window.removeEventListener("resize", requestTick);
     };
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, previewMode]);
 
-  const brandName = siteSettings?.brandName ?? "Ventolivo";
+  const brandName = siteSettings.brandName;
   const heroMedia = getHeroSceneMediaState(siteSettings, brandName);
-  const copy = dict?.storySection ?? {
-    eyebrow: "Inspired by nature",
-    title: "Nature, memory, and the rituals we turn into soap.",
-    lead: "We design from scenes that stay with us, drawn equally from nature and human life.",
-    body: "A dried leaf carried by a narrow stream, a sandstorm across the desert, a bay that feels like paradise, an emerald seam, life beneath the sea, a carefully brewed coffee, the grain of a wooden table, confetti suspended in the air. What we love to watch, touch, and taste becomes part of our handmade soaps, always in harmony with nature and human life.",
-    closing: "Your skin deserves the best. So does your soul.",
-    ritualLabel: "Handmade ritual",
-    momentsLabel: "Sensory notes",
-    momentsValue: "Leaf, desert, bay, emerald, coffee, wood, confetti.",
-    detailLabel: "Organic composition",
-    detailText: "Layered with calm motion, mineral warmth, and tactile detail.",
-    studyLabel: "Sensory study",
-    studyText: "Crafted for skin and soul",
-  };
 
-  const resolvedProgress = prefersReducedMotion ? 1 : progress;
+  const resolvedProgress = prefersReducedMotion || previewMode ? 1 : progress;
   const visualProgress = easeOutCubic(resolvedProgress);
   const lineReveal = revealAmount(resolvedProgress, 0.05, 0.08);
   const soapReveal = revealAmount(resolvedProgress, 0.0, 0.08);
@@ -174,6 +166,17 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
   const studyFloat = mix(24, -8, visualProgress);
   const momentsFloat = mix(36, -14, visualProgress);
 
+  const renderEditable = (
+    fieldId: Parameters<StorefrontPreviewBindings["renderEditable"]>[0]["fieldId"],
+    label: string,
+    children: ReactNode,
+    className = "",
+    badgeAlign: "left" | "right" = "left",
+  ) =>
+    preview
+      ? preview.renderEditable({ fieldId, label, children, className, badgeAlign })
+      : children;
+
   return (
     <section ref={sectionRef} className="px-4 pb-10 pt-2 md:px-6 md:pb-12">
       <div className="mx-auto max-w-[1380px]">
@@ -196,7 +199,7 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
                   })}
                 >
                   <span className="h-1.5 w-1.5 rounded-full bg-olive" />
-                  {copy.eyebrow}
+                  {renderEditable("storyEyebrow", "Story eyebrow", <span>{content.eyebrow}</span>)}
                 </div>
 
                 <div
@@ -210,14 +213,18 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
                 >
                   <div className="mb-5 flex flex-wrap items-center gap-3">
                     <span className="rounded-full border border-white/60 bg-[rgba(255,252,247,0.88)] px-4 py-2 text-[10px] uppercase tracking-[0.22em] text-[#ab8a72] shadow-[0_14px_28px_rgba(105,81,61,0.06)] backdrop-blur-xl">
-                      {brandName}
+                      {renderEditable("brandName", "Brand name", <span>{brandName}</span>)}
                     </span>
                     <span className="rounded-full border border-brown/8 bg-white/62 px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-[#b29178]">
-                      {copy.ritualLabel}
+                      {renderEditable(
+                        "storyRitualLabel",
+                        "Story ritual label",
+                        <span>{content.ritualLabel}</span>,
+                      )}
                     </span>
                   </div>
                   <h2 className="max-w-[560px] font-serif text-[3rem] leading-[0.88] tracking-[-0.03em] text-[#3f2c1f] md:text-[4.35rem] xl:text-[5.35rem]">
-                    {copy.title}
+                    {renderEditable("storyTitle", "Story title", <span>{content.title}</span>)}
                   </h2>
 
                   <div
@@ -237,7 +244,11 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
                       }}
                     />
                     <span className="text-[10px] uppercase tracking-[0.26em] text-[#b08b6f]">
-                      {copy.momentsLabel}
+                      {renderEditable(
+                        "storyMomentsLabel",
+                        "Story moments label",
+                        <span>{content.momentsLabel}</span>,
+                      )}
                     </span>
                   </div>
                 </div>
@@ -251,7 +262,7 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
                       scaleFrom: 0.98,
                     })}
                   >
-                    {copy.lead}
+                    {renderEditable("storyLead", "Story lead", <span>{content.lead}</span>)}
                   </p>
 
                   <div className="mt-6 grid gap-6 md:grid-cols-[minmax(0,1fr)_220px] md:items-start">
@@ -263,7 +274,7 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
                         scaleFrom: 0.99,
                       })}
                     >
-                      {copy.body}
+                      {renderEditable("storyBody", "Story body", <span>{content.body}</span>)}
                     </p>
 
                     <div
@@ -276,10 +287,18 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
                       })}
                     >
                       <p className="text-[10px] uppercase tracking-[0.22em] text-[#b39179]">
-                        {copy.momentsLabel}
+                        {renderEditable(
+                          "storyMomentsLabel",
+                          "Story moments label",
+                          <span>{content.momentsLabel}</span>,
+                        )}
                       </p>
                       <p className="mt-3 text-[13px] leading-[1.9] text-[#7d6757]">
-                        {copy.momentsValue}
+                        {renderEditable(
+                          "storyMomentsValue",
+                          "Story moments value",
+                          <span>{content.momentsValue}</span>,
+                        )}
                       </p>
                     </div>
                   </div>
@@ -294,7 +313,7 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
                     blurFrom: 8,
                   })}
                 >
-                  &quot;{copy.closing}&quot;
+                  &quot;{renderEditable("storyClosing", "Story closing", <span>{content.closing}</span>)}&quot;
                 </p>
               </div>
 
@@ -404,9 +423,15 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
                     }}
                   >
                     <p className="text-[10px] uppercase tracking-[0.2em] text-[#b39078]">
-                      {copy.ritualLabel}
+                      {renderEditable(
+                        "storyRitualLabel",
+                        "Story ritual label",
+                        <span>{content.ritualLabel}</span>,
+                      )}
                     </p>
-                    <p className="mt-2 text-[12px] leading-[1.75] text-[#7d6757]">{brandName}</p>
+                    <p className="mt-2 text-[12px] leading-[1.75] text-[#7d6757]">
+                      {renderEditable("brandName", "Brand name", <span>{brandName}</span>)}
+                    </p>
                   </div>
 
                   <div
@@ -424,10 +449,18 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
                     }}
                   >
                     <p className="text-[10px] uppercase tracking-[0.2em] text-[#b39078]">
-                      {copy.detailLabel}
+                      {renderEditable(
+                        "storyDetailLabel",
+                        "Story detail label",
+                        <span>{content.detailLabel}</span>,
+                      )}
                     </p>
                     <p className="mt-2 text-[12px] leading-[1.75] text-[#7d6757]">
-                      {copy.detailText}
+                      {renderEditable(
+                        "storyDetailText",
+                        "Story detail text",
+                        <span>{content.detailText}</span>,
+                      )}
                     </p>
                   </div>
 
@@ -474,10 +507,18 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
                     }}
                   >
                     <p className="text-[10px] uppercase tracking-[0.2em] text-[#b39078]">
-                      {copy.studyLabel}
+                      {renderEditable(
+                        "storyStudyLabel",
+                        "Story study label",
+                        <span>{content.studyLabel}</span>,
+                      )}
                     </p>
                     <p className="mt-3 font-serif text-[1.45rem] leading-[1] text-[#735844]">
-                      {copy.studyText}
+                      {renderEditable(
+                        "storyStudyText",
+                        "Story study text",
+                        <span>{content.studyText}</span>,
+                      )}
                     </p>
                   </div>
 
@@ -496,10 +537,18 @@ export default function SoapStorySection({ dict, siteSettings }: SoapStorySectio
                     }}
                   >
                     <p className="text-[10px] uppercase tracking-[0.22em] text-[#b39078]">
-                      {copy.momentsLabel}
+                      {renderEditable(
+                        "storyMomentsLabel",
+                        "Story moments label",
+                        <span>{content.momentsLabel}</span>,
+                      )}
                     </p>
                     <p className="mt-2 text-[12px] leading-[1.75] text-[#7d6757]">
-                      {copy.momentsValue}
+                      {renderEditable(
+                        "storyMomentsValue",
+                        "Story moments value",
+                        <span>{content.momentsValue}</span>,
+                      )}
                     </p>
                   </div>
                 </div>

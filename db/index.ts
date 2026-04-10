@@ -20,6 +20,8 @@ export {
 } from "./media";
 export {
   dbGetLocalizedSiteContentSettings,
+  dbGetSiteContentTranslation,
+  dbSaveSiteContentBundle,
   dbGetSiteContentSettings,
   dbGetSiteLocales,
   dbUpsertSiteContentTranslation,

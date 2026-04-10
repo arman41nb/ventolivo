@@ -30,6 +30,18 @@ export interface SiteContentSettings {
   heroImageOffsetX: number;
   heroImageOffsetY: number;
   heroImageScale: number;
+  storyEyebrow: string;
+  storyTitle: string;
+  storyLead: string;
+  storyBody: string;
+  storyClosing: string;
+  storyRitualLabel: string;
+  storyMomentsLabel: string;
+  storyMomentsValue: string;
+  storyDetailLabel: string;
+  storyDetailText: string;
+  storyStudyLabel: string;
+  storyStudyText: string;
   stripBannerItem1: string;
   stripBannerItem2: string;
   stripBannerItem3: string;
@@ -68,6 +80,11 @@ export interface SiteContentInput extends SiteContentSettings {
   siteLocales?: SiteLocaleConfig[];
 }
 
+export interface SiteContentBundleInput {
+  settings: SiteContentInput;
+  translations: SiteContentLocaleInput[];
+}
+
 export interface SiteContentLocaleInput {
   locale: string;
   navbarLinkProducts: string;
@@ -83,6 +100,18 @@ export interface SiteContentLocaleInput {
   heroSecondaryButtonLabel: string;
   heroBadgeValue: string;
   heroBadgeLabel: string;
+  storyEyebrow: string;
+  storyTitle: string;
+  storyLead: string;
+  storyBody: string;
+  storyClosing: string;
+  storyRitualLabel: string;
+  storyMomentsLabel: string;
+  storyMomentsValue: string;
+  storyDetailLabel: string;
+  storyDetailText: string;
+  storyStudyLabel: string;
+  storyStudyText: string;
   stripBannerItem1: string;
   stripBannerItem2: string;
   stripBannerItem3: string;

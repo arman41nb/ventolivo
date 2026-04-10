@@ -1,6 +1,9 @@
 import type { HeroForegroundMedia, SiteContentSettings } from "@/types";
-import { MEDIA_FRAMING_LIMITS } from "@/modules/media/framing";
-import { buildMediaTransform, buildTranslateScaleTransform } from "@/modules/media/transform";
+import {
+  buildMediaTransform,
+  buildTranslateScaleTransform,
+  MEDIA_FRAMING_LIMITS,
+} from "@/modules/media";
 import { defaultSiteContentSettings } from "./defaults";
 
 const fallbackHeroImageUrl =

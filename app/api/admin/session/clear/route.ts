@@ -5,7 +5,7 @@ import {
   getAdminSessionCookieName,
   getExpiredAdminSessionCookieOptions,
   getSafeAdminNextPath,
-} from "@/modules/admin-auth";
+} from "@/services/admin-auth";
 
 export async function GET(request: NextRequest) {
   const rawLocale = request.nextUrl.searchParams.get("locale") ?? defaultLocale;

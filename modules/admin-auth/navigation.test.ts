@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { getAdminSessionRecoveryPath, getSafeAdminNextPath } from "./navigation";
+import {
+  getAdminSessionRecoveryPath,
+  getSafeAdminNextPath,
+} from "./domain/navigation";
 
 describe("getSafeAdminNextPath", () => {
   it("keeps locale-scoped admin paths", () => {

@@ -20,6 +20,8 @@ model Product {
   nameTranslations      String?
   tagTranslations       String?
   descriptionTranslations String?
+  weightTranslations    String?
+  ingredientsTranslations String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   mediaLinks            ProductMedia[]
@@ -162,4 +164,17 @@ model ContactMessage {
 
   @@index([read])
   @@index([createdAt])
+}
+
+model RateLimitBucket {
+  id         String   @id @default(cuid())
+  scope      String
+  identifier String
+  count      Int      @default(0)
+  resetAt    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([scope, identifier])
+  @@index([resetAt])
 }

@@ -35,6 +35,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  distDir: "build/next",
   output: "standalone",
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   images: {

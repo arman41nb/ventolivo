@@ -1,269 +1,118 @@
 # Ventolivo WebService
 
-Ventolivo is a multilingual e-commerce storefront for an artisan soap brand, built with Next.js 16 App Router. The application supports multiple languages (English, Turkish, German, Persian, Arabic) with full RTL support, and features a flexible architecture that allows switching between mock data and database-backed product storage.
+Ventolivo is a multilingual e-commerce storefront for an artisan soap brand, built with Next.js 16 App Router. The application supports multiple languages (English, Turkish, German, Persian, Arabic) with RTL support, an admin panel, and a layered architecture centered on `app -> services -> modules`.
 
 ## Tech Stack
 
-| Category             | Technology                    |
-| -------------------- | ----------------------------- |
-| Framework            | Next.js 16 (App Router)       |
-| Language             | TypeScript (strict mode)      |
-| UI Library           | React 19                      |
-| Styling              | Tailwind CSS 4                |
-| Database             | SQLite via Prisma ORM         |
-| Testing              | Vitest + Testing Library      |
-| Error Tracking       | Sentry                        |
-| Internationalization | next-intl compatible approach |
-| Containerization     | Docker + Docker Compose       |
-
-## Features
-
-### Core Functionality
-
-- **Multilingual Support**: 5 languages (EN, TR, DE, FA, AR) with RTL support for Persian and Arabic
-- **Product Catalog**: Dynamic product listing with filtering and search capabilities
-- **Product Details**: Detailed product pages with images, descriptions, and translations
-- **Featured Products**: Homepage featured products section
-- **Responsive Design**: Mobile-first design using Tailwind CSS
-
-### Content Management
-
-- **Admin Dashboard**: Manage products, media assets, and site content
-- **Site Content Editor**: Visual editing of homepage content (Hero, CTA, Footer, etc.)
-- **Product Management**: Create, update, delete products with full translation support
-- **Media Library**: Upload and manage product images and videos
-
-### Technical Features
-
-- **Repository-backed Content Access**: Public storefront content can fall back to default site settings when the database is not configured
-- **Dual Data Source**: Switch between mock data and database without changing route logic
-- **Type Safety**: Full TypeScript support with strict mode enabled
-- **API Routes**: RESTful API endpoints for products
-- **Error Tracking**: Sentry integration for both client and server
-- **Testing**: Unit and integration tests with Vitest
+| Category | Technology |
+| --- | --- |
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript (strict mode) |
+| UI Library | React 19 |
+| Styling | Tailwind CSS 4 |
+| Database | SQLite via Prisma ORM |
+| Testing | Vitest + Testing Library + Playwright |
+| Error Tracking | Sentry |
+| Containerization | Docker + Docker Compose |
 
 ## Project Structure
 
-```
+```text
 ventolivo/
-├── app/                    # Next.js App Router pages and API routes
-│   ├── [locale]/          # Locale-based routes (homepage, products, admin)
-│   └── api/               # API routes (products)
-├── components/            # React components
-│   ├── admin/             # Admin panel components
-│   ├── layout/            # Layout components (Navbar, Footer)
-│   ├── products/          # Product-related components
-│   ├── sections/         # Page sections (Hero, Features, etc.)
-│   └── ui/                # Reusable UI components
-├── config/                # Site configuration and navigation
-├── db/                    # Prisma client and database operations
-├── hooks/                 # Custom React hooks
-├── i18n/                  # Internationalization (locales, dictionaries)
-├── lib/                   # Utilities (validations, SEO, env parsing)
-├── modules/               # Domain modules (products, admin, media, site-content)
-├── pages/                 # Alternative pages (deprecated, using app/)
-├── public/               # Static assets
-├── repositories/          # Data source abstraction layer
-├── services/              # Business logic layer
-├── stores/                # Client-side state management
-├── test/                  # Test setup and utilities
-└── types/                 # TypeScript type definitions
+|- app/          # Routes, server actions, API handlers
+|- components/   # UI building blocks and sections
+|- config/       # Static configuration
+|- db/           # Prisma persistence adapters
+|- hooks/        # React hooks
+|- i18n/         # Locale dictionaries and helpers
+|- lib/          # Shared utilities and validations
+|- modules/      # Domain/application/infrastructure modules
+|- public/       # Static assets
+|- services/     # App-facing orchestration layer
+|- stores/       # Client-side state
+|- test/         # Test setup and e2e assets
+`- types/        # Shared TypeScript types
 ```
 
-### Architecture Pattern
+## Architecture
 
 The project follows a layered architecture:
 
-1. **Components**: React UI components
-2. **Services**: Business logic entry points (`services/products.ts`)
-3. **Modules**: Domain-specific logic
-4. **Repositories**: Data source abstraction (mock vs database)
-5. **DB**: Prisma database operations
+1. `app` and server-facing components call `services`
+2. `services` orchestrate application use cases
+3. `modules` hold domain, application, and infrastructure logic
+4. `db` and storage adapters provide persistence details
 
-```
-Pages/Components → Services → Modules → Repositories → Mock/DB
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 20+
-- npm or yarn
-
-### Installation
-
-```bash
-cd ventolivo
-npm install
+```text
+App / Components -> Services -> Modules -> DB / Storage
 ```
 
-### Environment Variables
+## Scripts
 
-Create a `.env` file based on `.env.example`:
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run typecheck` | Run TypeScript type checking |
+| `npm run format` | Format code with Prettier |
+| `npm run format:check` | Check formatting |
+| `npm run test:run` | Run unit tests once |
+| `npm run test:coverage` | Run tests with coverage |
+| `npm run test:e2e` | Run Playwright tests |
+| `npm run ci:check` | Run formatting, lint, typecheck, db validation, and coverage |
+
+## Environment
+
+Create a `.env` file with the values you need:
 
 ```env
-# Site Configuration
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-NEXT_PUBLIC_WHATSAPP_NUMBER=+905551234567
+NEXT_PUBLIC_WHATSAPP_NUMBER=
 NEXT_PUBLIC_GA_ID=
-
-# Optional Error Tracking
 NEXT_PUBLIC_SENTRY_DSN=
 
-# Database
-# Optional for the public storefront when using mock/default content.
-# Required for admin authentication, media persistence, and saving site content.
 DATABASE_URL=file:./dev.db
-
-# Data Source Selection
-# Options: "mock" | "database"
 PRODUCTS_DATA_SOURCE=mock
+MEDIA_STORAGE_DRIVER=local
+MEDIA_LOCAL_UPLOAD_DIR=public/uploads/media
+MEDIA_PUBLIC_BASE_PATH=/uploads/media
+MEDIA_S3_ENDPOINT=
+MEDIA_S3_REGION=us-east-1
+MEDIA_S3_BUCKET=
+MEDIA_S3_ACCESS_KEY_ID=
+MEDIA_S3_SECRET_ACCESS_KEY=
+MEDIA_S3_PUBLIC_BASE_URL=
+MEDIA_S3_FORCE_PATH_STYLE=true
+MEDIA_S3_KEY_PREFIX=media
+
+ADMIN_USERNAME=
+ADMIN_PASSWORD=
+ADMIN_SESSION_SECRET=
+
+LIBRETRANSLATE_URL=
+LIBRETRANSLATE_API_KEY=
+RATE_LIMIT_DRIVER=database
+RATE_LIMIT_WINDOW_MS=60000
+RATE_LIMIT_MAX_MEDIA_UPLOADS=10
+RATE_LIMIT_MAX_TRANSLATION_REQUESTS=20
 ```
 
-### Available Scripts
+## Quality Gates
 
-| Command                 | Description                  |
-| ----------------------- | ---------------------------- |
-| `npm run dev`           | Start development server     |
-| `npm run build`         | Build for production         |
-| `npm run start`         | Start production server      |
-| `npm run lint`          | Run ESLint                   |
-| `npm run typecheck`     | Run TypeScript type checking |
-| `npm run format`        | Format code with Prettier    |
-| `npm run format:check`  | Check code formatting        |
-| `npm run test`          | Run tests in watch mode      |
-| `npm run test:run`      | Run tests once               |
-| `npm run test:coverage` | Run tests with coverage      |
+- TypeScript runs in strict mode
+- ESLint uses a dedicated flat config in `eslint.config.mjs`
+- Prettier uses `.prettierrc.json`
+- App-layer imports are guarded so `app/` consumes `services/`, not `modules/`
+- Sensitive admin routes include request tracing and configurable memory/database-backed rate limiting
+- Media uploads support local disk or S3-compatible object storage behind the same abstraction
+- CI runs lint, typecheck, coverage, build, Docker build, and e2e smoke checks
 
-### Database Setup
+## Deployment
 
-```bash
-# Generate Prisma client
-npx prisma generate
+The project ships with:
 
-# Push schema to database
-npx prisma db push
-
-# (Optional) Create initial migration
-npx prisma migrate dev --name init
-```
-
-## Data Source Switching
-
-The application supports two data sources:
-
-### Mock Data (Default)
-
-- Data stored in `data/products.ts`
-- No database required for product content
-- Site content falls back to built-in defaults when `DATABASE_URL` is not configured
-- Suitable for development and prototyping
-
-### Database
-
-- Prisma with SQLite backend
-- Set `PRODUCTS_DATA_SOURCE=database` in environment
-- Full CRUD operations supported
-- Required for admin authentication, media storage, audit logs, and persistent site-content editing
-
-To switch to database:
-
-```bash
-# Add to .env
-PRODUCTS_DATA_SOURCE=database
-```
-
-## Docker Deployment
-
-### Build and Run
-
-```bash
-# Build and start containers
-docker-compose up -d
-
-# View logs
-docker-compose logs -f app
-```
-
-### Dockerfile Features
-
-- Multi-stage build for optimized image size
-- Standalone output for production
-- Non-root user for security
-
-## API Endpoints
-
-### Products
-
-| Method | Endpoint               | Description                                                             |
-| ------ | ---------------------- | ----------------------------------------------------------------------- |
-| GET    | `/api/products`        | Get all products (supports `tag`, `featured`, `limit`, `locale` params) |
-| GET    | `/api/products/[slug]` | Get single product by slug                                              |
-
-Example:
-
-```bash
-curl "http://localhost:3000/api/products?featured=true&limit=4"
-```
-
-## Internationalization
-
-### Supported Languages
-
-| Code | Language | Direction |
-| ---- | -------- | --------- |
-| en   | English  | LTR       |
-| tr   | Turkish  | LTR       |
-| de   | German   | LTR       |
-| fa   | Persian  | RTL       |
-| ar   | Arabic   | RTL       |
-
-### Dictionary Structure
-
-Translation files are located in `i18n/dictionaries/`:
-
-- `en.json`
-- `tr.json`
-- `de.json`
-- `fa.json`
-- `ar.json`
-
-Locale-aware routing accepts valid locale codes. If a locale does not have a dedicated UI dictionary yet, shared interface copy safely falls back to English while database-backed site content can still be localized per locale.
-
-## Admin Panel
-
-Access admin at `/[locale]/admin` (e.g., `/en/admin`).
-
-Features:
-
-- Dashboard with statistics
-- Product management (CRUD)
-- Site content editing
-- Media library
-- Session management
-
-## Testing
-
-```bash
-# Run all tests
-npm run test:run
-
-# Run with coverage
-npm run test:coverage
-
-# Watch mode
-npm run test
-```
-
-## Project Conventions
-
-- **TypeScript**: Strict mode enabled, all files must be type-safe
-- **Components**: Use functional components with TypeScript
-- **Styling**: Tailwind CSS with custom design tokens
-- **Naming**: PascalCase for components, camelCase for variables
-- **Paths**: Use `@/` alias for imports (configured in tsconfig.json)
-
-## License
-
-Private - All rights reserved
+- `Dockerfile` for standalone production builds
+- `docker-compose.yml` for local production-like runs
+- GitHub Actions workflows in `.github/workflows/`

@@ -8,8 +8,8 @@ describe("site content repository", () => {
 
   it("falls back to defaults when the database is not configured", async () => {
     const [{ getSiteContentRepository }, defaultsModule] = await Promise.all([
-      import("./site-content"),
-      import("@/modules/site-content/defaults"),
+      import("@/modules/site-content/infrastructure/get-site-content-repository"),
+      import("@/modules/site-content"),
     ]);
     const repository = getSiteContentRepository();
 
@@ -21,8 +21,8 @@ describe("site content repository", () => {
 
   it("rejects writes when persistence is unavailable", async () => {
     const [{ getSiteContentRepository }, defaultsModule] = await Promise.all([
-      import("./site-content"),
-      import("@/modules/site-content/defaults"),
+      import("@/modules/site-content/infrastructure/get-site-content-repository"),
+      import("@/modules/site-content"),
     ]);
     const repository = getSiteContentRepository();
 

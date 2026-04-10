@@ -4,17 +4,28 @@ import AdminShell from "@/components/admin/AdminShell";
 import { getDictionary } from "@/i18n";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { env } from "@/lib/env";
-import { getAdminSession, getAdminSessionRecoveryPath } from "@/modules/admin-auth";
-import { getAdminNavItems } from "@/modules/admin/ui";
-import { getAllProducts } from "@/modules/products";
+import { buildAdminProductInsights } from "@/modules/admin/insights";
+import { getAdminSession, getAdminSessionRecoveryPath } from "@/services/admin-auth";
+import { getAdminNavItems } from "@/services/admin";
+import { getAllProducts } from "@/services/products";
+import { getSiteLocales } from "@/services/site-content";
 import { deleteProductAction } from "./actions";
+
+type ProductFilterKey = "all" | "featured" | "missing-media" | "missing-translations";
+type ProductSortKey = "recent" | "name" | "price-desc" | "price-asc";
 
 export default async function AdminProductsPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ error?: string; status?: string; q?: string }>;
+  searchParams: Promise<{
+    error?: string;
+    status?: string;
+    q?: string;
+    filter?: ProductFilterKey;
+    sort?: ProductSortKey;
+  }>;
 }) {
   const { locale: rawLocale } = await params;
 
@@ -23,10 +34,11 @@ export default async function AdminProductsPage({
   }
 
   const locale = rawLocale as Locale;
-  const [dictionary, { error, status, q }, session] = await Promise.all([
+  const [dictionary, { error, status, q, filter, sort }, session, siteLocales] = await Promise.all([
     getDictionary(locale),
     searchParams,
     getAdminSession(),
+    getSiteLocales(),
   ]);
 
   if (!session) {
@@ -39,18 +51,108 @@ export default async function AdminProductsPage({
   }
 
   const allProducts = await getAllProducts(locale);
+  const insights = buildAdminProductInsights(allProducts, siteLocales);
+  const productInsightMap = new Map(insights.productRows.map((item) => [item.productId, item]));
   const isDatabaseMode = env.PRODUCTS_DATA_SOURCE === "database";
   const searchTerm = (q ?? "").trim().toLocaleLowerCase();
   const errorMessage = error === "slug-conflict" ? dictionary.admin.errors.slugConflict : null;
-  const products = searchTerm
-    ? allProducts.filter((product) =>
-        [product.name, product.slug, product.tag]
-          .join(" ")
-          .toLocaleLowerCase()
-          .includes(searchTerm),
-      )
-    : allProducts;
+  const activeFilter: ProductFilterKey =
+    filter === "featured" ||
+    filter === "missing-media" ||
+    filter === "missing-translations"
+      ? filter
+      : "all";
+  const activeSort: ProductSortKey =
+    sort === "name" || sort === "price-desc" || sort === "price-asc" ? sort : "recent";
+  const filteredProducts = allProducts.filter((product) => {
+    const matchesQuery =
+      !searchTerm ||
+      [product.name, product.slug, product.tag].join(" ").toLocaleLowerCase().includes(searchTerm);
+
+    if (!matchesQuery) {
+      return false;
+    }
+
+    const productInsight = productInsightMap.get(product.id);
+
+    if (activeFilter === "featured") {
+      return Boolean(product.featured);
+    }
+
+    if (activeFilter === "missing-media") {
+      return !productInsight?.hasCover;
+    }
+
+    if (activeFilter === "missing-translations") {
+      return Boolean(productInsight && productInsight.missingTranslationLocales.length > 0);
+    }
+
+    return true;
+  });
+  const products = [...filteredProducts].sort((left, right) => {
+    if (activeSort === "name") {
+      return left.name.localeCompare(right.name, locale);
+    }
+
+    if (activeSort === "price-desc") {
+      return right.price - left.price;
+    }
+
+    if (activeSort === "price-asc") {
+      return left.price - right.price;
+    }
+
+    return right.id - left.id;
+  });
   const priceFormatter = new Intl.NumberFormat(locale);
+  const filterLinks: Array<{ key: ProductFilterKey; label: string; count: number }> = [
+    { key: "all", label: "All products", count: insights.totalProducts },
+    { key: "featured", label: "Featured", count: insights.featuredProducts },
+    { key: "missing-media", label: "Missing cover", count: insights.productsMissingMedia },
+    {
+      key: "missing-translations",
+      label: "Missing translations",
+      count: insights.productsMissingTranslations,
+    },
+  ];
+
+  function getFilterHref(nextFilter: ProductFilterKey) {
+    const nextParams = new URLSearchParams();
+
+    if (q?.trim()) {
+      nextParams.set("q", q.trim());
+    }
+
+    if (activeSort !== "recent") {
+      nextParams.set("sort", activeSort);
+    }
+
+    if (nextFilter !== "all") {
+      nextParams.set("filter", nextFilter);
+    }
+
+    const query = nextParams.toString();
+    return query ? `/${locale}/admin/products?${query}` : `/${locale}/admin/products`;
+  }
+
+  function getSortHref(nextSort: ProductSortKey) {
+    const nextParams = new URLSearchParams();
+
+    if (q?.trim()) {
+      nextParams.set("q", q.trim());
+    }
+
+    if (activeFilter !== "all") {
+      nextParams.set("filter", activeFilter);
+    }
+
+    if (nextSort !== "recent") {
+      nextParams.set("sort", nextSort);
+    }
+
+    const query = nextParams.toString();
+    return query ? `/${locale}/admin/products?${query}` : `/${locale}/admin/products`;
+  }
 
   return (
     <AdminShell
@@ -121,6 +223,22 @@ export default async function AdminProductsPage({
                 {dictionary.admin.disabledMessage}
               </p>
             ) : null}
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              {filterLinks.map((item) => (
+                <Link
+                  key={item.key}
+                  href={getFilterHref(item.key)}
+                  className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.16em] transition-colors ${
+                    activeFilter === item.key
+                      ? "border-transparent bg-brown text-white"
+                      : "border-brown/15 bg-white/78 text-brown hover:bg-white"
+                  }`}
+                >
+                  {item.label} / {item.count}
+                </Link>
+              ))}
+            </div>
           </div>
 
           <div className="grid gap-4">
@@ -140,6 +258,12 @@ export default async function AdminProductsPage({
                 {env.PRODUCTS_DATA_SOURCE.toUpperCase()}
               </p>
             </article>
+            <article className="rounded-[26px] border border-brown/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.85),rgba(241,235,228,0.95))] p-5 shadow-[0_16px_34px_rgba(107,79,58,0.08)]">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-muted">Coverage</p>
+              <p className="mt-4 font-serif text-4xl text-dark">
+                {insights.fullyLocalizedProducts}/{insights.totalProducts}
+              </p>
+            </article>
           </div>
         </div>
       </section>
@@ -156,8 +280,64 @@ export default async function AdminProductsPage({
                 ? dictionary.admin.inventory.visibleProducts
                 : dictionary.admin.inventory.visibleProductsPlural}
             </h2>
+            <p className="mt-3 text-sm text-text/72">
+              Focus the list by content health, then sort by name or price without leaving the
+              current search context.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={getSortHref("recent")}
+              className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.16em] transition-colors ${
+                activeSort === "recent"
+                  ? "border-transparent bg-brown text-white"
+                  : "border-brown/15 bg-white/78 text-brown hover:bg-white"
+              }`}
+            >
+              Recent
+            </Link>
+            <Link
+              href={getSortHref("name")}
+              className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.16em] transition-colors ${
+                activeSort === "name"
+                  ? "border-transparent bg-brown text-white"
+                  : "border-brown/15 bg-white/78 text-brown hover:bg-white"
+              }`}
+            >
+              Name
+            </Link>
+            <Link
+              href={getSortHref("price-desc")}
+              className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.16em] transition-colors ${
+                activeSort === "price-desc"
+                  ? "border-transparent bg-brown text-white"
+                  : "border-brown/15 bg-white/78 text-brown hover:bg-white"
+              }`}
+            >
+              Price desc
+            </Link>
+            <Link
+              href={getSortHref("price-asc")}
+              className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.16em] transition-colors ${
+                activeSort === "price-asc"
+                  ? "border-transparent bg-brown text-white"
+                  : "border-brown/15 bg-white/78 text-brown hover:bg-white"
+              }`}
+            >
+              Price asc
+            </Link>
           </div>
         </div>
+        {products.length === 0 ? (
+          <div className="rounded-[28px] border border-dashed border-brown/20 bg-[linear-gradient(180deg,rgba(255,252,247,0.76),rgba(239,228,215,0.58))] p-8 text-center">
+            <p className="text-[11px] uppercase tracking-[0.2em] text-muted">No products matched</p>
+            <h3 className="mt-3 font-serif text-3xl text-dark">This view is clean for now</h3>
+            <p className="mt-3 text-sm leading-7 text-text/72">
+              Adjust the search, reset the active filter, or create a new product to keep building
+              the catalog.
+            </p>
+          </div>
+        ) : null}
         <div className="flex flex-col gap-5">
           {products.map((product) => (
             <article
@@ -183,6 +363,15 @@ export default async function AdminProductsPage({
                           {dictionary.admin.dashboard.stats.featured}
                         </span>
                       ) : null}
+                      {productInsightMap.get(product.id)?.missingTranslationLocales.length ? (
+                        <span className="rounded-full bg-amber-50 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-amber-800">
+                          {productInsightMap.get(product.id)?.missingTranslationLocales.length} locales missing
+                        </span>
+                      ) : (
+                        <span className="rounded-full bg-olive/12 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-olive">
+                          Fully localized
+                        </span>
+                      )}
                     </div>
                     <p className="mt-2 text-sm text-text/75">
                       #{product.id} | {dictionary.admin.inventory.pathLabel}: /products/
@@ -195,12 +384,32 @@ export default async function AdminProductsPage({
                       <span className="rounded-full border border-brown/10 bg-white/70 px-3 py-2 text-xs uppercase tracking-[0.16em] text-brown/72">
                         TL {priceFormatter.format(product.price)}
                       </span>
+                      <span className="rounded-full border border-brown/10 bg-white/70 px-3 py-2 text-xs uppercase tracking-[0.16em] text-brown/60">
+                        {(productInsightMap.get(product.id)?.mediaCount ?? 0).toString().padStart(2, "0")} media
+                      </span>
+                      <span
+                        className={`rounded-full border px-3 py-2 text-xs uppercase tracking-[0.16em] ${
+                          productInsightMap.get(product.id)?.hasCover
+                            ? "border-olive/20 bg-olive/10 text-olive"
+                            : "border-amber-500/20 bg-amber-50 text-amber-800"
+                        }`}
+                      >
+                        {productInsightMap.get(product.id)?.hasCover ? "Cover ready" : "Needs cover"}
+                      </span>
                       {product.weight ? (
                         <span className="rounded-full border border-brown/10 bg-white/70 px-3 py-2 text-xs uppercase tracking-[0.16em] text-brown/60">
                           {product.weight}
                         </span>
                       ) : null}
                     </div>
+                    {productInsightMap.get(product.id)?.missingTranslationLocales.length ? (
+                      <p className="mt-4 text-sm text-text/72">
+                        Missing translation locales:{" "}
+                        {productInsightMap.get(product.id)?.missingTranslationLocales
+                          .map((localeCode) => localeCode.toUpperCase())
+                          .join(", ")}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ViewportReveal from "@/components/animation/ViewportReveal";
 import ProductGrid from "@/components/products/ProductGrid";
-import type { Product } from "@/types";
+import type { Product, StorefrontPreviewBindings } from "@/types";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 
@@ -11,14 +11,16 @@ interface FeaturedProductsProps {
   viewAllLabel?: string;
   orderLabel?: string;
   locale?: Locale;
+  preview?: StorefrontPreviewBindings;
 }
 
 export default function FeaturedProducts({
   products,
-  title = "Our Collection",
-  viewAllLabel = "View all ->",
-  orderLabel = "Order via WhatsApp ->",
+  title,
+  viewAllLabel,
+  orderLabel,
   locale,
+  preview,
 }: FeaturedProductsProps) {
   const productsHref = locale ? localePath(locale, "/products") : "/products";
 
@@ -35,16 +37,35 @@ export default function FeaturedProducts({
           <div className="mb-9 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <ViewportReveal className="max-w-[720px]" delay={20} distance={26} duration={520}>
               <h2 className="font-serif text-[2.8rem] leading-[0.98] text-dark md:text-[4.2rem] luxe-heading-glide">
-                {title}
+                {preview?.renderEditable({
+                  fieldId: "featuredProductsTitle",
+                  label: "Featured products title",
+                  children: <span>{title}</span>,
+                  className: "block w-fit",
+                }) ?? title}
               </h2>
             </ViewportReveal>
             <ViewportReveal delay={90} distance={18} duration={460}>
-              <Link
-                href={productsHref}
-                className="w-fit border-b border-brown pb-1 text-[14px] text-brown no-underline transition-colors hover:text-dark hover:border-dark luxe-link-drift"
-              >
-                {viewAllLabel}
-              </Link>
+              {viewAllLabel ? (
+                preview?.renderEditable({
+                  fieldId: "featuredProductsViewAllLabel",
+                  label: "Featured view all link",
+                  children: (
+                    <span className="w-fit border-b border-brown pb-1 text-[14px] text-brown transition-colors hover:text-dark hover:border-dark luxe-link-drift">
+                      {viewAllLabel}
+                    </span>
+                  ),
+                  className: "w-fit",
+                  badgeAlign: "right",
+                }) ?? (
+                  <Link
+                    href={productsHref}
+                    className="w-fit border-b border-brown pb-1 text-[14px] text-brown no-underline transition-colors hover:text-dark hover:border-dark luxe-link-drift"
+                  >
+                    {viewAllLabel}
+                  </Link>
+                )
+              ) : null}
             </ViewportReveal>
           </div>
 

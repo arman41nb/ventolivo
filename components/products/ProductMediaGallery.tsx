@@ -68,8 +68,10 @@ export default function ProductMediaGallery({
                   className="aspect-square w-full rounded-[16px] object-cover"
                 />
                 {item.type === "video" ? (
-                  <span className="absolute inset-0 flex items-center justify-center bg-dark/25 text-xs uppercase tracking-[0.16em] text-white">
-                    Video
+                  <span className="absolute inset-0 flex items-center justify-center bg-dark/25 text-white">
+                    <span className="grid h-10 w-10 place-items-center rounded-full border border-white/35 bg-white/15 backdrop-blur-sm">
+                      <span className="ms-0.5 text-sm leading-none">▶</span>
+                    </span>
                   </span>
                 ) : null}
               </div>

@@ -14,7 +14,15 @@ interface CreateAuditLogInput {
   actorLabel?: string;
   targetType?: string;
   targetId?: string;
-  metadata?: string;
+  metadata?: string | Record<string, unknown>;
+}
+
+function serializeAuditMetadata(metadata: CreateAuditLogInput["metadata"]) {
+  if (!metadata) {
+    return null;
+  }
+
+  return typeof metadata === "string" ? metadata : JSON.stringify(metadata);
 }
 
 export async function dbCountAdminUsers(): Promise<number> {
@@ -91,7 +99,7 @@ export async function dbCreateAuditLog(input: CreateAuditLogInput) {
       actorLabel: input.actorLabel ?? null,
       targetType: input.targetType ?? null,
       targetId: input.targetId ?? null,
-      metadata: input.metadata ?? null,
+      metadata: serializeAuditMetadata(input.metadata),
     },
   });
 }

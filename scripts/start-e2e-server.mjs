@@ -6,7 +6,11 @@ import path from "node:path";
 const defaultDatabaseUrl = `file:${path.join(os.tmpdir(), "ventolivo", "e2e.db").replace(/\\/g, "/")}`;
 const databaseUrl =
   process.env.PLAYWRIGHT_DATABASE_URL ?? process.env.DATABASE_URL ?? defaultDatabaseUrl;
-const standaloneServerPath = path.resolve(process.cwd(), ".next", "standalone", "server.js");
+const standaloneServerCandidates = [
+  path.resolve(process.cwd(), "build", "next", "standalone", "server.js"),
+  path.resolve(process.cwd(), ".next", "standalone", "server.js"),
+];
+const standaloneServerPath = standaloneServerCandidates.find((candidate) => existsSync(candidate));
 
 function normalizeDatabaseUrl(url) {
   if (!url.startsWith("file:./")) {
@@ -64,7 +68,7 @@ function runPrismaDbPush() {
   }
 }
 
-if (!existsSync(standaloneServerPath)) {
+if (!standaloneServerPath) {
   console.error("Standalone server was not found. Run `npm run build` before `npm run test:e2e`.");
   process.exit(1);
 }

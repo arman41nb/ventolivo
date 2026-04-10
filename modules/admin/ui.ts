@@ -1,9 +1,10 @@
 import type { Locale } from "@/i18n/config";
 
-export type AdminSectionKey = "dashboard" | "products" | "media" | "siteContent";
+export type AdminSectionKey = "dashboard" | "translations" | "products" | "media" | "siteContent";
 
 export interface AdminNavigationLabels {
   dashboard: string;
+  translations: string;
   products: string;
   media: string;
   siteContent: string;
@@ -19,6 +20,11 @@ export function getAdminNavItems(
       href: `/${locale}/admin`,
       label: labels.dashboard,
       active: activeSection === "dashboard",
+    },
+    {
+      href: `/${locale}/admin/translations`,
+      label: labels.translations,
+      active: activeSection === "translations",
     },
     {
       href: `/${locale}/admin/products`,

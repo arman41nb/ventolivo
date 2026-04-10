@@ -3,6 +3,7 @@ import { defaultLocale, type Locale } from "@/i18n/config";
 import { assetPathSchema, requiredAssetPathSchema } from "@/lib/validations";
 import type {
   LocalizedFieldMap,
+  LocalizedListFieldMap,
   Product,
   ProductMediaItem,
   ProductTranslations,
@@ -11,6 +12,10 @@ import type {
 
 const productIngredientsSchema = z.array(z.string());
 const localizedFieldMapSchema = z.record(z.string().trim().min(2).max(16), z.string().trim());
+const localizedListFieldMapSchema = z.record(
+  z.string().trim().min(2).max(16),
+  z.array(z.string().trim().min(1)),
+);
 const dbProductMediaLinkSchema = z.object({
   role: z.string(),
   sortOrder: z.number().int(),
@@ -38,6 +43,8 @@ const dbProductRecordSchema = z.object({
   nameTranslations: z.string().nullable().optional(),
   tagTranslations: z.string().nullable().optional(),
   descriptionTranslations: z.string().nullable().optional(),
+  weightTranslations: z.string().nullable().optional(),
+  ingredientsTranslations: z.string().nullable().optional(),
   mediaLinks: z.array(z.unknown()).optional().default([]),
 });
 
@@ -102,6 +109,22 @@ export function parseLocalizedFieldMap(
   }
 }
 
+export function parseLocalizedListFieldMap(
+  value: string | null | undefined,
+): LocalizedListFieldMap | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+    const result = localizedListFieldMapSchema.safeParse(parsed);
+    return result.success ? result.data : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export function mapDbProductRecord(record: DbProductRecord): Product {
   const product = dbProductRecordSchema.parse(record);
   const mediaLinks = product.mediaLinks.flatMap((link) => {
@@ -112,6 +135,8 @@ export function mapDbProductRecord(record: DbProductRecord): Product {
     name: parseLocalizedFieldMap(product.nameTranslations),
     tag: parseLocalizedFieldMap(product.tagTranslations),
     description: parseLocalizedFieldMap(product.descriptionTranslations),
+    weight: parseLocalizedFieldMap(product.weightTranslations),
+    ingredients: parseLocalizedListFieldMap(product.ingredientsTranslations),
   });
 
   return {
@@ -160,11 +185,33 @@ export function serializeLocalizedFieldMap(value: LocalizedFieldMap | undefined)
   return JSON.stringify(value);
 }
 
+export function serializeLocalizedListFieldMap(
+  value: LocalizedListFieldMap | undefined,
+): string | null {
+  if (!value || Object.keys(value).length === 0) {
+    return null;
+  }
+
+  return JSON.stringify(value);
+}
+
 export function resolveLocalizedField(
   baseValue: string,
   localizedValue: LocalizedFieldMap | undefined,
   locale?: Locale,
 ): string {
+  if (!locale) {
+    return baseValue;
+  }
+
+  return localizedValue?.[locale] || localizedValue?.[defaultLocale] || baseValue;
+}
+
+export function resolveLocalizedListField(
+  baseValue: string[] | undefined,
+  localizedValue: LocalizedListFieldMap | undefined,
+  locale?: Locale,
+): string[] | undefined {
   if (!locale) {
     return baseValue;
   }
@@ -180,6 +227,14 @@ export function resolveLocalizedProduct(product: Product, locale?: Locale): Prod
     description: resolveLocalizedField(
       product.description,
       product.translations?.description,
+      locale,
+    ),
+    weight: product.weight
+      ? resolveLocalizedField(product.weight, product.translations?.weight, locale)
+      : undefined,
+    ingredients: resolveLocalizedListField(
+      product.ingredients,
+      product.translations?.ingredients,
       locale,
     ),
   };
@@ -214,6 +269,43 @@ export function normalizeProductTranslations(
 
     if (Object.keys(filtered).length > 0) {
       normalized[key] = filtered;
+    }
+  }
+
+  if (translations.weight) {
+    const filtered = Object.fromEntries(
+      Object.entries(translations.weight).flatMap(([locale, text]) => {
+        if (typeof text !== "string") {
+          return [];
+        }
+
+        const normalizedText = text.trim();
+        return normalizedText.length > 0 ? [[locale, normalizedText]] : [];
+      }),
+    ) as LocalizedFieldMap;
+
+    if (Object.keys(filtered).length > 0) {
+      normalized.weight = filtered;
+    }
+  }
+
+  if (translations.ingredients) {
+    const filtered = Object.fromEntries(
+      Object.entries(translations.ingredients).flatMap(([locale, items]) => {
+        if (!Array.isArray(items)) {
+          return [];
+        }
+
+        const normalizedItems = items
+          .map((item) => (typeof item === "string" ? item.trim() : ""))
+          .filter((item) => item.length > 0);
+
+        return normalizedItems.length > 0 ? [[locale, normalizedItems]] : [];
+      }),
+    ) as LocalizedListFieldMap;
+
+    if (Object.keys(filtered).length > 0) {
+      normalized.ingredients = filtered;
     }
   }
 

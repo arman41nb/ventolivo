@@ -4,14 +4,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { defaultLocale } from "@/i18n/config";
 import { siteContentLocaleSchema, siteContentSchema, siteLocalesSchema } from "@/lib/validations";
-import { recordAdminAuditLog, requireAdminSession } from "@/modules/admin-auth";
+import { recordAdminAuditLog, requireAdminSession } from "@/services/admin-auth";
 import {
   getSiteContentSettings,
   getSiteLocales,
   pickSiteContentLocaleFields,
-  updateSiteContentSettings,
-  updateSiteContentTranslation,
-} from "@/modules/site-content/server";
+  saveSiteContentBundle,
+} from "@/services/site-content";
 import type { SiteContentLocaleFields, SiteLocaleConfig } from "@/types";
 
 function getStringValue(formData: FormData, key: string): string {
@@ -87,6 +86,32 @@ function getRedirectLocale(currentLocale: string, siteLocales: SiteLocaleConfig[
     : defaultLocale;
 }
 
+function getRedirectTarget(
+  formData: FormData,
+  locale: string,
+  siteLocales: SiteLocaleConfig[],
+): string {
+  const redirectTo = getStringValue(formData, "redirectTo").trim();
+  const redirectLocale = getRedirectLocale(locale, siteLocales);
+
+  if (!redirectTo) {
+    return `/${redirectLocale}/admin/site?status=updated`;
+  }
+
+  if (!redirectTo.startsWith("/")) {
+    return `/${redirectLocale}/admin/site?status=updated`;
+  }
+
+  return `${redirectTo}${redirectTo.includes("?") ? "&" : "?"}status=updated`;
+}
+
+function isTranslatedLocaleEntry(
+  entry: [string, SiteContentLocaleFields | undefined],
+  currentLocale: string,
+): entry is [string, SiteContentLocaleFields] {
+  return Boolean(entry[1]) && entry[0] !== currentLocale;
+}
+
 export async function saveSiteContentAction(formData: FormData) {
   const session = await requireAdminSession();
   const locale = getStringValue(formData, "locale") || defaultLocale;
@@ -109,6 +134,18 @@ export async function saveSiteContentAction(formData: FormData) {
     heroSecondaryButtonLabel: getStringValue(formData, "heroSecondaryButtonLabel"),
     heroBadgeValue: getStringValue(formData, "heroBadgeValue"),
     heroBadgeLabel: getStringValue(formData, "heroBadgeLabel"),
+    storyEyebrow: getStringValue(formData, "storyEyebrow"),
+    storyTitle: getStringValue(formData, "storyTitle"),
+    storyLead: getStringValue(formData, "storyLead"),
+    storyBody: getStringValue(formData, "storyBody"),
+    storyClosing: getStringValue(formData, "storyClosing"),
+    storyRitualLabel: getStringValue(formData, "storyRitualLabel"),
+    storyMomentsLabel: getStringValue(formData, "storyMomentsLabel"),
+    storyMomentsValue: getStringValue(formData, "storyMomentsValue"),
+    storyDetailLabel: getStringValue(formData, "storyDetailLabel"),
+    storyDetailText: getStringValue(formData, "storyDetailText"),
+    storyStudyLabel: getStringValue(formData, "storyStudyLabel"),
+    storyStudyText: getStringValue(formData, "storyStudyText"),
     heroImageUrl: getStringValue(formData, "heroImageUrl"),
     heroImageAlt: getStringValue(formData, "heroImageAlt"),
     heroAccentImageUrl: getStringValue(formData, "heroAccentImageUrl"),
@@ -160,46 +197,44 @@ export async function saveSiteContentAction(formData: FormData) {
   const currentLocaleFields = pickSiteContentLocaleFields(result.data);
   const translatedDefaultLocale = translatedContent[defaultLocale];
 
-  await updateSiteContentSettings({
-    ...currentBaseSettings,
-    brandName: result.data.brandName,
-    logoMode: result.data.logoMode,
-    logoText: result.data.logoText,
-    logoImageUrl: result.data.logoImageUrl,
-    logoAltText: result.data.logoAltText,
-    heroImageUrl: result.data.heroImageUrl,
-    heroImageAlt: result.data.heroImageAlt,
-    heroAccentImageUrl: result.data.heroAccentImageUrl,
-    heroAccentImageAlt: result.data.heroAccentImageAlt,
-    heroAccentImageOffsetX: result.data.heroAccentImageOffsetX,
-    heroAccentImageOffsetY: result.data.heroAccentImageOffsetY,
-    heroAccentImageScale: result.data.heroAccentImageScale,
-    heroForegroundMedia: result.data.heroForegroundMedia,
-    heroImageOffsetX: result.data.heroImageOffsetX,
-    heroImageOffsetY: result.data.heroImageOffsetY,
-    heroImageScale: result.data.heroImageScale,
-    aboutImageUrl: result.data.aboutImageUrl,
-    aboutImageAlt: result.data.aboutImageAlt,
-    ...(locale === defaultLocale ? currentLocaleFields : {}),
-    ...(translatedDefaultLocale ?? {}),
-    siteLocales,
+  await saveSiteContentBundle({
+    settings: {
+      ...currentBaseSettings,
+      brandName: result.data.brandName,
+      logoMode: result.data.logoMode,
+      logoText: result.data.logoText,
+      logoImageUrl: result.data.logoImageUrl,
+      logoAltText: result.data.logoAltText,
+      heroImageUrl: result.data.heroImageUrl,
+      heroImageAlt: result.data.heroImageAlt,
+      heroAccentImageUrl: result.data.heroAccentImageUrl,
+      heroAccentImageAlt: result.data.heroAccentImageAlt,
+      heroAccentImageOffsetX: result.data.heroAccentImageOffsetX,
+      heroAccentImageOffsetY: result.data.heroAccentImageOffsetY,
+      heroAccentImageScale: result.data.heroAccentImageScale,
+      heroForegroundMedia: result.data.heroForegroundMedia,
+      heroImageOffsetX: result.data.heroImageOffsetX,
+      heroImageOffsetY: result.data.heroImageOffsetY,
+      heroImageScale: result.data.heroImageScale,
+      aboutImageUrl: result.data.aboutImageUrl,
+      aboutImageAlt: result.data.aboutImageAlt,
+      ...(locale === defaultLocale ? currentLocaleFields : {}),
+      ...(translatedDefaultLocale ?? {}),
+      siteLocales,
+    },
+    translations: [
+      {
+        locale,
+        ...currentLocaleFields,
+      },
+      ...Object.entries(translatedContent)
+        .filter((entry) => isTranslatedLocaleEntry(entry, locale))
+        .map(([targetLocale, translatedFields]) => ({
+          locale: targetLocale,
+          ...translatedFields,
+        })),
+    ],
   });
-
-  await updateSiteContentTranslation({
-    locale,
-    ...currentLocaleFields,
-  });
-
-  for (const [targetLocale, translatedFields] of Object.entries(translatedContent)) {
-    if (!translatedFields || targetLocale === locale) {
-      continue;
-    }
-
-    await updateSiteContentTranslation({
-      locale: targetLocale,
-      ...translatedFields,
-    });
-  }
 
   await recordAdminAuditLog({
     action: "site-content.updated",
@@ -220,10 +255,11 @@ export async function saveSiteContentAction(formData: FormData) {
     revalidatePath(`/${currentLocale}/products`);
     revalidatePath(`/${currentLocale}/products/[slug]`, "page");
     revalidatePath(`/${currentLocale}/admin`);
+    revalidatePath(`/${currentLocale}/admin/translations`);
     revalidatePath(`/${currentLocale}/admin/products`);
     revalidatePath(`/${currentLocale}/admin/media`);
     revalidatePath(`/${currentLocale}/admin/site`);
   }
 
-  redirect(`/${getRedirectLocale(locale, siteLocales)}/admin/site?status=updated`);
+  redirect(getRedirectTarget(formData, locale, siteLocales));
 }

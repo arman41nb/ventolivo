@@ -1,65 +1,66 @@
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { revalidatePath } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
-import { isAuthenticatedAdminRequest } from "@/modules/admin-auth";
-import { createMediaAsset } from "@/modules/media";
-import { getSiteLocales } from "@/modules/site-content/server";
-import { slugify } from "@/lib/utils";
+import { getRequestLogContext, logError, withRequestId } from "@/lib/logger";
+import { enforceMediaUploadRateLimit } from "@/lib/rate-limit";
+import { isAuthenticatedAdminRequest } from "@/services/admin-auth";
+import { uploadMediaFiles } from "@/services/media";
+import { getSiteLocales } from "@/services/site-content";
 
 export const runtime = "nodejs";
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
-const allowedMimeTypes = new Map<string, string>([
-  ["image/jpeg", ".jpg"],
-  ["image/png", ".png"],
-  ["image/webp", ".webp"],
-  ["image/gif", ".gif"],
-  ["image/svg+xml", ".svg"],
-  ["image/avif", ".avif"],
+const allowedMimeTypes = new Set<string>([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/avif",
 ]);
-
-function getExtension(file: File): string {
-  const fileExtension = path.extname(file.name).toLowerCase();
-
-  if (fileExtension) {
-    return fileExtension;
-  }
-
-  return allowedMimeTypes.get(file.type) || ".png";
-}
-
-function getLabel(fileName: string): string {
-  const baseName = path.parse(fileName).name.replace(/[-_]+/g, " ").trim();
-
-  if (!baseName) {
-    return "Uploaded image";
-  }
-
-  return baseName.replace(/\b\w/g, (character) => character.toUpperCase());
-}
-
-function getFileName(file: File): string {
-  const baseName = slugify(path.parse(file.name).name) || "image";
-  return `${Date.now()}-${crypto.randomUUID()}-${baseName}${getExtension(file)}`;
-}
 
 function isFileUpload(value: FormDataEntryValue): value is File {
   return typeof File !== "undefined" && value instanceof File;
 }
 
 export async function POST(request: NextRequest) {
+  const logContext = getRequestLogContext(request);
   const isAuthenticated = await isAuthenticatedAdminRequest(request);
 
   if (!isAuthenticated) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return withRequestId(
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+      logContext.requestId,
+    );
+  }
+
+  const rateLimit = await enforceMediaUploadRateLimit(logContext.clientIp ?? "unknown");
+
+  if (!rateLimit.allowed) {
+    return withRequestId(
+      NextResponse.json(
+        { error: "Too many upload requests. Please try again later." },
+        {
+          status: 429,
+          headers: {
+            "retry-after": `${rateLimit.retryAfterSeconds}`,
+          },
+        },
+      ),
+      logContext.requestId,
+      {
+        "x-rate-limit-limit": `${rateLimit.limit}`,
+        "x-rate-limit-remaining": `${rateLimit.remaining}`,
+      },
+    );
   }
 
   const formData = await request.formData();
   const files = formData.getAll("files").filter(isFileUpload);
 
   if (files.length === 0) {
-    return NextResponse.json({ error: "Select at least one image file." }, { status: 400 });
+    return withRequestId(
+      NextResponse.json({ error: "Select at least one image file." }, { status: 400 }),
+      logContext.requestId,
+    );
   }
 
   for (const file of files) {
@@ -74,44 +75,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `${file.name} is larger than 10 MB.` }, { status: 400 });
     }
   }
+  try {
+    const assets = await uploadMediaFiles(files);
 
-  const uploadDirectory = path.join(process.cwd(), "public", "uploads", "media");
+    const siteLocales = await getSiteLocales();
 
-  await mkdir(uploadDirectory, { recursive: true });
+    for (const locale of siteLocales.map((siteLocale) => siteLocale.code)) {
+      revalidatePath(`/${locale}/admin/media`);
+      revalidatePath(`/${locale}/admin/site`);
+      revalidatePath(`/${locale}/admin/products`);
+    }
 
-  const assets = [];
-
-  for (const file of files) {
-    const fileName = getFileName(file);
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
-    const relativePath = `/uploads/media/${fileName}`;
-
-    await writeFile(path.join(uploadDirectory, fileName), fileBuffer);
-
-    const asset = await createMediaAsset({
-      kind: "image",
-      url: relativePath,
-      altText: "",
-      label: getLabel(file.name),
-      thumbnailUrl: "",
-    });
-
-    assets.push(asset);
+    return withRequestId(
+      NextResponse.json({
+        assets: assets.map((asset) => ({
+          ...asset,
+          createdAt: asset.createdAt.toISOString(),
+          updatedAt: asset.updatedAt.toISOString(),
+        })),
+      }),
+      logContext.requestId,
+      {
+        "x-rate-limit-limit": `${rateLimit.limit}`,
+        "x-rate-limit-remaining": `${rateLimit.remaining}`,
+      },
+    );
+  } catch (error) {
+    logError("api.admin.media.upload", error, logContext);
+    return withRequestId(
+      NextResponse.json({ error: "Media upload failed" }, { status: 500 }),
+      logContext.requestId,
+    );
   }
-
-  const siteLocales = await getSiteLocales();
-
-  for (const locale of siteLocales.map((siteLocale) => siteLocale.code)) {
-    revalidatePath(`/${locale}/admin/media`);
-    revalidatePath(`/${locale}/admin/site`);
-    revalidatePath(`/${locale}/admin/products`);
-  }
-
-  return NextResponse.json({
-    assets: assets.map((asset) => ({
-      ...asset,
-      createdAt: asset.createdAt.toISOString(),
-      updatedAt: asset.updatedAt.toISOString(),
-    })),
-  });
 }

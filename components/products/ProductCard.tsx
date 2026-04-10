@@ -18,7 +18,7 @@ interface ProductCardProps {
 
 export default function ProductCard({
   product,
-  orderLabel = "Order via WhatsApp ->",
+  orderLabel,
   locale,
 }: ProductCardProps) {
   const message = buildProductWhatsAppMessage(product.name, product.price);
@@ -54,8 +54,10 @@ export default function ProductCard({
                 alt={media.alt ?? product.name}
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.08] group-hover:-translate-y-1"
               />
-              <span className="absolute inset-0 flex items-center justify-center bg-dark/20 text-xs uppercase tracking-[0.16em] text-white">
-                Video
+              <span className="absolute inset-0 flex items-center justify-center bg-dark/20 text-white">
+                <span className="grid h-11 w-11 place-items-center rounded-full border border-white/35 bg-white/15 backdrop-blur-sm">
+                  <span className="ms-0.5 text-sm leading-none">▶</span>
+                </span>
               </span>
             </div>
           ) : (
@@ -86,19 +88,21 @@ export default function ProductCard({
             <Link
               href={productHref}
               className="grid h-11 w-11 place-items-center rounded-full border border-brown/12 bg-white text-brown transition-colors hover:bg-brown hover:text-white no-underline"
-              aria-label={`View ${product.name}`}
+              aria-label={product.name}
             >
               <span className="text-lg leading-none">+</span>
             </Link>
-            <a
-              href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border-b border-brown pb-1 text-[11px] uppercase tracking-[0.14em] text-brown no-underline transition-colors hover:text-dark hover:border-dark"
-              aria-label={`${orderLabel} - ${product.name}`}
-            >
-              {orderLabel}
-            </a>
+            {orderLabel ? (
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border-b border-brown pb-1 text-[11px] uppercase tracking-[0.14em] text-brown no-underline transition-colors hover:text-dark hover:border-dark"
+                aria-label={`${orderLabel} - ${product.name}`}
+              >
+                {orderLabel}
+              </a>
+            ) : null}
           </div>
         </div>
       </div>

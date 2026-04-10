@@ -1,4 +1,4 @@
-import type { SiteContentInput, SiteContentLocaleInput } from "@/types";
+import type { SiteContentBundleInput, SiteContentInput, SiteContentLocaleInput } from "@/types";
 import type { SiteContentRepository } from "../domain/contracts";
 
 export const prismaSiteContentRepository: SiteContentRepository = {
@@ -13,6 +13,14 @@ export const prismaSiteContentRepository: SiteContentRepository = {
   async getSiteLocales() {
     const { dbGetSiteLocales } = await import("@/db");
     return dbGetSiteLocales();
+  },
+  async getSiteContentTranslation(locale) {
+    const { dbGetSiteContentTranslation } = await import("@/db");
+    return dbGetSiteContentTranslation(locale);
+  },
+  async saveSiteContentBundle(input: SiteContentBundleInput) {
+    const { dbSaveSiteContentBundle } = await import("@/db");
+    return dbSaveSiteContentBundle(input);
   },
   async upsertSiteContentSettings(input: SiteContentInput) {
     const { dbUpsertSiteContentSettings } = await import("@/db");

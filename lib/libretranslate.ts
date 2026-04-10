@@ -5,6 +5,8 @@ interface TranslationFields extends Record<string, string> {
   name: string;
   tag: string;
   description: string;
+  weight: string;
+  ingredients: string;
 }
 
 type TranslationResult = Partial<Record<Locale, TranslationFields>>;

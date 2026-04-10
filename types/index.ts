@@ -1,6 +1,7 @@
 export type { AdminAuditLogEntry, AdminSessionIdentity, AdminUser } from "./admin";
 export type {
   LocalizedFieldMap,
+  LocalizedListFieldMap,
   Product,
   ProductCategory,
   ProductMediaItem,
@@ -10,6 +11,7 @@ export type {
 export type { MediaLibraryAsset, MediaLibraryAssetInput } from "./media";
 export type {
   HeroForegroundMedia,
+  SiteContentBundleInput,
   SiteContentInput,
   SiteContentLocaleFields,
   SiteContentLocaleInput,
@@ -17,4 +19,9 @@ export type {
   SiteLocaleDirection,
   SiteContentSettings,
 } from "./site-content";
+export type {
+  EditableFieldId,
+  StorefrontPreviewBindings,
+  StorefrontPreviewRenderInput,
+} from "./site-preview";
 export type { NavLink, Feature, SocialLink, SEOData } from "./common";

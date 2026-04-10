@@ -8,11 +8,11 @@ interface StripBannerMarqueeProps {
 
 export default function StripBannerMarquee({ dict, siteSettings }: StripBannerMarqueeProps) {
   const items = [
-    siteSettings?.stripBannerItem1 ?? dict?.stripBanner.items?.[0] ?? "Handcrafted",
-    siteSettings?.stripBannerItem2 ?? dict?.stripBanner.items?.[1] ?? "Natural Ingredients",
-    siteSettings?.stripBannerItem3 ?? dict?.stripBanner.items?.[2] ?? "No Chemicals",
-    siteSettings?.stripBannerItem4 ?? dict?.stripBanner.items?.[3] ?? "Made in Denizli",
-  ];
+    siteSettings?.stripBannerItem1 ?? dict?.stripBanner.items?.[0],
+    siteSettings?.stripBannerItem2 ?? dict?.stripBanner.items?.[1],
+    siteSettings?.stripBannerItem3 ?? dict?.stripBanner.items?.[2],
+    siteSettings?.stripBannerItem4 ?? dict?.stripBanner.items?.[3],
+  ].filter((item): item is string => Boolean(item));
 
   return (
     <div className="bg-brown px-4 py-4 md:px-6">

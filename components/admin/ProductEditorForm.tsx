@@ -1,6 +1,8 @@
+export { default } from "./ProductEditorWorkspace";
+/*
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
+eslint-disable @next/next/no-img-element
 import { useMemo, useState } from "react";
 import ProductTranslationAssistant from "@/components/admin/ProductTranslationAssistant";
 import type { Dictionary } from "@/i18n/types";
@@ -111,11 +113,15 @@ export default function ProductEditorForm({
   const populatedTranslationCount = useMemo(
     () =>
       supportedLocales.filter((translationLocale) =>
-        ["name", "tag", "description"].some((field) => {
+        ["name", "tag", "description", "weight", "ingredients"].some((field) => {
           const translationMap = product?.translations?.[
             field as keyof NonNullable<Product["translations"]>
-          ] as Record<string, string> | undefined;
-          return Boolean(translationMap?.[translationLocale.code]?.trim());
+          ] as Record<string, string | string[]> | undefined;
+          const value = translationMap?.[translationLocale.code];
+
+          return Array.isArray(value)
+            ? value.some((item) => item.trim().length > 0)
+            : Boolean(value?.trim());
         }),
       ).length,
     [product, supportedLocales],
@@ -502,9 +508,16 @@ export default function ProductEditorForm({
               const translationTag = product?.translations?.tag?.[translationLocale.code] ?? "";
               const translationDescription =
                 product?.translations?.description?.[translationLocale.code] ?? "";
+              const translationWeight = product?.translations?.weight?.[translationLocale.code] ?? "";
+              const translationIngredients =
+                product?.translations?.ingredients?.[translationLocale.code]?.join(", ") ?? "";
               const note = [
                 getSiteLocaleNativeLabel(translationLocale.code),
-                translationName || translationTag || translationDescription
+                translationName ||
+                translationTag ||
+                translationDescription ||
+                translationWeight ||
+                translationIngredients
                   ? editorDictionary.hasContent
                   : editorDictionary.empty,
               ].join(" / ");
@@ -573,6 +586,26 @@ export default function ProductEditorForm({
                         className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown"
                       />
                     </label>
+                    <label className="flex flex-col gap-2 text-sm">
+                      <span className="text-muted">{dictionary.admin.form.weight}</span>
+                      <input
+                        name={`translations.weight.${translationLocale.code}`}
+                        defaultValue={product?.translations?.weight?.[translationLocale.code] ?? ""}
+                        className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown"
+                      />
+                    </label>
+                    <label className="flex flex-col gap-2 text-sm">
+                      <span className="text-muted">{dictionary.admin.form.ingredients}</span>
+                      <input
+                        name={`translations.ingredients.${translationLocale.code}`}
+                        defaultValue={
+                          product?.translations?.ingredients?.[translationLocale.code]?.join(", ") ??
+                          ""
+                        }
+                        placeholder={dictionary.admin.form.ingredientsPlaceholder}
+                        className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown"
+                      />
+                    </label>
                   </div>
                   <label className="mt-4 flex flex-col gap-2 text-sm">
                     <span className="text-muted">{dictionary.admin.form.description}</span>
@@ -614,3 +647,4 @@ export default function ProductEditorForm({
     </form>
   );
 }
+*/

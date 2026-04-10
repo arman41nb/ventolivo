@@ -6,9 +6,8 @@ import AboutSection from "@/components/sections/AboutSection";
 import FeaturesGrid from "@/components/sections/FeaturesGrid";
 import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
-import { getSiteContentSettings, getSiteLocales } from "@/modules/site-content/server";
-import { getFeaturedProducts } from "@/modules/products";
-import { getDictionary } from "@/i18n";
+import { getFeaturedProducts } from "@/services/products";
+import { getStorefrontData } from "@/services/storefront";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { notFound } from "next/navigation";
 
@@ -22,36 +21,40 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   }
 
   const currentLocale = locale as Locale;
-  const [dict, featured, siteSettings, supportedLocales] = await Promise.all([
-    getDictionary(currentLocale),
+  const [{ content, siteSettings, supportedLocales }, featured] = await Promise.all([
+    getStorefrontData(currentLocale),
     getFeaturedProducts(4, currentLocale),
-    getSiteContentSettings(currentLocale),
-    getSiteLocales(),
   ]);
 
   return (
     <div className="page-shell min-h-screen">
       <Navbar
-        dict={dict}
         locale={currentLocale}
-        siteSettings={siteSettings}
+        brand={{
+          name: content.brandName,
+          logoMode: siteSettings.logoMode,
+          logoText: siteSettings.logoText,
+          logoImageUrl: siteSettings.logoImageUrl,
+          logoAltText: siteSettings.logoAltText,
+        }}
+        content={content.navbar}
         supportedLocales={supportedLocales}
       />
       <main>
-        <Hero dict={dict} locale={currentLocale} siteSettings={siteSettings} />
-        <SoapStorySection dict={dict} siteSettings={siteSettings} />
+        <Hero locale={currentLocale} siteSettings={siteSettings} content={{ ...content.hero, ...content.features }} />
+        <SoapStorySection siteSettings={siteSettings} content={content.storySection} />
         <FeaturedProducts
           products={featured}
-          title={siteSettings.featuredProductsTitle || dict.featuredProducts.title}
-          viewAllLabel={siteSettings.featuredProductsViewAllLabel || dict.featuredProducts.viewAll}
-          orderLabel={dict.products.card.orderVia}
+          title={content.featuredProducts.title}
+          viewAllLabel={content.featuredProducts.viewAllLabel}
+          orderLabel={content.featuredProducts.orderLabel}
           locale={currentLocale}
         />
-        <AboutSection dict={dict} siteSettings={siteSettings} />
-        <FeaturesGrid dict={dict} siteSettings={siteSettings} />
-        <CTASection dict={dict} siteSettings={siteSettings} />
+        <AboutSection siteSettings={siteSettings} content={content.about} />
+        <FeaturesGrid content={content.features} />
+        <CTASection content={content.cta} />
       </main>
-      <Footer dict={dict} siteSettings={siteSettings} locale={currentLocale} />
+      <Footer brandName={content.brandName} content={content.footer} locale={currentLocale} />
     </div>
   );
 }

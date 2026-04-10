@@ -6,11 +6,18 @@ import {
   normalizeSiteLocales,
 } from "@/modules/site-content";
 import type {
+  SiteContentBundleInput,
   SiteContentInput,
+  SiteContentLocaleFields,
   SiteContentLocaleInput,
   SiteLocaleConfig,
   SiteContentSettings,
 } from "@/types";
+
+type SiteContentDbClient = Pick<
+  typeof prisma,
+  "siteContentSettings" | "siteContentTranslation"
+>;
 
 const sharedJsonKeys = [
   "aboutImageUrl",
@@ -32,6 +39,18 @@ const localizedJsonKeys = [
   "navbarLinkContact",
   "heroPrimaryButtonLabel",
   "heroSecondaryButtonLabel",
+  "storyEyebrow",
+  "storyTitle",
+  "storyLead",
+  "storyBody",
+  "storyClosing",
+  "storyRitualLabel",
+  "storyMomentsLabel",
+  "storyMomentsValue",
+  "storyDetailLabel",
+  "storyDetailText",
+  "storyStudyLabel",
+  "storyStudyText",
   "stripBannerItem1",
   "stripBannerItem2",
   "stripBannerItem3",
@@ -70,6 +89,12 @@ function parseContentJson(value: string | null | undefined): Partial<SiteContent
   return Object.fromEntries(
     Object.entries(rawContent).filter(([key]) => key !== SITE_LOCALE_CONTENT_KEY),
   ) as Partial<SiteContentSettings>;
+}
+
+function parseLocaleContentJson(
+  value: string | null | undefined,
+): Partial<SiteContentLocaleFields> {
+  return parseContentJson(value) as Partial<SiteContentLocaleFields>;
 }
 
 function parseSiteLocales(value: string | null | undefined): SiteLocaleConfig[] {
@@ -223,10 +248,52 @@ export async function dbGetSiteLocales(): Promise<SiteLocaleConfig[]> {
   return parseSiteLocales(settings?.contentJson);
 }
 
+export async function dbGetSiteContentTranslation(
+  locale: string,
+): Promise<Partial<SiteContentLocaleFields> | undefined> {
+  const translation = await prisma.siteContentTranslation.findUnique({
+    where: {
+      siteContentId_locale: {
+        siteContentId: 1,
+        locale,
+      },
+    },
+  });
+
+  if (!translation) {
+    return undefined;
+  }
+
+  return {
+    ...parseLocaleContentJson(translation.contentJson),
+    ...(translation.navbarCtaLabel ? { navbarCtaLabel: translation.navbarCtaLabel } : {}),
+    ...(translation.heroSubtitle ? { heroSubtitle: translation.heroSubtitle } : {}),
+    ...(translation.heroTitleLine1 ? { heroTitleLine1: translation.heroTitleLine1 } : {}),
+    ...(translation.heroTitleLine2 ? { heroTitleLine2: translation.heroTitleLine2 } : {}),
+    ...(translation.heroTitleLine3 ? { heroTitleLine3: translation.heroTitleLine3 } : {}),
+    ...(translation.heroDescription ? { heroDescription: translation.heroDescription } : {}),
+    ...(translation.heroBadgeValue ? { heroBadgeValue: translation.heroBadgeValue } : {}),
+    ...(translation.heroBadgeLabel ? { heroBadgeLabel: translation.heroBadgeLabel } : {}),
+    ...(translation.ctaTitleLine1 ? { ctaTitleLine1: translation.ctaTitleLine1 } : {}),
+    ...(translation.ctaTitleLine2 ? { ctaTitleLine2: translation.ctaTitleLine2 } : {}),
+    ...(translation.ctaDescription ? { ctaDescription: translation.ctaDescription } : {}),
+    ...(translation.ctaButtonLabel ? { ctaButtonLabel: translation.ctaButtonLabel } : {}),
+    ...(translation.footerCopyrightText
+      ? { footerCopyrightText: translation.footerCopyrightText }
+      : {}),
+  };
+}
+
 export async function dbUpsertSiteContentSettings(
   input: SiteContentInput,
 ): Promise<SiteContentSettings> {
-  const settings = await prisma.siteContentSettings.upsert({
+  const settings = await upsertSiteContentSettingsRecord(prisma, input);
+
+  return mapSiteContentRecord(settings);
+}
+
+async function upsertSiteContentSettingsRecord(client: SiteContentDbClient, input: SiteContentInput) {
+  return client.siteContentSettings.upsert({
     where: { id: 1 },
     update: {
       ...getBaseColumnValues(input),
@@ -238,8 +305,6 @@ export async function dbUpsertSiteContentSettings(
       contentJson: serializeSiteContentConfig(input, input.siteLocales),
     },
   });
-
-  return mapSiteContentRecord(settings);
 }
 
 export async function dbGetLocalizedSiteContentSettings(
@@ -283,7 +348,14 @@ export async function dbGetLocalizedSiteContentSettings(
 }
 
 export async function dbUpsertSiteContentTranslation(input: SiteContentLocaleInput): Promise<void> {
-  await prisma.siteContentSettings.upsert({
+  await upsertSiteContentTranslationRecord(prisma, input);
+}
+
+async function upsertSiteContentTranslationRecord(
+  client: SiteContentDbClient,
+  input: SiteContentLocaleInput,
+) {
+  await client.siteContentSettings.upsert({
     where: { id: 1 },
     update: {},
     create: {
@@ -293,7 +365,7 @@ export async function dbUpsertSiteContentTranslation(input: SiteContentLocaleInp
     },
   });
 
-  await prisma.siteContentTranslation.upsert({
+  await client.siteContentTranslation.upsert({
     where: {
       siteContentId_locale: {
         siteContentId: 1,
@@ -335,4 +407,20 @@ export async function dbUpsertSiteContentTranslation(input: SiteContentLocaleInp
       footerCopyrightText: input.footerCopyrightText,
     },
   });
+}
+
+export async function dbSaveSiteContentBundle(
+  input: SiteContentBundleInput,
+): Promise<SiteContentSettings> {
+  const settings = await prisma.$transaction(async (transaction) => {
+    const updatedSettings = await upsertSiteContentSettingsRecord(transaction, input.settings);
+
+    for (const translation of input.translations) {
+      await upsertSiteContentTranslationRecord(transaction, translation);
+    }
+
+    return updatedSettings;
+  });
+
+  return mapSiteContentRecord(settings);
 }

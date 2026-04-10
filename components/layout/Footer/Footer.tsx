@@ -1,29 +1,35 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import ViewportReveal from "@/components/animation/ViewportReveal";
-import { siteConfig, socialLinks } from "@/config";
-import type { Dictionary } from "@/i18n";
+import { socialLinks } from "@/config";
 import type { Locale } from "@/i18n/config";
-import type { SiteContentSettings } from "@/types";
+import type { StorefrontContent } from "@/modules/site-content";
+import type { StorefrontPreviewBindings } from "@/types";
 
 interface FooterProps {
-  dict?: Dictionary;
-  siteSettings?: SiteContentSettings;
-  locale?: Locale;
+  brandName: string;
+  content: StorefrontContent["footer"];
+  locale: Locale;
+  preview?: StorefrontPreviewBindings;
 }
 
-export default function Footer({ dict, siteSettings, locale }: FooterProps) {
-  const brandName = siteSettings?.brandName ?? siteConfig.name;
-  const copyright =
-    siteSettings?.footerCopyrightText ?? dict?.footer.copyright ?? "All rights reserved.";
-  const homeHref = locale ? `/${locale}` : "/";
-  const productLabel = dict?.navbar.links.products ?? "Products";
-  const aboutLabel = dict?.navbar.links.about ?? "About";
-  const contactLabel = dict?.navbar.links.contact ?? "Contact";
-  const featureLabels = [
-    productLabel,
-    dict?.about.subtitle ?? aboutLabel,
-    dict?.cta.button ?? contactLabel,
-  ];
+function renderEditable(
+  preview: StorefrontPreviewBindings | undefined,
+  fieldId: Parameters<StorefrontPreviewBindings["renderEditable"]>[0]["fieldId"],
+  label: string,
+  children: ReactNode,
+  className = "",
+  badgeAlign: "left" | "right" = "left",
+) {
+  if (!preview) {
+    return children;
+  }
+
+  return preview.renderEditable({ fieldId, label, children, className, badgeAlign });
+}
+
+export default function Footer({ brandName, content, locale, preview }: FooterProps) {
+  const homeHref = `/${locale}`;
 
   return (
     <footer
@@ -33,52 +39,83 @@ export default function Footer({ dict, siteSettings, locale }: FooterProps) {
       <div className="mx-auto max-w-[1380px]">
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.7fr_0.7fr_0.9fr]">
           <ViewportReveal delay={0} distance={26} duration={520}>
-            <Link
-              href={homeHref}
-              className="font-serif text-[2.4rem] text-cream no-underline"
-              aria-label={brandName}
-            >
-              {brandName}
-            </Link>
-            <p className="mt-4 max-w-[420px] text-[14px] leading-[1.9] text-cream/75">
-              {siteSettings?.heroDescription ?? siteConfig.description}
-            </p>
+            {preview ? (
+              renderEditable(
+                preview,
+                "brandName",
+                "Brand name",
+                <span className="font-serif text-[2.4rem] text-cream">{brandName}</span>,
+                "w-fit",
+              )
+            ) : (
+              <Link
+                href={homeHref}
+                className="font-serif text-[2.4rem] text-cream no-underline"
+                aria-label={brandName}
+              >
+                {brandName}
+              </Link>
+            )}
+            {renderEditable(
+              preview,
+              "heroDescription",
+              "Footer description",
+              <p className="mt-4 max-w-[420px] text-[14px] leading-[1.9] text-cream/75">
+                {content.description}
+              </p>,
+              "block max-w-[420px]",
+            )}
           </ViewportReveal>
 
           <ViewportReveal delay={70} distance={24} duration={500}>
             <h5 className="mb-3 text-[13px] uppercase tracking-[0.18em] text-white">
-              {productLabel}
+              {content.links.products}
             </h5>
             <div className="grid gap-2 text-[14px] text-cream/75">
-              <Link
-                href={locale ? `/${locale}/products` : "/products"}
-                className="no-underline hover:text-white"
-              >
-                {productLabel}
-              </Link>
-              <Link href={`${homeHref}#about`} className="no-underline hover:text-white">
-                {aboutLabel}
-              </Link>
-              <Link href={`${homeHref}#contact`} className="no-underline hover:text-white">
-                {contactLabel}
-              </Link>
+              {renderEditable(
+                preview,
+                "navbarLinkProducts",
+                "Footer products link",
+                <span>{content.links.products}</span>,
+              )}
+              {renderEditable(
+                preview,
+                "navbarLinkAbout",
+                "Footer about link",
+                <span>{content.links.about}</span>,
+              )}
+              {renderEditable(
+                preview,
+                "navbarLinkContact",
+                "Footer contact link",
+                <span>{content.links.contact}</span>,
+              )}
             </div>
           </ViewportReveal>
 
           <ViewportReveal delay={130} distance={22} duration={500}>
             <h5 className="mb-3 text-[13px] uppercase tracking-[0.18em] text-white">
-              {aboutLabel}
+              {content.links.about}
             </h5>
             <div className="grid gap-2 text-[14px] text-cream/75">
-              {featureLabels.map((label) => (
-                <span key={label}>{label}</span>
+              {content.featureLabels.map((label, index) => (
+                <span key={label}>
+                  {renderEditable(
+                    preview,
+                    index === 0 ? "navbarLinkProducts" : index === 1 ? "aboutSubtitle" : "ctaButtonLabel",
+                    "Footer feature label",
+                    <span>{label}</span>,
+                  )}
+                </span>
               ))}
             </div>
           </ViewportReveal>
 
           <ViewportReveal delay={180} distance={20} duration={500}>
-            <h5 className="mb-3 text-[13px] uppercase tracking-[0.18em] text-white">Social</h5>
-            <nav className="grid gap-2 text-[14px] text-cream/75" aria-label="Social links">
+            <h5 className="mb-3 text-[13px] uppercase tracking-[0.18em] text-white">
+              {brandName}
+            </h5>
+            <nav className="grid gap-2 text-[14px] text-cream/75" aria-label={brandName}>
               {socialLinks.map((link) => (
                 <a
                   key={link.label}
@@ -86,7 +123,7 @@ export default function Footer({ dict, siteSettings, locale }: FooterProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="no-underline hover:text-white"
-                  aria-label={`${link.label} (opens in new tab)`}
+                  aria-label={link.label}
                 >
                   {link.label}
                 </a>
@@ -101,10 +138,15 @@ export default function Footer({ dict, siteSettings, locale }: FooterProps) {
           distance={18}
           duration={460}
         >
-          <p>
-            &copy; {new Date().getFullYear()} {brandName}. {copyright}
-          </p>
-          <p>Designed for a premium handmade care brand.</p>
+          {renderEditable(
+            preview,
+            "footerCopyrightText",
+            "Footer copyright",
+            <p>
+              &copy; {new Date().getFullYear()} {brandName}. {content.copyright}
+            </p>,
+            "block",
+          )}
         </ViewportReveal>
       </div>
     </footer>

@@ -4,7 +4,7 @@
 import { useMemo, useState } from "react";
 import type { Dictionary } from "@/i18n/types";
 import MediaUploadDropzone from "@/components/admin/MediaUploadDropzone";
-import type { MediaLibraryAsset } from "@/types";
+import type { MediaLibraryAsset, Product } from "@/types";
 
 interface MediaLibraryFormProps {
   locale: string;
@@ -13,6 +13,7 @@ interface MediaLibraryFormProps {
   updateAction: (formData: FormData) => void | Promise<void>;
   deleteAction: (formData: FormData) => void | Promise<void>;
   assets: MediaLibraryAsset[];
+  products: Product[];
 }
 
 function Field({
@@ -94,23 +95,44 @@ export default function MediaLibraryForm({
   updateAction,
   deleteAction,
   assets,
+  products,
 }: MediaLibraryFormProps) {
   const [libraryAssets, setLibraryAssets] = useState(assets);
   const [searchQuery, setSearchQuery] = useState("");
   const [kindFilter, setKindFilter] = useState<"all" | "image" | "video">("all");
+  const [usageFilter, setUsageFilter] = useState<"all" | "used" | "unused">("all");
   const [expandedAssetId, setExpandedAssetId] = useState<string | null>(assets[0]?.id ?? null);
   const [showExternalComposer, setShowExternalComposer] = useState(false);
+  const assetUsage = useMemo(
+    () =>
+      new Map(
+        libraryAssets.map((asset) => {
+          const linkedProducts = products.filter((product) =>
+            (product.media ?? []).some((item) => item.assetId === asset.id || item.url === asset.url),
+          );
+
+          return [asset.id, linkedProducts];
+        }),
+      ),
+    [libraryAssets, products],
+  );
   const visibleAssets = useMemo(
     () =>
       libraryAssets.filter(
         (asset) =>
           (kindFilter === "all" || asset.kind === kindFilter) &&
+          (usageFilter === "all" ||
+            (usageFilter === "used"
+              ? (assetUsage.get(asset.id)?.length ?? 0) > 0
+              : (assetUsage.get(asset.id)?.length ?? 0) === 0)) &&
           matchesAssetSearch(asset, searchQuery),
       ),
-    [kindFilter, libraryAssets, searchQuery],
+    [assetUsage, kindFilter, libraryAssets, searchQuery, usageFilter],
   );
   const imageCount = libraryAssets.filter((asset) => asset.kind === "image").length;
   const videoCount = libraryAssets.filter((asset) => asset.kind === "video").length;
+  const usedCount = libraryAssets.filter((asset) => (assetUsage.get(asset.id)?.length ?? 0) > 0).length;
+  const unusedCount = libraryAssets.length - usedCount;
 
   return (
     <div className="grid gap-6">
@@ -143,6 +165,12 @@ export default function MediaLibraryForm({
             <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
               {videoCount} {dictionary.videos}
             </span>
+            <span className="rounded-full bg-olive/10 px-4 py-2 text-xs uppercase tracking-[0.16em] text-olive">
+              {usedCount} in use
+            </span>
+            <span className="rounded-full bg-amber-50 px-4 py-2 text-xs uppercase tracking-[0.16em] text-amber-800">
+              {unusedCount} unused
+            </span>
           </div>
         </div>
         <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto]">
@@ -174,6 +202,24 @@ export default function MediaLibraryForm({
               onClick={() => setKindFilter("video")}
             />
           </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <FilterButton
+            active={usageFilter === "all"}
+            label="All usage"
+            onClick={() => setUsageFilter("all")}
+          />
+          <FilterButton
+            active={usageFilter === "used"}
+            label="Used"
+            onClick={() => setUsageFilter("used")}
+          />
+          <FilterButton
+            active={usageFilter === "unused"}
+            label="Unused"
+            onClick={() => setUsageFilter("unused")}
+          />
         </div>
 
         <div className="mt-4">
@@ -223,6 +269,7 @@ export default function MediaLibraryForm({
         <section className="grid gap-4">
           {visibleAssets.map((asset) => {
             const isExpanded = expandedAssetId === asset.id;
+            const linkedProducts = assetUsage.get(asset.id) ?? [];
 
             return (
               <article
@@ -246,6 +293,17 @@ export default function MediaLibraryForm({
                         <span className="rounded-full bg-cream px-3 py-1 text-xs uppercase tracking-[0.14em] text-brown">
                           {asset.id}
                         </span>
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs uppercase tracking-[0.14em] ${
+                            linkedProducts.length > 0
+                              ? "bg-olive/10 text-olive"
+                              : "bg-amber-50 text-amber-800"
+                          }`}
+                        >
+                          {linkedProducts.length > 0
+                            ? `${linkedProducts.length} product links`
+                            : "unused asset"}
+                        </span>
                       </div>
                       <h3 className="font-serif text-2xl text-dark">
                         {asset.label || dictionary.untitledAsset}
@@ -254,6 +312,15 @@ export default function MediaLibraryForm({
                       <p className="text-sm text-text/70">
                         {asset.altText || dictionary.noAltText}
                       </p>
+                      {linkedProducts.length > 0 ? (
+                        <p className="text-sm text-text/65">
+                          Linked to: {linkedProducts.map((product) => product.name).join(", ")}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-amber-800">
+                          This asset is not used by any product yet.
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">

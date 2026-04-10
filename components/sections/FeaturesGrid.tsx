@@ -1,10 +1,10 @@
 import ViewportReveal from "@/components/animation/ViewportReveal";
-import type { Dictionary } from "@/i18n";
-import type { SiteContentSettings } from "@/types";
+import type { StorefrontContent } from "@/modules/site-content";
+import type { StorefrontPreviewBindings } from "@/types";
 
 interface FeaturesGridProps {
-  dict?: Dictionary;
-  siteSettings?: SiteContentSettings;
+  content: StorefrontContent["features"];
+  preview?: StorefrontPreviewBindings;
 }
 
 const featureIcons: Record<string, React.ReactNode> = {
@@ -26,66 +26,23 @@ const featureIcons: Record<string, React.ReactNode> = {
   ),
 };
 
-export default function FeaturesGrid({ dict, siteSettings }: FeaturesGridProps) {
-  const features = dict
-    ? [
-        {
-          key: "coldProcess",
-          icon: featureIcons.coldProcess,
-          title: siteSettings?.feature1Title ?? dict.features.items.coldProcess.title,
-          text: siteSettings?.feature1Text ?? dict.features.items.coldProcess.text,
-        },
-        {
-          key: "smallBatches",
-          icon: featureIcons.smallBatches,
-          title: siteSettings?.feature2Title ?? dict.features.items.smallBatches.title,
-          text: siteSettings?.feature2Text ?? dict.features.items.smallBatches.text,
-        },
-        {
-          key: "natural",
-          icon: featureIcons.natural,
-          title: siteSettings?.feature3Title ?? dict.features.items.natural.title,
-          text: siteSettings?.feature3Text ?? dict.features.items.natural.text,
-        },
-      ]
-    : [
-        {
-          key: "coldProcess",
-          icon: featureIcons.coldProcess,
-          title: siteSettings?.feature1Title ?? "Cold Process",
-          text:
-            siteSettings?.feature1Text ??
-            "Traditional cold-process method preserving all natural glycerin and nutrients.",
-        },
-        {
-          key: "smallBatches",
-          icon: featureIcons.smallBatches,
-          title: siteSettings?.feature2Title ?? "Small Batches",
-          text:
-            siteSettings?.feature2Text ??
-            "Each batch is made in small quantities to ensure maximum quality and freshness.",
-        },
-        {
-          key: "natural",
-          icon: featureIcons.natural,
-          title: siteSettings?.feature3Title ?? "100% Natural",
-          text:
-            siteSettings?.feature3Text ??
-            "Only plant-based oils, butters, and botanicals. Nothing artificial, ever.",
-        },
-      ];
+export default function FeaturesGrid({ content, preview }: FeaturesGridProps) {
+  const features = content.items.map((feature) => ({
+    ...feature,
+    icon: featureIcons[feature.key],
+  }));
 
   return (
-    <section className="px-4 py-20 md:px-6">
+    <section className="px-4 py-16 md:px-6 md:py-20">
       <div className="relative mx-auto max-w-[1380px]">
         <span className="pointer-events-none absolute left-[6%] top-[-8%] h-44 w-44 rounded-full bg-white/22 blur-[70px] luxe-atmosphere luxe-atmosphere-delay-1" />
         <span className="pointer-events-none absolute right-[4%] bottom-[-10%] h-40 w-40 rounded-full bg-[#e1d1bc]/26 blur-[68px] luxe-atmosphere luxe-atmosphere-delay-3" />
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:gap-5 xl:grid-cols-3">
           {features.map((feature, index) => (
             <ViewportReveal
               key={feature.key}
-              className={`group relative overflow-hidden rounded-[28px] border border-brown/8 bg-[rgba(255,253,249,0.7)] p-6 shadow-[0_12px_28px_rgba(72,49,30,0.06)] transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_18px_34px_rgba(72,49,30,0.09)] ${
-                index === 1 ? "translate-y-4 md:translate-y-8" : ""
+              className={`group relative overflow-hidden rounded-[26px] border border-brown/8 bg-[rgba(255,253,249,0.7)] p-5 shadow-[0_12px_28px_rgba(72,49,30,0.06)] transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_18px_34px_rgba(72,49,30,0.09)] sm:p-6 ${
+                index === 1 ? "xl:translate-y-8" : ""
               }`}
               delay={index * 90}
               distance={30}
@@ -97,9 +54,19 @@ export default function FeaturesGrid({ dict, siteSettings }: FeaturesGridProps) 
                 {feature.icon}
               </div>
               <p className="mb-2 font-serif text-[1.6rem] text-dark luxe-heading-glide">
-                {feature.title}
+                {preview?.renderEditable({
+                  fieldId: (`feature${index + 1}Title` as "feature1Title" | "feature2Title" | "feature3Title"),
+                  label: `Feature ${index + 1} title`,
+                  children: <span>{feature.title}</span>,
+                  className: "w-fit",
+                }) ?? feature.title}
               </p>
-              <p className="text-[14px] leading-[1.85] text-muted">{feature.text}</p>
+              {preview?.renderEditable({
+                fieldId: (`feature${index + 1}Text` as "feature1Text" | "feature2Text" | "feature3Text"),
+                label: `Feature ${index + 1} text`,
+                children: <p className="text-[14px] leading-[1.85] text-muted">{feature.text}</p>,
+                className: "block",
+              }) ?? <p className="text-[14px] leading-[1.85] text-muted">{feature.text}</p>}
             </ViewportReveal>
           ))}
         </div>

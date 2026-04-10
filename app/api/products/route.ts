@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import { getAllProducts, getProductsByTag } from "@/modules/products";
+import { logError, getRequestLogContext, withRequestId } from "@/lib/logger";
+import { getAllProducts, getProductsByTag } from "@/services/products";
 import { productFilterSchema } from "@/lib/validations";
 import { isValidLocale, type Locale } from "@/i18n/config";
 
 export async function GET(request: Request) {
+  const logContext = getRequestLogContext(request);
+
   try {
     const { searchParams } = new URL(request.url);
     const params = Object.fromEntries(searchParams.entries());
@@ -32,9 +35,15 @@ export async function GET(request: Request) {
       products = products.slice(0, limit);
     }
 
-    return NextResponse.json({ products, count: products.length });
+    return withRequestId(
+      NextResponse.json({ products, count: products.length }),
+      logContext.requestId,
+    );
   } catch (error) {
-    console.error("Error fetching products:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    logError("api.products.list", error, logContext);
+    return withRequestId(
+      NextResponse.json({ error: "Internal server error" }, { status: 500 }),
+      logContext.requestId,
+    );
   }
 }

@@ -8,7 +8,7 @@ import {
   locales,
 } from "@/i18n/config";
 import type { Locale } from "@/i18n/config";
-import { isAdminAuthenticatedRequest } from "@/modules/admin-auth/session";
+import { isAdminAuthenticatedRequest } from "@/services/admin-auth";
 
 function withLocalePreference(response: NextResponse, locale: string) {
   response.cookies.set(localePreferenceCookieName, locale, {

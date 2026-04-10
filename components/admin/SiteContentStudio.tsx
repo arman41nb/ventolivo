@@ -6,20 +6,40 @@ import SceneImage from "@/components/media/SceneImage";
 import { useState, type CSSProperties, type ReactNode } from "react";
 import HeroVisualStage from "@/components/sections/HeroVisualStage";
 import { useFormStatus } from "react-dom";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import Hero from "@/components/sections/Hero";
 import MediaUploadDropzone from "@/components/admin/MediaUploadDropzone";
 import SiteContentTranslationAssistant from "@/components/admin/SiteContentTranslationAssistant";
 import SiteLocalesManager from "@/components/admin/SiteLocalesManager";
-import { MEDIA_FRAMING_LIMITS } from "@/modules/media/framing";
+import SoapStorySection from "@/components/sections/SoapStorySection";
+import FeaturedProducts from "@/components/sections/FeaturedProducts";
+import AboutSection from "@/components/sections/AboutSection";
+import FeaturesGrid from "@/components/sections/FeaturesGrid";
+import CTASection from "@/components/sections/CTASection";
+import { MEDIA_FRAMING_LIMITS } from "@/modules/media";
 import ProductGrid from "@/components/products/ProductGrid";
 import { siteConfig, socialLinks } from "@/config";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
-import { getHeroSceneMediaState, getHeroSceneTransforms } from "@/modules/site-content";
-import type { MediaLibraryAsset, Product, SiteContentSettings, SiteLocaleConfig } from "@/types";
+import {
+  getHeroSceneMediaState,
+  getHeroSceneTransforms,
+  resolveStorefrontContent,
+} from "@/modules/site-content";
+import type {
+  EditableFieldId,
+  MediaLibraryAsset,
+  Product,
+  SiteContentSettings,
+  SiteLocaleConfig,
+  StorefrontPreviewBindings,
+} from "@/types";
 
 type EditableSectionId =
   | "header"
   | "hero"
+  | "story"
   | "strip"
   | "featured"
   | "about"
@@ -28,49 +48,6 @@ type EditableSectionId =
   | "footer";
 
 type WorkspacePanelId = "translations" | "languages" | "workflow";
-
-type EditableFieldId =
-  | "brandName"
-  | "logoText"
-  | "logoImage"
-  | "navbarLinkProducts"
-  | "navbarLinkAbout"
-  | "navbarLinkContact"
-  | "navbarCtaLabel"
-  | "heroSubtitle"
-  | "heroTitleLine1"
-  | "heroTitleLine2"
-  | "heroTitleLine3"
-  | "heroDescription"
-  | "heroPrimaryButtonLabel"
-  | "heroSecondaryButtonLabel"
-  | "heroBadgeValue"
-  | "heroBadgeLabel"
-  | "heroImage"
-  | "heroAccentImage"
-  | "stripBannerItem1"
-  | "stripBannerItem2"
-  | "stripBannerItem3"
-  | "stripBannerItem4"
-  | "featuredProductsTitle"
-  | "featuredProductsViewAllLabel"
-  | "aboutSubtitle"
-  | "aboutTitleLine1"
-  | "aboutTitleLine2"
-  | "aboutDescription"
-  | "aboutButtonLabel"
-  | "aboutImage"
-  | "feature1Title"
-  | "feature1Text"
-  | "feature2Title"
-  | "feature2Text"
-  | "feature3Title"
-  | "feature3Text"
-  | "ctaTitleLine1"
-  | "ctaTitleLine2"
-  | "ctaDescription"
-  | "ctaButtonLabel"
-  | "footerCopyrightText";
 
 type AssetFieldKey = "logoImageUrl" | "heroImageUrl" | "heroAccentImageUrl" | "aboutImageUrl";
 type AssetAltFieldKey = "logoAltText" | "heroImageAlt" | "heroAccentImageAlt" | "aboutImageAlt";
@@ -112,6 +89,7 @@ export interface SiteContentStudioProps {
 const sectionLabels: Record<EditableSectionId, string> = {
   header: "Header",
   hero: "Hero",
+  story: "Story",
   strip: "Strip banner",
   featured: "Featured products",
   about: "About",
@@ -309,6 +287,102 @@ const editableFields: Record<EditableFieldId, EditableFieldMeta> = {
       helper:
         "Use this for the candle or any supporting object that should appear next to the main product.",
     },
+  },
+  storyEyebrow: {
+    id: "storyEyebrow",
+    section: "story",
+    label: "Story eyebrow",
+    title: "Story eyebrow",
+    description: "The small label above the story section headline.",
+    editor: { type: "input", key: "storyEyebrow" },
+  },
+  storyTitle: {
+    id: "storyTitle",
+    section: "story",
+    label: "Story title",
+    title: "Story title",
+    description: "The main title of the nature and ritual section.",
+    editor: { type: "textarea", key: "storyTitle", rows: 3 },
+  },
+  storyLead: {
+    id: "storyLead",
+    section: "story",
+    label: "Story lead",
+    title: "Story lead",
+    description: "The opening paragraph in the story section.",
+    editor: { type: "textarea", key: "storyLead", rows: 3 },
+  },
+  storyBody: {
+    id: "storyBody",
+    section: "story",
+    label: "Story body",
+    title: "Story body",
+    description: "The main descriptive paragraph in the story section.",
+    editor: { type: "textarea", key: "storyBody", rows: 7 },
+  },
+  storyClosing: {
+    id: "storyClosing",
+    section: "story",
+    label: "Story closing",
+    title: "Story closing quote",
+    description: "The closing quote shown in the story section.",
+    editor: { type: "textarea", key: "storyClosing", rows: 3 },
+  },
+  storyRitualLabel: {
+    id: "storyRitualLabel",
+    section: "story",
+    label: "Ritual label",
+    title: "Story ritual label",
+    description: "The short ritual label used in the story badges.",
+    editor: { type: "input", key: "storyRitualLabel" },
+  },
+  storyMomentsLabel: {
+    id: "storyMomentsLabel",
+    section: "story",
+    label: "Moments label",
+    title: "Story moments label",
+    description: "The sensory notes label used across the story section.",
+    editor: { type: "input", key: "storyMomentsLabel" },
+  },
+  storyMomentsValue: {
+    id: "storyMomentsValue",
+    section: "story",
+    label: "Moments value",
+    title: "Story moments value",
+    description: "The sensory notes list shown in the story cards.",
+    editor: { type: "textarea", key: "storyMomentsValue", rows: 3 },
+  },
+  storyDetailLabel: {
+    id: "storyDetailLabel",
+    section: "story",
+    label: "Detail label",
+    title: "Story detail label",
+    description: "The label above the organic composition note.",
+    editor: { type: "input", key: "storyDetailLabel" },
+  },
+  storyDetailText: {
+    id: "storyDetailText",
+    section: "story",
+    label: "Detail text",
+    title: "Story detail text",
+    description: "The composition note in the floating detail card.",
+    editor: { type: "textarea", key: "storyDetailText", rows: 3 },
+  },
+  storyStudyLabel: {
+    id: "storyStudyLabel",
+    section: "story",
+    label: "Study label",
+    title: "Story study label",
+    description: "The label above the sensory study card.",
+    editor: { type: "input", key: "storyStudyLabel" },
+  },
+  storyStudyText: {
+    id: "storyStudyText",
+    section: "story",
+    label: "Study text",
+    title: "Story study text",
+    description: "The short phrase inside the study card.",
+    editor: { type: "input", key: "storyStudyText" },
   },
   stripBannerItem1: {
     id: "stripBannerItem1",
@@ -734,7 +808,7 @@ function EditableElement({
     <button
       type="button"
       onClick={() => onSelect(fieldId)}
-      className={`group relative rounded-[18px] text-left focus:outline-none ${className}`}
+      className={`group relative appearance-none border-0 bg-transparent p-0 text-left [font:inherit] text-inherit focus:outline-none ${className}`}
       style={style}
     >
       <span
@@ -889,7 +963,7 @@ function AssetPicker({
   );
 }
 
-function PreviewNavbar({
+function _PreviewNavbar({
   locale,
   dictionary,
   draft,
@@ -973,7 +1047,7 @@ function PreviewNavbar({
   );
 }
 
-function PreviewHero({
+function _PreviewHero({
   dictionary,
   draft,
   selectedField,
@@ -1274,7 +1348,7 @@ function PreviewHero({
   );
 }
 
-function PreviewStripBanner({
+function _PreviewStripBanner({
   dictionary,
   draft,
   selectedField,
@@ -1326,7 +1400,7 @@ function PreviewStripBanner({
   );
 }
 
-function PreviewFeaturedProducts({
+function _PreviewFeaturedProducts({
   locale,
   dictionary,
   draft,
@@ -1382,7 +1456,7 @@ function PreviewFeaturedProducts({
   );
 }
 
-function PreviewAbout({
+function _PreviewAbout({
   dictionary,
   draft,
   selectedField,
@@ -1471,7 +1545,7 @@ function PreviewAbout({
   );
 }
 
-function PreviewFeatures({
+function _PreviewFeatures({
   dictionary,
   draft,
   selectedField,
@@ -1540,7 +1614,7 @@ function PreviewFeatures({
   );
 }
 
-function PreviewCTA({
+function _PreviewCTA({
   dictionary,
   draft,
   selectedField,
@@ -1603,7 +1677,7 @@ function PreviewCTA({
   );
 }
 
-function PreviewFooter({
+function _PreviewFooter({
   draft,
   selectedField,
   onSelectField,
@@ -1669,6 +1743,7 @@ export default function SiteContentStudio({
   );
   const imageAssets = assets.filter((asset) => asset.kind === "image");
   const activeWorkspace = workspacePanelMeta[activeWorkspacePanel];
+  const storefrontContent = resolveStorefrontContent(dictionary, draft);
 
   function updateField<Key extends keyof SiteContentSettings>(
     key: Key,
@@ -1688,6 +1763,31 @@ export default function SiteContentStudio({
     setDraft(settings);
     setAssets(mediaLibrary);
   }
+
+  const previewBindings: StorefrontPreviewBindings = {
+    renderEditable: ({
+      fieldId,
+      label,
+      children,
+      className = "",
+      badgeAlign = "left",
+      contentClassName = "",
+      style,
+    }) => (
+      <EditableElement
+        fieldId={fieldId}
+        selectedField={selectedField}
+        onSelect={handleSelectField}
+        label={label}
+        className={className}
+        badgeAlign={badgeAlign}
+        contentClassName={contentClassName}
+        style={style}
+      >
+        {children}
+      </EditableElement>
+    ),
+  };
 
   function applyUploadedAsset(
     uploadedAssets: MediaLibraryAsset[],
@@ -2137,80 +2237,63 @@ export default function SiteContentStudio({
           </div>
 
           <div className="max-h-[calc(100vh-260px)] overflow-auto bg-[#fbf7f1] p-4">
-            <div className="mx-auto flex max-w-[940px] flex-col gap-4">
-              <section className="overflow-hidden rounded-[30px] border border-brown/10 bg-white shadow-sm">
-                <PreviewNavbar
+            <div className="mx-auto max-w-[1440px] overflow-hidden rounded-[30px] border border-brown/10 bg-[#f8f3ed] shadow-[0_22px_50px_rgba(71,49,30,0.08)]">
+              <div className="page-shell min-h-screen bg-transparent">
+                <Navbar
                   locale={locale}
-                  dictionary={dictionary}
-                  draft={draft}
-                  selectedField={selectedField}
-                  onSelectField={handleSelectField}
+                  brand={{
+                    name: storefrontContent.brandName,
+                    logoMode: draft.logoMode,
+                    logoText: draft.logoText,
+                    logoImageUrl: draft.logoImageUrl,
+                    logoAltText: draft.logoAltText,
+                  }}
+                  content={storefrontContent.navbar}
+                  supportedLocales={supportedLocales}
+                  preview={previewBindings}
                 />
-              </section>
-
-              <section className="overflow-hidden rounded-[30px] border border-brown/10 bg-white shadow-sm">
-                <PreviewHero
-                  dictionary={dictionary}
-                  draft={draft}
-                  selectedField={selectedField}
-                  onSelectField={handleSelectField}
-                />
-              </section>
-
-              <section className="overflow-hidden rounded-[30px] border border-brown/10 bg-white shadow-sm">
-                <PreviewStripBanner
-                  dictionary={dictionary}
-                  draft={draft}
-                  selectedField={selectedField}
-                  onSelectField={handleSelectField}
-                />
-              </section>
-
-              <section className="overflow-hidden rounded-[30px] border border-brown/10 bg-white shadow-sm">
-                <PreviewFeaturedProducts
+                <main>
+                  <Hero
+                    locale={locale}
+                    siteSettings={draft}
+                    content={{ ...storefrontContent.hero, ...storefrontContent.features }}
+                    preview={previewBindings}
+                  />
+                  <SoapStorySection
+                    siteSettings={draft}
+                    content={storefrontContent.storySection}
+                    previewMode
+                    preview={previewBindings}
+                  />
+                  <FeaturedProducts
+                    locale={locale}
+                    title={storefrontContent.featuredProducts.title}
+                    viewAllLabel={storefrontContent.featuredProducts.viewAllLabel}
+                    orderLabel={storefrontContent.featuredProducts.orderLabel}
+                    products={featuredProducts}
+                    preview={previewBindings}
+                  />
+                  <AboutSection
+                    siteSettings={draft}
+                    content={storefrontContent.about}
+                    preview={previewBindings}
+                  />
+                  <FeaturesGrid
+                    content={storefrontContent.features}
+                    preview={previewBindings}
+                  />
+                  <CTASection
+                    content={storefrontContent.cta}
+                    preview={previewBindings}
+                  />
+                </main>
+                <Footer
+                  brandName={storefrontContent.brandName}
+                  content={storefrontContent.footer}
                   locale={locale}
-                  dictionary={dictionary}
-                  draft={draft}
-                  selectedField={selectedField}
-                  onSelectField={handleSelectField}
-                  featuredProducts={featuredProducts}
+                  preview={previewBindings}
                 />
-              </section>
-
-              <section className="overflow-hidden rounded-[30px] border border-brown/10 bg-white shadow-sm">
-                <PreviewAbout
-                  dictionary={dictionary}
-                  draft={draft}
-                  selectedField={selectedField}
-                  onSelectField={handleSelectField}
-                />
-              </section>
-
-              <section className="overflow-hidden rounded-[30px] border border-brown/10 bg-white shadow-sm">
-                <PreviewFeatures
-                  dictionary={dictionary}
-                  draft={draft}
-                  selectedField={selectedField}
-                  onSelectField={handleSelectField}
-                />
-              </section>
-
-              <section className="overflow-hidden rounded-[30px] border border-brown/10 bg-white shadow-sm">
-                <PreviewCTA
-                  dictionary={dictionary}
-                  draft={draft}
-                  selectedField={selectedField}
-                  onSelectField={handleSelectField}
-                />
-              </section>
-
-              <section className="overflow-hidden rounded-[30px] border border-brown/10 bg-white shadow-sm">
-                <PreviewFooter
-                  draft={draft}
-                  selectedField={selectedField}
-                  onSelectField={handleSelectField}
-                />
-              </section>
+              </div>
             </div>
           </div>
         </div>

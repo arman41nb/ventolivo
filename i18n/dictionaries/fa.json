@@ -95,6 +95,7 @@
     "disabledMessage": "ویرایش ادمین وقتی PRODUCTS_DATA_SOURCE=mock است غیرفعال می‌ماند. برای ساخت، ویرایش یا حذف محصول به database سوییچ کنید.",
     "navigation": {
       "dashboard": "داشبورد",
+      "translations": "ترجمه و زبان‌ها",
       "products": "محصولات",
       "media": "کتابخانه",
       "siteContent": "محتوای سایت"

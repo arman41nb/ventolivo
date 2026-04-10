@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { adminLoginSchema } from "@/lib/validations";
-import { authenticateAdmin, getSafeAdminNextPath, logoutAdminSession } from "@/modules/admin-auth";
+import { authenticateAdmin, getSafeAdminNextPath, logoutAdminSession } from "@/services/admin-auth";
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key);

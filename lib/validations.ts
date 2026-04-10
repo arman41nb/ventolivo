@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { baseSiteLocaleCode, isValidSiteLocaleCode } from "@/modules/site-content";
-import { MEDIA_FRAMING_LIMITS } from "@/modules/media/framing";
+import { MEDIA_FRAMING_LIMITS } from "@/modules/media";
 
 function isValidAssetReference(value: string): boolean {
   if (value.length === 0) {
@@ -138,6 +138,18 @@ export const siteContentSchema = z.object({
     .min(MEDIA_FRAMING_LIMITS.scale.min)
     .max(MEDIA_FRAMING_LIMITS.scale.max)
     .default(MEDIA_FRAMING_LIMITS.scale.defaultValue),
+  storyEyebrow: z.string().trim().min(1).max(120),
+  storyTitle: z.string().trim().min(1).max(220),
+  storyLead: z.string().trim().min(1).max(240),
+  storyBody: z.string().trim().min(1).max(1200),
+  storyClosing: z.string().trim().min(1).max(180),
+  storyRitualLabel: z.string().trim().min(1).max(80),
+  storyMomentsLabel: z.string().trim().min(1).max(80),
+  storyMomentsValue: z.string().trim().min(1).max(220),
+  storyDetailLabel: z.string().trim().min(1).max(80),
+  storyDetailText: z.string().trim().min(1).max(220),
+  storyStudyLabel: z.string().trim().min(1).max(80),
+  storyStudyText: z.string().trim().min(1).max(120),
   stripBannerItem1: z.string().trim().min(1).max(80),
   stripBannerItem2: z.string().trim().min(1).max(80),
   stripBannerItem3: z.string().trim().min(1).max(80),
@@ -178,6 +190,18 @@ export const siteContentLocaleSchema = siteContentSchema.pick({
   heroSecondaryButtonLabel: true,
   heroBadgeValue: true,
   heroBadgeLabel: true,
+  storyEyebrow: true,
+  storyTitle: true,
+  storyLead: true,
+  storyBody: true,
+  storyClosing: true,
+  storyRitualLabel: true,
+  storyMomentsLabel: true,
+  storyMomentsValue: true,
+  storyDetailLabel: true,
+  storyDetailText: true,
+  storyStudyLabel: true,
+  storyStudyText: true,
   stripBannerItem1: true,
   stripBannerItem2: true,
   stripBannerItem3: true,

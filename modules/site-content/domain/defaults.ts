@@ -1,5 +1,5 @@
 import type { SiteContentSettings } from "@/types";
-import { MEDIA_FRAMING_LIMITS } from "@/modules/media/framing";
+import { MEDIA_FRAMING_LIMITS } from "@/modules/media";
 import { getDefaultSiteLocales } from "./locales";
 
 export const defaultSiteContentSettings: SiteContentSettings = {
@@ -34,6 +34,19 @@ export const defaultSiteContentSettings: SiteContentSettings = {
   heroImageOffsetX: MEDIA_FRAMING_LIMITS.offset.defaultValue,
   heroImageOffsetY: MEDIA_FRAMING_LIMITS.offset.defaultValue,
   heroImageScale: MEDIA_FRAMING_LIMITS.scale.defaultValue,
+  storyEyebrow: "Inspired by nature",
+  storyTitle: "Nature, memory, and the rituals we turn into soap.",
+  storyLead: "We design from scenes that stay with us, drawn equally from nature and human life.",
+  storyBody:
+    "A dried leaf carried by a narrow stream, a sandstorm across the desert, a bay that feels like paradise, an emerald seam, life beneath the sea, a carefully brewed coffee, the grain of a wooden table, confetti suspended in the air. What we love to watch, touch, and taste becomes part of our handmade soaps, always in harmony with nature and human life.",
+  storyClosing: "Your skin deserves the best. So does your soul.",
+  storyRitualLabel: "Handmade ritual",
+  storyMomentsLabel: "Sensory notes",
+  storyMomentsValue: "Leaf, desert, bay, emerald, coffee, wood, confetti.",
+  storyDetailLabel: "Organic composition",
+  storyDetailText: "Layered with calm motion, mineral warmth, and tactile detail.",
+  storyStudyLabel: "Sensory study",
+  storyStudyText: "Crafted for skin and soul",
   stripBannerItem1: "Handcrafted",
   stripBannerItem2: "Natural Ingredients",
   stripBannerItem3: "No Chemicals",

@@ -20,8 +20,14 @@ export const fallbackSiteContentRepository: SiteContentRepository = {
   async getLocalizedSiteContentSettings() {
     return cloneSiteContentSettings();
   },
+  async getSiteContentTranslation() {
+    return undefined;
+  },
   async getSiteLocales() {
     return cloneSiteLocales();
+  },
+  async saveSiteContentBundle() {
+    throw createPersistenceError();
   },
   async upsertSiteContentSettings() {
     throw createPersistenceError();

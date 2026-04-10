@@ -7,7 +7,8 @@ import {
   normalizeProductMedia,
   serializeProductIngredients,
   serializeLocalizedFieldMap,
-} from "@/modules/products/mappers";
+  serializeLocalizedListFieldMap,
+} from "@/modules/products/domain/mappers";
 import type { Product, ProductUpsertInput } from "@/types";
 
 const productInclude = {
@@ -101,7 +102,9 @@ export async function dbGetProductsByTag(tag: string): Promise<Product[]> {
       "featured",
       "nameTranslations",
       "tagTranslations",
-      "descriptionTranslations"
+      "descriptionTranslations",
+      "weightTranslations",
+      "ingredientsTranslations"
     FROM "Product"
     WHERE lower(trim("tag")) = ${normalizedTag}
     ORDER BY "createdAt" DESC
@@ -135,6 +138,8 @@ export async function dbCreateProduct(input: ProductUpsertInput): Promise<Produc
       nameTranslations: serializeLocalizedFieldMap(input.translations?.name),
       tagTranslations: serializeLocalizedFieldMap(input.translations?.tag),
       descriptionTranslations: serializeLocalizedFieldMap(input.translations?.description),
+      weightTranslations: serializeLocalizedFieldMap(input.translations?.weight),
+      ingredientsTranslations: serializeLocalizedListFieldMap(input.translations?.ingredients),
       mediaLinks: mapProductMediaCreateInput(input),
     },
     include: productInclude,
@@ -159,6 +164,8 @@ export async function dbUpdateProduct(id: number, input: ProductUpsertInput): Pr
       nameTranslations: serializeLocalizedFieldMap(input.translations?.name),
       tagTranslations: serializeLocalizedFieldMap(input.translations?.tag),
       descriptionTranslations: serializeLocalizedFieldMap(input.translations?.description),
+      weightTranslations: serializeLocalizedFieldMap(input.translations?.weight),
+      ingredientsTranslations: serializeLocalizedListFieldMap(input.translations?.ingredients),
       mediaLinks: {
         deleteMany: {},
         ...(mapProductMediaCreateInput(input) ?? {}),

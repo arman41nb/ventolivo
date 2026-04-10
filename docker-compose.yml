@@ -12,9 +12,18 @@ services:
       - NEXT_PUBLIC_SITE_URL=http://localhost:3000
       - DATABASE_URL=file:./data/dev.db
       - PRODUCTS_DATA_SOURCE=database
+      - MEDIA_STORAGE_DRIVER=local
+      - MEDIA_LOCAL_UPLOAD_DIR=public/uploads/media
+      - MEDIA_PUBLIC_BASE_PATH=/uploads/media
+      - RATE_LIMIT_DRIVER=database
+      - RATE_LIMIT_WINDOW_MS=60000
+      - RATE_LIMIT_MAX_MEDIA_UPLOADS=10
+      - RATE_LIMIT_MAX_TRANSLATION_REQUESTS=20
     volumes:
       - db-data:/app/data
+      - media-data:/app/public/uploads/media
     restart: unless-stopped
 
 volumes:
   db-data:
+  media-data:

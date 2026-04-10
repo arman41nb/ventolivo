@@ -5,12 +5,19 @@ import { getDictionary } from "@/i18n";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { env } from "@/lib/env";
 import {
+  buildAdminFocusItems,
+  buildAdminMediaInsights,
+  buildAdminProductInsights,
+} from "@/modules/admin/insights";
+import {
   getAdminSession,
   getAdminSessionRecoveryPath,
   getRecentAdminAuditLogEntries,
-} from "@/modules/admin-auth";
-import { getAdminNavItems } from "@/modules/admin/ui";
-import { getAllProducts, getFeaturedProducts } from "@/modules/products";
+} from "@/services/admin-auth";
+import { getAdminNavItems } from "@/services/admin";
+import { getAllMediaAssets } from "@/services/media";
+import { getAllProducts, getFeaturedProducts } from "@/services/products";
+import { getSiteLocales } from "@/services/site-content";
 
 export default async function AdminDashboardPage({
   params,
@@ -35,11 +42,20 @@ export default async function AdminDashboardPage({
     );
   }
 
-  const [products, featuredProducts, activity] = await Promise.all([
+  const [products, featuredProducts, activity, mediaAssets, siteLocales] = await Promise.all([
     getAllProducts(locale),
     getFeaturedProducts(4, locale),
     getRecentAdminAuditLogEntries(6),
+    getAllMediaAssets(),
+    getSiteLocales(),
   ]);
+  const productInsights = buildAdminProductInsights(products, siteLocales);
+  const mediaInsights = buildAdminMediaInsights(mediaAssets, products);
+  const focusItems = buildAdminFocusItems({
+    productInsights,
+    mediaInsights,
+    locales: siteLocales,
+  });
   const recentProducts = products.slice(0, 5);
   const lastActivity = activity[0];
   const latestProduct = recentProducts[0];
@@ -58,6 +74,11 @@ export default async function AdminDashboardPage({
       label: dictionary.admin.dataSourceLabel,
       value: env.PRODUCTS_DATA_SOURCE.toUpperCase(),
       accent: "bg-[linear-gradient(135deg,rgba(122,86,56,0.12),rgba(255,255,255,0.94))]",
+    },
+    {
+      label: "Media assets",
+      value: mediaInsights.totalAssets.toString().padStart(2, "0"),
+      accent: "bg-[linear-gradient(135deg,rgba(218,208,195,0.42),rgba(255,255,255,0.94))]",
     },
   ];
 
@@ -169,6 +190,66 @@ export default async function AdminDashboardPage({
       </section>
 
       <section className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+        <article className="rounded-[34px] border border-white/55 bg-white/84 p-6 shadow-[0_24px_50px_rgba(107,79,58,0.1)] md:p-8 xl:col-span-2">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.24em] text-muted">Admin health</p>
+              <h2 className="mt-3 font-serif text-4xl text-dark">Data, content, and library health</h2>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-text/74">
+                This layer surfaces the parts of the admin that still need attention so we are not
+                editing blind: translation coverage, product media readiness, and unused library
+                assets.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <span className="rounded-full border border-brown/10 bg-white/75 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown/70">
+                {siteLocales.length} locales
+              </span>
+              <span className="rounded-full border border-brown/10 bg-white/75 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown/70">
+                {productInsights.totalMissingTranslationLocales} missing locale slots
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            {focusItems.map((item) => (
+              <article
+                key={item.id}
+                className={`rounded-[28px] border p-5 shadow-[0_16px_30px_rgba(107,79,58,0.06)] ${
+                  item.tone === "success"
+                    ? "border-olive/20 bg-[linear-gradient(180deg,rgba(124,140,94,0.12),rgba(255,255,255,0.9))]"
+                    : item.tone === "warning"
+                      ? "border-amber-500/20 bg-[linear-gradient(180deg,rgba(245,158,11,0.08),rgba(255,255,255,0.92))]"
+                      : "border-red-500/20 bg-[linear-gradient(180deg,rgba(239,68,68,0.08),rgba(255,255,255,0.92))]"
+                }`}
+              >
+                <p className="text-[11px] uppercase tracking-[0.22em] text-muted">{item.label}</p>
+                <p className="mt-4 font-serif text-4xl text-dark">{item.value}</p>
+                <p className="mt-3 text-sm leading-7 text-text/72">{item.description}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-6 grid gap-4 md:grid-cols-4">
+            <div className="rounded-[24px] border border-brown/10 bg-[linear-gradient(180deg,rgba(255,252,247,0.78),rgba(239,228,215,0.72))] p-5">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-muted">Localized products</p>
+              <p className="mt-3 font-serif text-3xl text-dark">{productInsights.fullyLocalizedProducts}</p>
+            </div>
+            <div className="rounded-[24px] border border-brown/10 bg-[linear-gradient(180deg,rgba(255,252,247,0.78),rgba(239,228,215,0.72))] p-5">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-muted">Products with cover</p>
+              <p className="mt-3 font-serif text-3xl text-dark">{productInsights.productsWithCover}</p>
+            </div>
+            <div className="rounded-[24px] border border-brown/10 bg-[linear-gradient(180deg,rgba(255,252,247,0.78),rgba(239,228,215,0.72))] p-5">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-muted">Gallery ready</p>
+              <p className="mt-3 font-serif text-3xl text-dark">{productInsights.productsWithGallery}</p>
+            </div>
+            <div className="rounded-[24px] border border-brown/10 bg-[linear-gradient(180deg,rgba(255,252,247,0.78),rgba(239,228,215,0.72))] p-5">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-muted">Unused assets</p>
+              <p className="mt-3 font-serif text-3xl text-dark">{mediaInsights.unusedAssets}</p>
+            </div>
+          </div>
+        </article>
+
         <article className="rounded-[34px] border border-white/55 bg-white/84 p-6 shadow-[0_24px_50px_rgba(107,79,58,0.1)] md:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>

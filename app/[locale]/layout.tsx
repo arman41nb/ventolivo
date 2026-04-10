@@ -5,7 +5,7 @@ import type { Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 import { I18nProvider } from "@/hooks/useI18n";
 import { generatePageMetadata } from "@/lib/seo";
-import { getSiteLocales } from "@/modules/site-content/server";
+import { getSiteLocales } from "@/services/site-content";
 import "../globals.css";
 
 export const dynamic = "force-dynamic";

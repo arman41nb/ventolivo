@@ -5,10 +5,13 @@ export {
   normalizeProductTag,
   normalizeProductTranslations,
   parseLocalizedFieldMap,
+  parseLocalizedListFieldMap,
   parseProductIngredients,
   resolveLocalizedField,
+  resolveLocalizedListField,
   resolveLocalizedProduct,
   serializeLocalizedFieldMap,
+  serializeLocalizedListFieldMap,
   serializeProductIngredients,
 } from "./domain/mappers";
 export {

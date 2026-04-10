@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import type { Dictionary } from "@/i18n/types";
 import type { Locale } from "@/i18n/config";
 import { logoutAdminAction } from "@/app/[locale]/admin/actions";
-import { getSiteLocales } from "@/modules/site-content/server";
-import AdminShellClient from "@/components/admin/AdminShellClient";
+import { getSiteLocales } from "@/services/site-content";
+import AdminShellFrame from "@/components/admin/AdminShellFrame";
 
 interface AdminShellProps {
   locale: Locale;
@@ -47,7 +47,7 @@ export default async function AdminShell({
   const activeItem = navItems?.find((item) => item.active);
 
   return (
-    <AdminShellClient
+    <AdminShellFrame
       locale={locale}
       dictionary={dictionary}
       title={title}
@@ -62,6 +62,6 @@ export default async function AdminShell({
       logoutAction={logoutAdminAction}
     >
       {children}
-    </AdminShellClient>
+    </AdminShellFrame>
   );
 }

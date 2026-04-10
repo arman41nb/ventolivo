@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { mapDbProductRecord, normalizeProductTag, parseProductIngredients } from "./mappers";
+import {
+  mapDbProductRecord,
+  normalizeProductTag,
+  parseProductIngredients,
+} from "./domain/mappers";
 
 describe("normalizeProductTag", () => {
   it("normalizes case and surrounding whitespace", () => {

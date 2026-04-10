@@ -95,6 +95,7 @@
     "disabledMessage": "Admin edits are disabled while PRODUCTS_DATA_SOURCE=mock. Switch to database to create, edit, or delete products.",
     "navigation": {
       "dashboard": "Dashboard",
+      "translations": "Translations",
       "products": "Products",
       "media": "Library",
       "siteContent": "Site content"

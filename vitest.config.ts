@@ -8,18 +8,19 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "."),
+      "server-only": path.resolve(__dirname, "./test/shims/server-only.ts"),
     },
   },
   test: {
     environment: "jsdom",
     globals: true,
     setupFiles: ["./test/setup.ts"],
-    exclude: ["coverage/**", "node_modules/**", "test/e2e/**", ".next/**"],
+    exclude: ["coverage/**", "node_modules/**", "test/e2e/**", ".next/**", "build/**"],
     include: ["**/*.{test,spec}.{ts,tsx}"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json-summary", "lcov"],
-      exclude: ["node_modules/", ".next/", "test/", "**/*.d.ts", "**/*.config.*"],
+      exclude: ["node_modules/", ".next/", "build/", "test/", "**/*.d.ts", "**/*.config.*"],
       thresholds: {
         statements: 65,
         branches: 35,

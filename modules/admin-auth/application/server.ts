@@ -1,3 +1,5 @@
+import "server-only";
+
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 import type { AdminAuditLogEntry, AdminSessionIdentity } from "@/types";
@@ -69,7 +71,9 @@ async function bootstrapFirstAdminIfAllowed(username: string, password: string) 
     action: "admin.bootstrap",
     adminUserId: adminUser.id,
     actorLabel: adminUser.username,
-    metadata: "Initial admin account was provisioned from bootstrap environment variables.",
+    metadata: {
+      event: "Initial admin account was provisioned from bootstrap environment variables.",
+    },
   });
 
   return adminUser;
@@ -130,7 +134,11 @@ export async function authenticateAdmin(input: AuthenticateAdminInput): Promise<
     await createAuditLogRecord({
       action: "admin.login_failed",
       actorLabel: username,
-      metadata: "Unknown username.",
+      metadata: {
+        reason: "unknown_username",
+        ipAddress: input.ipAddress,
+        userAgent: input.userAgent,
+      },
     });
     return false;
   }
@@ -142,7 +150,11 @@ export async function authenticateAdmin(input: AuthenticateAdminInput): Promise<
       action: "admin.login_failed",
       adminUserId: adminUser.id,
       actorLabel: adminUser.username,
-      metadata: "Invalid password.",
+      metadata: {
+        reason: "invalid_password",
+        ipAddress: input.ipAddress,
+        userAgent: input.userAgent,
+      },
     });
     return false;
   }
@@ -159,7 +171,10 @@ export async function authenticateAdmin(input: AuthenticateAdminInput): Promise<
     action: "admin.login_succeeded",
     adminUserId: adminUser.id,
     actorLabel: adminUser.username,
-    metadata: "Admin signed in successfully.",
+    metadata: {
+      ipAddress: input.ipAddress,
+      userAgent: input.userAgent,
+    },
   });
 
   return true;
@@ -235,7 +250,9 @@ export async function logoutAdminSession() {
     action: "admin.logout",
     adminUserId: session.user.id,
     actorLabel: session.user.username,
-    metadata: "Admin signed out.",
+    metadata: {
+      sessionId: session.sessionId,
+    },
   });
   await clearAdminSessionCookie();
 }
@@ -246,7 +263,7 @@ export async function recordAdminAuditLog(input: {
   actorLabel?: string;
   targetType?: string;
   targetId?: string;
-  metadata?: string;
+  metadata?: string | Record<string, unknown>;
 }) {
   await createAuditLogRecord(input);
 }

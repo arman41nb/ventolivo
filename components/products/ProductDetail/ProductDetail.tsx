@@ -5,11 +5,13 @@ import { buildWhatsAppLink, buildProductWhatsAppMessage, formatPrice } from "@/l
 interface ProductDetailProps {
   product: Product;
   orderLabel?: string;
+  ingredientsLabel?: string;
 }
 
 export default function ProductDetail({
   product,
-  orderLabel = "Order via WhatsApp",
+  orderLabel,
+  ingredientsLabel,
 }: ProductDetailProps) {
   const message = buildProductWhatsAppMessage(product.name, product.price);
   const whatsappLink = buildWhatsAppLink(message);
@@ -43,23 +45,27 @@ export default function ProductDetail({
               {product.tag}
             </span>
           </div>
-          {product.ingredients && product.ingredients.length > 0 ? (
+          {product.ingredients && product.ingredients.length > 0 && ingredientsLabel ? (
             <div className="mb-7 rounded-[24px] border border-brown/8 bg-white/62 p-5">
-              <p className="mb-2 text-[12px] tracking-[0.18em] uppercase text-olive">Ingredients</p>
+              <p className="mb-2 text-[12px] tracking-[0.18em] uppercase text-olive">
+                {ingredientsLabel}
+              </p>
               <p className="text-[14px] leading-[1.8] text-muted">
                 {product.ingredients.join(", ")}
               </p>
             </div>
           ) : null}
           <p className="mb-6 font-serif text-[2.6rem] text-brown">{formatPrice(product.price)}</p>
-          <a
-            href={whatsappLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex w-fit items-center gap-[10px] rounded-full bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] px-7 py-4 text-[13px] font-medium uppercase tracking-[0.16em] text-white shadow-[0_16px_30px_rgba(93,61,39,0.18)] transition-transform hover:-translate-y-0.5 no-underline"
-          >
-            {orderLabel}
-          </a>
+          {orderLabel ? (
+            <a
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-fit items-center gap-[10px] rounded-full bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] px-7 py-4 text-[13px] font-medium uppercase tracking-[0.16em] text-white shadow-[0_16px_30px_rgba(93,61,39,0.18)] transition-transform hover:-translate-y-0.5 no-underline"
+            >
+              {orderLabel}
+            </a>
+          ) : null}
         </div>
       </div>
     </div>

@@ -21,5 +21,7 @@ export {
   getHeroSceneTransforms,
 } from "./domain/hero-scene";
 export type { HeroSceneMediaState, HeroSceneTransforms } from "./domain/hero-scene";
+export { resolveStorefrontContent } from "./domain/storefront";
+export type { StorefrontContent } from "./domain/storefront";
 export { pickSiteContentLocaleFields, siteContentTranslationKeys } from "./domain/translation";
 export type { SiteContentTranslationKey } from "./domain/translation";

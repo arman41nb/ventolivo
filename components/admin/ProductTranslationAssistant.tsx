@@ -53,6 +53,8 @@ export default function ProductTranslationAssistant({
         name: getValue("name"),
         tag: getValue("tag"),
         description: getValue("description"),
+        weight: getValue("weight"),
+        ingredients: getValue("ingredients"),
       },
     };
 
@@ -83,7 +85,18 @@ export default function ProductTranslationAssistant({
       });
 
       const result = (await response.json()) as {
-        translations?: Partial<Record<string, { name: string; tag: string; description: string }>>;
+        translations?: Partial<
+          Record<
+            string,
+            {
+              name: string;
+              tag: string;
+              description: string;
+              weight: string;
+              ingredients: string;
+            }
+          >
+        >;
         providers?: Partial<Record<string, "libretranslate" | "mymemory">>;
         error?: string;
       };
@@ -108,6 +121,12 @@ export default function ProductTranslationAssistant({
         const descriptionField = form.querySelector(
           `[name="translations.description.${locale}"]`,
         ) as HTMLTextAreaElement | null;
+        const weightField = form.querySelector(
+          `[name="translations.weight.${locale}"]`,
+        ) as HTMLInputElement | null;
+        const ingredientsField = form.querySelector(
+          `[name="translations.ingredients.${locale}"]`,
+        ) as HTMLInputElement | null;
 
         if (nameField && (!onlyEmptyFields || !nameField.value.trim())) {
           nameField.value = translation.name;
@@ -119,6 +138,14 @@ export default function ProductTranslationAssistant({
 
         if (descriptionField && (!onlyEmptyFields || !descriptionField.value.trim())) {
           descriptionField.value = translation.description;
+        }
+
+        if (weightField && (!onlyEmptyFields || !weightField.value.trim())) {
+          weightField.value = translation.weight;
+        }
+
+        if (ingredientsField && (!onlyEmptyFields || !ingredientsField.value.trim())) {
+          ingredientsField.value = translation.ingredients;
         }
       }
 
