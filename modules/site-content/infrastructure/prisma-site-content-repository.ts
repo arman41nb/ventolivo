@@ -14,6 +14,10 @@ export const prismaSiteContentRepository: SiteContentRepository = {
     const { dbGetSiteLocales } = await import("@/db");
     return dbGetSiteLocales();
   },
+  async getSiteThemePresets() {
+    const { dbGetSiteThemePresets } = await import("@/db");
+    return dbGetSiteThemePresets();
+  },
   async getSiteContentTranslation(locale) {
     const { dbGetSiteContentTranslation } = await import("@/db");
     return dbGetSiteContentTranslation(locale);

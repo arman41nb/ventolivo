@@ -109,8 +109,8 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
 
     return (
       <section className="px-4 pb-5 pt-4 md:px-6 md:pt-5">
-        <div className="relative mx-auto max-w-[1380px] overflow-hidden rounded-[42px] border border-white/55 bg-[linear-gradient(180deg,rgba(252,248,243,0.98),rgba(244,236,228,0.94))] shadow-[0_28px_90px_rgba(109,82,58,0.14)]">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_18%,rgba(255,255,255,0.95),transparent_20%),radial-gradient(circle_at_82%_15%,rgba(255,255,255,0.7),transparent_16%),radial-gradient(circle_at_50%_88%,rgba(198,178,156,0.2),transparent_22%)]" />
+        <div className="theme-shell-surface relative mx-auto max-w-[1380px] overflow-hidden rounded-[42px] border border-white/55">
+          <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: "var(--theme-shell-radial)" }} />
           <span className="pointer-events-none absolute left-[-4%] top-[16%] h-52 w-52 rounded-full bg-white/48 blur-[72px] hero-soft-orb" />
           <span className="pointer-events-none absolute right-[-6%] top-[10%] h-64 w-64 rounded-full bg-[#e7d6c2]/46 blur-[92px] hero-soft-orb hero-soft-orb-delay-2" />
           <span className="pointer-events-none absolute bottom-[-4%] left-[34%] h-48 w-48 rounded-full bg-[#efe2d2]/50 blur-[82px] hero-soft-orb hero-soft-orb-delay-3" />
@@ -124,22 +124,22 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
                 className="flex flex-wrap items-center gap-3 hero-fade-up"
                 style={animationStyle(120)}
               >
-                <p className="inline-flex items-center gap-3 rounded-full border border-brown/8 bg-white/82 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-[#9c826a] shadow-[0_10px_25px_rgba(72,49,30,0.05)]">
+                <p className="theme-soft-badge inline-flex items-center gap-3 rounded-full border border-brown/8 px-4 py-2 text-[11px] uppercase tracking-[0.22em]">
                   <span className="h-1.5 w-1.5 rounded-full bg-olive" />
                   {content.subtitle}
                 </p>
-                <span className="rounded-full border border-brown/8 bg-white/74 px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-[#9c826a]">
+                <span className="theme-soft-chip rounded-full border border-brown/8 px-4 py-2 text-[11px] uppercase tracking-[0.2em]">
                   {content.badge.value} {content.badge.label}
                 </span>
               </div>
 
               <div className="mt-6 max-w-[620px]">
-                <h1 className="font-serif text-[3.55rem] leading-[0.88] tracking-[-0.03em] text-[#3f2c1f] md:text-[5.1rem] xl:text-[6.3rem]">
+                <h1 className="font-serif text-[3.55rem] leading-[0.88] tracking-[-0.03em] text-dark md:text-[5.1rem] xl:text-[6.3rem]">
                   <span className="block hero-fade-up" style={animationStyle(220, 980)}>
                     {content.title.line1}
                   </span>
                   <span
-                    className="mt-1 block text-[#a07d62] hero-fade-up"
+                    className="theme-hero-emphasis mt-1 block hero-fade-up"
                     style={animationStyle(340, 1040)}
                   >
                     <em className="font-medium italic">{content.title.line2}</em>
@@ -149,7 +149,7 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
                   </span>
                 </h1>
                 <p
-                  className="mt-8 max-w-[430px] text-[15px] leading-[1.9] text-[#6f5a49] md:text-[17px] hero-fade-up"
+                  className="theme-hero-copy mt-8 max-w-[430px] text-[15px] leading-[1.9] md:text-[17px] hero-fade-up"
                   style={animationStyle(580, 1120)}
                 >
                   {content.description}
@@ -159,14 +159,14 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Link
                   href={productsHref}
-                  className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] px-7 py-4 text-[13px] font-medium uppercase tracking-[0.16em] text-white shadow-[0_16px_34px_rgba(93,61,39,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_38px_rgba(93,61,39,0.24)] no-underline hero-fade-up hero-button-entrance"
+                  className="theme-primary-button inline-flex items-center justify-center rounded-full px-7 py-4 text-[13px] font-medium uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 no-underline hero-fade-up hero-button-entrance"
                   style={animationStyle(720, 980)}
                 >
                   {content.primaryButtonLabel}
                 </Link>
                 <Link
                   href={aboutHref}
-                  className="inline-flex items-center justify-center rounded-full border border-brown/8 bg-white/84 px-7 py-4 text-[13px] font-medium uppercase tracking-[0.16em] text-[#8a6b52] shadow-[0_10px_24px_rgba(72,49,30,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white no-underline hero-fade-up hero-button-entrance"
+                  className="theme-secondary-button inline-flex items-center justify-center rounded-full border border-brown/8 px-7 py-4 text-[13px] font-medium uppercase tracking-[0.16em] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white no-underline hero-fade-up hero-button-entrance"
                   style={animationStyle(840, 1020)}
                 >
                   {content.secondaryButtonLabel}
@@ -177,7 +177,7 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
                 {trustPills.map((item, index) => (
                   <span
                     key={item}
-                    className="rounded-full border border-brown/8 bg-white/74 px-4 py-3 text-[11px] uppercase tracking-[0.2em] text-[#a18a75] shadow-[0_8px_22px_rgba(72,49,30,0.04)] hero-fade-up hero-chip-entrance"
+                    className="theme-soft-chip rounded-full border border-brown/8 px-4 py-3 text-[11px] uppercase tracking-[0.2em] hero-fade-up hero-chip-entrance"
                     style={animationStyle(940 + index * 90, 900)}
                   >
                     {item}
@@ -206,17 +206,17 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
                     >
                       <div style={{ transform: card.transform }}>
                         <div
-                          className={`rounded-[30px] border border-white/60 ${card.toneClass} p-5 shadow-[0_22px_45px_rgba(105,81,61,0.08)] backdrop-blur-xl transition-transform duration-300 hero-card-shell ${
+                          className={`rounded-[30px] border border-white/60 ${index === 0 ? "theme-hero-card" : "theme-hero-card-alt"} p-5 backdrop-blur-xl transition-transform duration-300 hero-card-shell ${
                             index === 0 ? "hero-card-shell-delay-1" : "hero-card-shell-delay-2"
                           }`}
                         >
-                          <small className="block text-[11px] uppercase tracking-[0.18em] text-[#c2a78f]">
+                          <small className="theme-quote-accent block text-[11px] uppercase tracking-[0.18em]">
                             {card.eyebrow}
                           </small>
-                          <strong className="mt-3 block font-serif text-[2rem] leading-none text-[#96755d]">
+                          <strong className="theme-hero-emphasis mt-3 block font-serif text-[2rem] leading-none">
                             {card.title}
                           </strong>
-                          <p className="mt-4 text-[13px] leading-[1.95] text-[#806b59]">
+                          <p className="theme-hero-copy mt-4 text-[13px] leading-[1.95]">
                             {card.text}
                           </p>
                         </div>
@@ -234,8 +234,8 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
 
   return (
     <section className="px-3 pb-4 pt-3 sm:px-4 sm:pb-5 sm:pt-4 md:px-6 md:pt-5">
-      <div className="relative mx-auto max-w-[1380px] overflow-hidden rounded-[30px] border border-white/55 bg-[linear-gradient(180deg,rgba(252,248,243,0.98),rgba(244,236,228,0.94))] shadow-[0_28px_90px_rgba(109,82,58,0.14)] sm:rounded-[36px] lg:rounded-[42px]">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_18%,rgba(255,255,255,0.95),transparent_20%),radial-gradient(circle_at_82%_15%,rgba(255,255,255,0.7),transparent_16%),radial-gradient(circle_at_50%_88%,rgba(198,178,156,0.2),transparent_22%)]" />
+      <div className="theme-shell-surface relative mx-auto max-w-[1380px] overflow-hidden rounded-[30px] border border-white/55 sm:rounded-[36px] lg:rounded-[42px]">
+        <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: "var(--theme-shell-radial)" }} />
         <span className="pointer-events-none absolute left-[-4%] top-[16%] h-52 w-52 rounded-full bg-white/48 blur-[72px] hero-soft-orb" />
         <span className="pointer-events-none absolute right-[-6%] top-[10%] h-64 w-64 rounded-full bg-[#e7d6c2]/46 blur-[92px] hero-soft-orb hero-soft-orb-delay-2" />
         <span className="pointer-events-none absolute bottom-[-4%] left-[34%] h-48 w-48 rounded-full bg-[#efe2d2]/50 blur-[82px] hero-soft-orb hero-soft-orb-delay-3" />
@@ -249,11 +249,11 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
               className="flex flex-wrap items-center gap-2.5 sm:gap-3 hero-fade-up"
               style={animationStyle(120)}
             >
-              <p className="inline-flex items-center gap-2.5 rounded-full border border-brown/8 bg-white/82 px-3.5 py-2 text-[10px] uppercase tracking-[0.2em] text-[#9c826a] shadow-[0_10px_25px_rgba(72,49,30,0.05)] sm:px-4 sm:text-[11px] sm:tracking-[0.22em]">
+              <p className="theme-soft-badge inline-flex items-center gap-2.5 rounded-full border border-brown/8 px-3.5 py-2 text-[10px] uppercase tracking-[0.2em] sm:px-4 sm:text-[11px] sm:tracking-[0.22em]">
                 <span className="h-1.5 w-1.5 rounded-full bg-olive" />
                 {renderEditable(preview, "heroSubtitle", "Hero subtitle", <span>{content.subtitle}</span>)}
               </p>
-              <span className="rounded-full border border-brown/8 bg-white/74 px-3.5 py-2 text-[10px] uppercase tracking-[0.18em] text-[#9c826a] sm:px-4 sm:text-[11px] sm:tracking-[0.2em]">
+              <span className="theme-soft-chip rounded-full border border-brown/8 px-3.5 py-2 text-[10px] uppercase tracking-[0.18em] sm:px-4 sm:text-[11px] sm:tracking-[0.2em]">
                 {renderEditable(preview, "heroBadgeValue", "Badge value", <span>{content.badge.value}</span>)}
                 {" "}
                 {renderEditable(preview, "heroBadgeLabel", "Badge label", <span>{content.badge.label}</span>)}
@@ -261,12 +261,12 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
             </div>
 
             <div className="mt-5 max-w-[620px] sm:mt-6">
-              <h1 className="font-serif text-[2.85rem] leading-[0.92] tracking-[-0.04em] text-[#3f2c1f] sm:text-[3.8rem] md:text-[4.75rem] lg:text-[4.5rem] xl:text-[5.7rem] 2xl:text-[6.3rem]">
+              <h1 className="font-serif text-[2.85rem] leading-[0.92] tracking-[-0.04em] text-dark sm:text-[3.8rem] md:text-[4.75rem] lg:text-[4.5rem] xl:text-[5.7rem] 2xl:text-[6.3rem]">
                 <span className="block hero-fade-up" style={animationStyle(220, 980)}>
                   {renderEditable(preview, "heroTitleLine1", "Hero line 1", <span>{content.title.line1}</span>)}
                 </span>
                 <span
-                  className="mt-1 block text-[#a07d62] hero-fade-up"
+                  className="theme-hero-emphasis mt-1 block hero-fade-up"
                   style={animationStyle(340, 1040)}
                 >
                   {renderEditable(
@@ -285,7 +285,7 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
                 "heroDescription",
                 "Hero description",
                 <p
-                  className="mt-6 max-w-[32rem] text-[14px] leading-[1.85] text-[#6f5a49] sm:mt-7 sm:text-[15px] md:mt-8 md:text-[17px] hero-fade-up"
+                  className="theme-hero-copy mt-6 max-w-[32rem] text-[14px] leading-[1.85] sm:mt-7 sm:text-[15px] md:mt-8 md:text-[17px] hero-fade-up"
                   style={animationStyle(580, 1120)}
                 >
                   {content.description}
@@ -301,7 +301,7 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
                   "heroPrimaryButtonLabel",
                   "Primary button",
                   <span
-                    className="inline-flex min-h-14 items-center justify-center rounded-full bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] px-6 py-4 text-[12px] font-medium uppercase tracking-[0.16em] text-white shadow-[0_16px_34px_rgba(93,61,39,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_38px_rgba(93,61,39,0.24)] sm:px-7 sm:text-[13px] hero-fade-up hero-button-entrance"
+                    className="theme-primary-button inline-flex min-h-14 items-center justify-center rounded-full px-6 py-4 text-[12px] font-medium uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 sm:px-7 sm:text-[13px] hero-fade-up hero-button-entrance"
                     style={animationStyle(720, 980)}
                   >
                     {content.primaryButtonLabel}
@@ -311,7 +311,7 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
               ) : (
                 <Link
                   href={productsHref}
-                  className="inline-flex min-h-14 items-center justify-center rounded-full bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] px-6 py-4 text-[12px] font-medium uppercase tracking-[0.16em] text-white shadow-[0_16px_34px_rgba(93,61,39,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_38px_rgba(93,61,39,0.24)] no-underline sm:px-7 sm:text-[13px] hero-fade-up hero-button-entrance"
+                  className="theme-primary-button inline-flex min-h-14 items-center justify-center rounded-full px-6 py-4 text-[12px] font-medium uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 no-underline sm:px-7 sm:text-[13px] hero-fade-up hero-button-entrance"
                   style={animationStyle(720, 980)}
                 >
                   {content.primaryButtonLabel}
@@ -323,7 +323,7 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
                   "heroSecondaryButtonLabel",
                   "Secondary button",
                   <span
-                    className="inline-flex min-h-14 items-center justify-center rounded-full border border-brown/8 bg-white/84 px-6 py-4 text-[12px] font-medium uppercase tracking-[0.16em] text-[#8a6b52] shadow-[0_10px_24px_rgba(72,49,30,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white sm:px-7 sm:text-[13px] hero-fade-up hero-button-entrance"
+                    className="theme-secondary-button inline-flex min-h-14 items-center justify-center rounded-full border border-brown/8 px-6 py-4 text-[12px] font-medium uppercase tracking-[0.16em] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white sm:px-7 sm:text-[13px] hero-fade-up hero-button-entrance"
                     style={animationStyle(840, 1020)}
                   >
                     {content.secondaryButtonLabel}
@@ -333,7 +333,7 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
               ) : (
                 <Link
                   href={aboutHref}
-                  className="inline-flex min-h-14 items-center justify-center rounded-full border border-brown/8 bg-white/84 px-6 py-4 text-[12px] font-medium uppercase tracking-[0.16em] text-[#8a6b52] shadow-[0_10px_24px_rgba(72,49,30,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white no-underline sm:px-7 sm:text-[13px] hero-fade-up hero-button-entrance"
+                  className="theme-secondary-button inline-flex min-h-14 items-center justify-center rounded-full border border-brown/8 px-6 py-4 text-[12px] font-medium uppercase tracking-[0.16em] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white no-underline sm:px-7 sm:text-[13px] hero-fade-up hero-button-entrance"
                   style={animationStyle(840, 1020)}
                 >
                   {content.secondaryButtonLabel}
@@ -342,17 +342,17 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
             </div>
 
             <div
-              className="mt-7 rounded-[24px] border border-white/65 bg-[linear-gradient(180deg,rgba(255,255,255,0.76),rgba(247,239,232,0.84))] p-3.5 shadow-[0_20px_40px_rgba(72,49,30,0.07)] sm:mt-8 sm:rounded-[28px] sm:p-4 hero-fade-up"
+              className="theme-panel-surface mt-7 rounded-[24px] border border-white/65 p-3.5 sm:mt-8 sm:rounded-[28px] sm:p-4 hero-fade-up"
               style={animationStyle(940, 980)}
             >
               <div className="mb-3 flex flex-wrap items-center gap-2.5 sm:mb-4 sm:gap-3">
-                <span className="inline-flex items-center gap-2 rounded-full border border-brown/8 bg-white/80 px-3 py-2 text-[10px] uppercase tracking-[0.18em] text-[#8b6d54] shadow-[0_8px_20px_rgba(72,49,30,0.04)] sm:text-[11px] sm:tracking-[0.2em]">
+                <span className="theme-soft-badge inline-flex items-center gap-2 rounded-full border border-brown/8 px-3 py-2 text-[10px] uppercase tracking-[0.18em] sm:text-[11px] sm:tracking-[0.2em]">
                   <span className="h-1.5 w-1.5 rounded-full bg-olive" />
                   {renderEditable(preview, "heroBadgeValue", "Badge value", <span>{content.badge.value}</span>)}
                   {" "}
                   {renderEditable(preview, "heroBadgeLabel", "Badge label", <span>{content.badge.label}</span>)}
                 </span>
-                <span className="text-[10px] uppercase tracking-[0.18em] text-[#b0947d] sm:text-[11px] sm:tracking-[0.22em]">
+                <span className="theme-quote-accent text-[10px] uppercase tracking-[0.18em] sm:text-[11px] sm:tracking-[0.22em]">
                   {renderEditable(preview, "brandName", "Brand name", <span>{siteSettings.brandName}</span>)}
                 </span>
               </div>
@@ -361,10 +361,10 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
                 {heroHighlights.map((item, index) => (
                   <div
                     key={item.title}
-                    className="rounded-[20px] border border-brown/7 bg-white/60 px-3.5 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] hero-chip-entrance"
+                    className="rounded-[20px] border border-brown/7 bg-white/60 px-3.5 py-3 shadow-[inset_0_1px_0_rgb(255_255_255/0.75)] hero-chip-entrance"
                     style={animationStyle(1000 + index * 90, 900)}
                   >
-                    <p className="text-[10px] uppercase tracking-[0.16em] text-[#a68872] sm:text-[11px] sm:tracking-[0.18em]">
+                    <p className="theme-quote-accent text-[10px] uppercase tracking-[0.16em] sm:text-[11px] sm:tracking-[0.18em]">
                       {renderEditable(
                         preview,
                         (`feature${index + 1}Title` as "feature1Title" | "feature2Title" | "feature3Title"),
@@ -372,7 +372,7 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
                         <span>{item.title}</span>,
                       )}
                     </p>
-                    <p className="mt-2 text-[12px] leading-[1.7] text-[#6f5a49]">
+                    <p className="theme-hero-copy mt-2 text-[12px] leading-[1.7]">
                       {renderEditable(
                         preview,
                         (`feature${index + 1}Text` as "feature1Text" | "feature2Text" | "feature3Text"),
@@ -436,11 +436,11 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
                   >
                     <div style={{ transform: card.transform }}>
                       <div
-                        className={`rounded-[24px] border border-white/60 ${card.toneClass} p-4 shadow-[0_18px_38px_rgba(105,81,61,0.08)] backdrop-blur-xl transition-transform duration-300 sm:rounded-[28px] sm:p-5 sm:shadow-[0_22px_45px_rgba(105,81,61,0.08)] hero-card-shell ${
+                        className={`rounded-[24px] border border-white/60 ${index === 0 ? "theme-hero-card" : "theme-hero-card-alt"} p-4 backdrop-blur-xl transition-transform duration-300 sm:rounded-[28px] sm:p-5 hero-card-shell ${
                           index === 0 ? "hero-card-shell-delay-1" : "hero-card-shell-delay-2"
                         }`}
                       >
-                        <small className="block text-[10px] uppercase tracking-[0.16em] text-[#c2a78f] sm:text-[11px] sm:tracking-[0.18em]">
+                        <small className="theme-quote-accent block text-[10px] uppercase tracking-[0.16em] sm:text-[11px] sm:tracking-[0.18em]">
                           {renderEditable(
                             preview,
                             index === 0 ? "feature1Title" : "heroBadgeValue",
@@ -448,7 +448,7 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
                             <span>{card.eyebrow}</span>,
                           )}
                         </small>
-                        <strong className="mt-3 block font-serif text-[1.65rem] leading-none text-[#96755d] sm:text-[1.9rem] lg:text-[2rem]">
+                        <strong className="theme-hero-emphasis mt-3 block font-serif text-[1.65rem] leading-none sm:text-[1.9rem] lg:text-[2rem]">
                           {renderEditable(
                             preview,
                             index === 0 ? "feature1Title" : "feature3Title",
@@ -456,7 +456,7 @@ export default function Hero({ locale, siteSettings, content, preview }: HeroPro
                             <span>{card.title}</span>,
                           )}
                         </strong>
-                        <p className="mt-3 text-[12px] leading-[1.8] text-[#806b59] sm:mt-4 sm:text-[13px] sm:leading-[1.95]">
+                        <p className="theme-hero-copy mt-3 text-[12px] leading-[1.8] sm:mt-4 sm:text-[13px] sm:leading-[1.95]">
                           {renderEditable(
                             preview,
                             index === 0 ? "feature1Text" : "feature3Text",

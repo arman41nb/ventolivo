@@ -9,9 +9,52 @@ import { recordAdminAuditLog, requireAdminSession } from "@/services/admin-auth"
 import { getMediaAssetsByIds } from "@/services/media";
 import { getSiteLocales } from "@/services/site-content";
 
+type ProductTranslationDraftFields = {
+  name: string;
+  tag: string;
+  description: string;
+  weight: string;
+  ingredients: string;
+};
+
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
+}
+
+function parseTranslatedProductInput(
+  formData: FormData,
+  allowedLocales: Set<string>,
+): Partial<Record<string, ProductTranslationDraftFields>> {
+  const rawValue = getStringValue(formData, "translatedProductJson");
+
+  if (!rawValue) {
+    return {};
+  }
+
+  try {
+    const parsed = JSON.parse(rawValue) as Record<string, unknown>;
+    const translations: Partial<Record<string, ProductTranslationDraftFields>> = {};
+
+    for (const [locale, value] of Object.entries(parsed)) {
+      if (!allowedLocales.has(locale) || !value || typeof value !== "object") {
+        continue;
+      }
+
+      const candidate = value as Record<string, unknown>;
+      translations[locale] = {
+        name: typeof candidate.name === "string" ? candidate.name.trim() : "",
+        tag: typeof candidate.tag === "string" ? candidate.tag.trim() : "",
+        description: typeof candidate.description === "string" ? candidate.description.trim() : "",
+        weight: typeof candidate.weight === "string" ? candidate.weight.trim() : "",
+        ingredients: typeof candidate.ingredients === "string" ? candidate.ingredients.trim() : "",
+      };
+    }
+
+    return translations;
+  } catch {
+    throw new Error("Invalid translated product content");
+  }
 }
 
 async function getProductInput(formData: FormData) {
@@ -33,11 +76,16 @@ async function getProductInput(formData: FormData) {
 
   const siteLocales = await getSiteLocales();
   const localeCodes = siteLocales.map((locale) => locale.code);
+  const stagedTranslations = parseTranslatedProductInput(formData, new Set(localeCodes));
 
   const translations = Object.fromEntries(
     ["name", "tag", "description", "weight", "ingredients"].map((field) => {
       const localizedEntries = localeCodes.flatMap((locale) => {
-        const rawValue = getStringValue(formData, `translations.${field}.${locale}`);
+        const stagedValue = stagedTranslations[locale]?.[
+          field as keyof ProductTranslationDraftFields
+        ];
+        const rawValue =
+          getStringValue(formData, `translations.${field}.${locale}`) || stagedValue || "";
 
         if (field === "ingredients") {
           const items = rawValue

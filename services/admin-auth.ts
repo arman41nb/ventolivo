@@ -6,6 +6,7 @@ export {
   getAdminSessionCookieName,
   getAdminSession,
   getAdminSessionFromRequest,
+  getAdminRegistrationState,
   getExpiredAdminSessionCookieOptions,
   getRecentAdminAuditLogEntries,
   getAdminSessionRecoveryPath,
@@ -14,5 +15,6 @@ export {
   isAdminAuthenticatedRequest,
   logoutAdminSession,
   recordAdminAuditLog,
+  registerAdmin,
   requireAdminSession,
 } from "@/modules/admin-auth";

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { defaultLocale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 import { getSiteLocaleFlag, getSiteLocaleNativeLabel } from "@/modules/site-content";
 import type { SiteLocaleConfig } from "@/types";
@@ -11,28 +12,58 @@ interface ProductTranslationAssistantProps {
   dictionary: Dictionary["admin"]["translationAssistant"];
 }
 
+type TranslationProvider = "libretranslate" | "google" | "mymemory";
+
+type ProductTranslationFields = {
+  name: string;
+  tag: string;
+  description: string;
+  weight: string;
+  ingredients: string;
+};
+
+const translationProviderLabels: Record<TranslationProvider, string> = {
+  libretranslate: "LibreTranslate",
+  google: "Google Translate",
+  mymemory: "MyMemory",
+};
+
 export default function ProductTranslationAssistant({
   currentLocale,
   locales,
   dictionary,
 }: ProductTranslationAssistantProps) {
-  const [sourceLocale, setSourceLocale] = useState(currentLocale);
+  const initialSourceLocale =
+    locales.find((locale) => locale.code === defaultLocale)?.code ?? currentLocale;
+  const [sourceLocale, setSourceLocale] = useState(initialSourceLocale);
   const [selectedLocales, setSelectedLocales] = useState<string[]>(
-    locales.map((locale) => locale.code).filter((locale) => locale !== currentLocale),
+    locales.map((locale) => locale.code).filter((locale) => locale !== initialSourceLocale),
   );
   const [onlyEmptyFields, setOnlyEmptyFields] = useState(true);
   const [status, setStatus] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [translations, setTranslations] = useState<Partial<Record<string, ProductTranslationFields>>>(
+    {},
+  );
   const targetLocales = useMemo(
     () => selectedLocales.filter((locale) => locale !== sourceLocale),
     [selectedLocales, sourceLocale],
   );
+  const translationsJson = useMemo(() => JSON.stringify(translations), [translations]);
 
   function toggleLocale(locale: string) {
     setSelectedLocales((current) =>
       current.includes(locale) ? current.filter((item) => item !== locale) : [...current, locale],
     );
     setStatus("");
+  }
+
+  function formatErrorStatus(message: string, retryAfterSeconds?: string | null) {
+    if (!retryAfterSeconds?.trim()) {
+      return message;
+    }
+
+    return `${message} Retry after ${retryAfterSeconds} seconds.`;
   }
 
   async function handleTranslate(event: React.MouseEvent<HTMLButtonElement>) {
@@ -97,12 +128,17 @@ export default function ProductTranslationAssistant({
             }
           >
         >;
-        providers?: Partial<Record<string, "libretranslate" | "mymemory">>;
+        providers?: Partial<Record<string, TranslationProvider>>;
         error?: string;
       };
 
       if (!response.ok || !result.translations) {
-        throw new Error(result.error || "Translation failed");
+        throw new Error(
+          formatErrorStatus(
+            result.error || "Translation failed",
+            response.headers.get("retry-after"),
+          ),
+        );
       }
 
       for (const locale of Object.keys(result.translations) as string[]) {
@@ -149,15 +185,60 @@ export default function ProductTranslationAssistant({
         }
       }
 
+      setTranslations((currentTranslations) => {
+        const nextTranslations = { ...currentTranslations };
+
+        for (const [locale, translation] of Object.entries(result.translations ?? {})) {
+          if (!translation) {
+            continue;
+          }
+
+          nextTranslations[locale] = {
+            name:
+              onlyEmptyFields && currentTranslations[locale]?.name?.trim().length
+                ? currentTranslations[locale]!.name
+                : translation.name,
+            tag:
+              onlyEmptyFields && currentTranslations[locale]?.tag?.trim().length
+                ? currentTranslations[locale]!.tag
+                : translation.tag,
+            description:
+              onlyEmptyFields && currentTranslations[locale]?.description?.trim().length
+                ? currentTranslations[locale]!.description
+                : translation.description,
+            weight:
+              onlyEmptyFields && currentTranslations[locale]?.weight?.trim().length
+                ? currentTranslations[locale]!.weight
+                : translation.weight,
+            ingredients:
+              onlyEmptyFields && currentTranslations[locale]?.ingredients?.trim().length
+                ? currentTranslations[locale]!.ingredients
+                : translation.ingredients,
+          };
+        }
+
+        return nextTranslations;
+      });
+
       const providers = result.providers
-        ? Array.from(new Set(Object.values(result.providers)))
+        ? Array.from(
+            new Set(
+              Object.values(result.providers).filter(
+                (provider): provider is TranslationProvider => Boolean(provider),
+              ),
+            ),
+          )
         : [];
       const providerLabel =
-        providers.length > 0 ? ` ${dictionary.providerPrefix}: ${providers.join(", ")}.` : "";
+        providers.length > 0
+          ? ` ${dictionary.providerPrefix}: ${providers
+              .map((provider) => translationProviderLabels[provider])
+              .join(", ")}.`
+          : "";
 
       setStatus(`${dictionary.updated}${providerLabel}`);
-    } catch {
-      setStatus(dictionary.unavailable);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : dictionary.unavailable);
     } finally {
       setLoading(false);
     }
@@ -165,6 +246,7 @@ export default function ProductTranslationAssistant({
 
   return (
     <div className="rounded-[20px] border border-brown/10 bg-white p-4">
+      <input type="hidden" name="translatedProductJson" value={translationsJson} />
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">

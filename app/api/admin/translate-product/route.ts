@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { autoTranslateProductFields } from "@/lib/libretranslate";
+import { autoTranslateProductFields, TranslationServiceError } from "@/lib/libretranslate";
 import { getRequestLogContext, logError, withRequestId } from "@/lib/logger";
 import { enforceTranslationRateLimit } from "@/lib/rate-limit";
 import { isValidLocale, type Locale } from "@/i18n/config";
@@ -79,6 +79,31 @@ export async function POST(request: Request) {
       "x-rate-limit-remaining": `${rateLimit.remaining}`,
     });
   } catch (error) {
+    if (error instanceof TranslationServiceError) {
+      console.warn(
+        JSON.stringify({
+          level: "warn",
+          scope: "api.admin.translate-product",
+          ...logContext,
+          adminUserId: session.user.id,
+          error: {
+            name: error.name,
+            message: error.message,
+          },
+          timestamp: new Date().toISOString(),
+        }),
+      );
+
+      return withRequestId(
+        NextResponse.json(
+          { error: error.message },
+          { status: error.statusCode },
+        ),
+        logContext.requestId,
+        error.statusCode === 429 ? { "retry-after": "60" } : undefined,
+      );
+    }
+
     logError("api.admin.translate-product", error, {
       ...logContext,
       adminUserId: session.user.id,

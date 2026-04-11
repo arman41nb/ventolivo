@@ -9,11 +9,15 @@ import type { Dictionary } from "./types";
 
 function normalizeDictionary(dictionary: unknown): Dictionary {
   const candidate = dictionary as Partial<Dictionary>;
+  const account = candidate.account ?? en.account;
   const admin = candidate.admin ?? en.admin;
   const dashboard = admin.dashboard ?? en.admin.dashboard;
   const navigation = admin.navigation ?? en.admin.navigation;
+  const customers = admin.customers ?? en.admin.customers;
   const mediaLibrary = admin.mediaLibrary ?? en.admin.mediaLibrary;
   const siteStudio = admin.siteStudio ?? en.admin.siteStudio;
+  const themeStudio = admin.themeStudio ?? en.admin.themeStudio;
+  const register = admin.register ?? en.admin.register;
   const create = admin.create ?? en.admin.create;
   const inventory = admin.inventory ?? en.admin.inventory;
   const form = admin.form ?? en.admin.form;
@@ -29,6 +33,26 @@ function normalizeDictionary(dictionary: unknown): Dictionary {
   return {
     ...en,
     ...candidate,
+    account: {
+      ...en.account,
+      ...account,
+      nav: {
+        ...en.account.nav,
+        ...(account.nav ?? {}),
+      },
+      login: {
+        ...en.account.login,
+        ...(account.login ?? {}),
+      },
+      register: {
+        ...en.account.register,
+        ...(account.register ?? {}),
+      },
+      dashboard: {
+        ...en.account.dashboard,
+        ...(account.dashboard ?? {}),
+      },
+    },
     admin: {
       ...en.admin,
       ...admin,
@@ -52,9 +76,21 @@ function normalizeDictionary(dictionary: unknown): Dictionary {
         ...en.admin.siteStudio,
         ...siteStudio,
       },
+      themeStudio: {
+        ...en.admin.themeStudio,
+        ...themeStudio,
+      },
       login: {
         ...en.admin.login,
         ...(admin.login ?? {}),
+      },
+      register: {
+        ...en.admin.register,
+        ...register,
+      },
+      customers: {
+        ...en.admin.customers,
+        ...customers,
       },
       create: {
         ...en.admin.create,

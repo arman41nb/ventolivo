@@ -3,6 +3,21 @@ import { MEDIA_FRAMING_LIMITS } from "@/modules/media";
 import { getDefaultSiteLocales } from "./locales";
 
 export const defaultSiteContentSettings: SiteContentSettings = {
+  themeCanvasStart: "#f6f0e8",
+  themeCanvasMid: "#f1e7dc",
+  themeCanvasEnd: "#eadfce",
+  themeSurface: "#f5f0e8",
+  themeSurfaceAlt: "#e8ddd0",
+  themeSurfaceRaised: "#fffaf4",
+  themePrimary: "#6b4f3a",
+  themePrimaryStrong: "#5d3d27",
+  themeAccent: "#7c8c5e",
+  themeText: "#3d2b1f",
+  themeHeading: "#2c1f14",
+  themeMuted: "#9a8878",
+  themeBorder: "#d9cab8",
+  themeFooterStart: "#5d3d27",
+  themeFooterEnd: "#482e1c",
   brandName: "Ventolivo",
   logoMode: "text",
   logoText: "Ventolivo",

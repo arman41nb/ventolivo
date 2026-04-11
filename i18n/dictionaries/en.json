@@ -86,6 +86,62 @@
       "orderVia": "Order via WhatsApp ->"
     }
   },
+  "account": {
+    "badge": "Customer Account",
+    "nav": {
+      "signIn": "Sign in",
+      "register": "Register",
+      "signInRegister": "Sign in / Register",
+      "account": "My account",
+      "signOut": "Sign out"
+    },
+    "login": {
+      "title": "Secure customer sign in",
+      "description": "Sign in before checkout so we can track purchase intent and keep your product requests in one place.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "invalidCredentials": "Invalid email or password. Please try again.",
+      "rateLimited": "Too many attempts. Please wait and try again.",
+      "accountDisabled": "This account is disabled. Please contact support.",
+      "loggedOut": "You have been signed out.",
+      "continueWithGoogle": "Continue with Google",
+      "googleUnavailable": "Google sign in is not configured yet.",
+      "googleDenied": "Google sign in was canceled.",
+      "googleFailed": "Google sign in failed. Please try again.",
+      "registerPrompt": "New here?",
+      "registerLinkLabel": "Create account"
+    },
+    "register": {
+      "title": "Create your account",
+      "description": "Create an account once to speed up future purchases and make buyer tracking transparent.",
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone (optional)",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "marketingConsent": "I agree to receive product and campaign updates by email.",
+      "submit": "Create account",
+      "invalidForm": "Please review your details and try again.",
+      "emailTaken": "This email already has an account.",
+      "rateLimited": "Too many registration attempts. Please wait and try again.",
+      "loginPrompt": "Already have an account?",
+      "loginLinkLabel": "Back to sign in",
+      "passwordHint": "Use a strong password with uppercase, lowercase, and at least one number."
+    },
+    "dashboard": {
+      "title": "Your personal shopping lounge",
+      "description": "Everything about your product requests in one elegant space, with faster checkout context and cleaner buyer history.",
+      "fullName": "Full name",
+      "email": "Email",
+      "intentCount": "Recent intents",
+      "browseProducts": "Browse products",
+      "intentHistoryBadge": "Buyer history",
+      "intentHistoryTitle": "Recent checkout intents",
+      "noIntents": "You have not started a checkout flow yet. Pick a product to begin.",
+      "unknownProduct": "Product unavailable"
+    }
+  },
   "admin": {
     "badge": "Admin Panel",
     "title": "Product Control Room",
@@ -97,8 +153,10 @@
       "dashboard": "Dashboard",
       "translations": "Translations",
       "products": "Products",
+      "customers": "Customers",
       "media": "Library",
-      "siteContent": "Site content"
+      "siteContent": "Site content",
+      "theme": "Theme"
     },
     "shell": {
       "localeSwitcher": "Admin language"
@@ -106,6 +164,7 @@
     "dashboard": {
       "logout": "Logout",
       "productManager": "Product manager",
+      "manageAccess": "Manage access",
       "sessionExpires": "Session expires",
       "stats": {
         "products": "Products",
@@ -128,16 +187,67 @@
       "description": "Edit the homepage visually, preview changes live, manage locales, and reuse library assets without leaving the content workflow.",
       "updated": "Site content updated."
     },
+    "themeStudio": {
+      "title": "Theme studio",
+      "description": "Manage the storefront palette, save reusable presets, and import or export theme JSON without leaving the admin workflow.",
+      "updated": "Theme studio updated."
+    },
     "login": {
       "title": "Secure admin access",
       "description": "Sign in to manage the multilingual catalog with persisted sessions, audit history, and a stronger operational foundation.",
       "kicker": "Welcome back",
-      "username": "Username",
+      "identifier": "Username or email",
       "password": "Password",
       "submit": "Sign in",
       "invalidCredentials": "Invalid credentials. Please try again.",
+      "rateLimited": "Too many authentication attempts. Please wait a minute and try again.",
+      "accountDisabled": "This admin account is disabled. Contact the owner to restore access.",
       "loggedOut": "You have been signed out successfully.",
-      "bootstrapHint": "The first successful login with your bootstrap environment credentials will provision the initial admin account."
+      "bootstrapHint": "The first successful login with your bootstrap environment credentials will provision the initial admin account.",
+      "setupNotice": "No admin account exists yet. Create the first owner account instead of relying on bootstrap credentials alone.",
+      "registerLinkLabel": "Open secure registration"
+    },
+    "register": {
+      "title": "Create admin access",
+      "description": "Provision the first owner account or expand the admin team with traceable access, stronger validation, and reusable account metadata.",
+      "kicker": "Access setup",
+      "displayName": "Display name",
+      "email": "Email",
+      "username": "Username",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "setupToken": "Setup token",
+      "submit": "Create access",
+      "created": "Admin access has been created.",
+      "invalidForm": "Please review the form fields and try again.",
+      "usernameTaken": "That username is already in use.",
+      "emailTaken": "That email address is already in use.",
+      "registrationClosed": "Registration is closed until an authenticated admin opens this page.",
+      "insufficientPermissions": "Only the owner account can create additional admin users.",
+      "setupTokenRequired": "A setup token is required before the first admin can be provisioned.",
+      "setupTokenInvalid": "The setup token is invalid.",
+      "rateLimited": "Too many registration attempts. Please wait a minute and try again.",
+      "signInLinkLabel": "Back to sign in",
+      "dashboardLinkLabel": "Back to dashboard",
+      "firstAdminHint": "The first account is created as the owner and is signed in immediately after setup.",
+      "teamHint": "Additional accounts are created as team managers so the owner can keep the main credentials stable.",
+      "setupTokenHint": "Set ADMIN_SETUP_TOKEN in production to lock the first-run setup behind a private token."
+    },
+    "customers": {
+      "title": "Customer and buyer tracking",
+      "description": "Review registered customers and checkout intent history so support, campaigns, and fulfillment can run from one operational view.",
+      "usersBadge": "Registered users",
+      "intentsBadge": "Total intents",
+      "intentsWindow": "Intents in 30 days",
+      "activeBuyersWindow": "Active buyers in 30 days",
+      "recentUsersTitle": "Recent customers",
+      "recentIntentsTitle": "Recent buyer intents",
+      "anonymousCustomer": "Anonymous visitor",
+      "unknownProduct": "Unknown product",
+      "marketingConsent": "Marketing consent",
+      "noMarketingConsent": "No marketing consent",
+      "noRecentUsers": "No registered customers yet.",
+      "noRecentIntents": "No buyer intent records yet."
     },
     "create": {
       "badge": "Create",

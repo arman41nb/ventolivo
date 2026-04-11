@@ -3,15 +3,21 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { defaultLocale } from "@/i18n/config";
-import { siteContentLocaleSchema, siteContentSchema, siteLocalesSchema } from "@/lib/validations";
+import {
+  siteContentLocaleSchema,
+  siteContentSchema,
+  siteLocalesSchema,
+  storefrontThemePresetListSchema,
+} from "@/lib/validations";
 import { recordAdminAuditLog, requireAdminSession } from "@/services/admin-auth";
 import {
   getSiteContentSettings,
   getSiteLocales,
+  getSiteThemePresets,
   pickSiteContentLocaleFields,
   saveSiteContentBundle,
 } from "@/services/site-content";
-import type { SiteContentLocaleFields, SiteLocaleConfig } from "@/types";
+import type { SiteContentLocaleFields, SiteLocaleConfig, StorefrontThemePreset } from "@/types";
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -80,6 +86,27 @@ function parseTranslatedSiteContentInput(
   }
 }
 
+function parseThemePresetsInput(formData: FormData, fallbackPresets: StorefrontThemePreset[]) {
+  const rawValue = getStringValue(formData, "themePresetsJson");
+
+  if (!rawValue) {
+    return fallbackPresets;
+  }
+
+  try {
+    const parsed = JSON.parse(rawValue) as unknown;
+    const result = storefrontThemePresetListSchema.safeParse(parsed);
+
+    if (!result.success) {
+      throw new Error("Invalid theme preset list");
+    }
+
+    return result.data;
+  } catch {
+    throw new Error("Invalid theme preset list");
+  }
+}
+
 function getRedirectLocale(currentLocale: string, siteLocales: SiteLocaleConfig[]): string {
   return siteLocales.some((locale) => locale.code === currentLocale)
     ? currentLocale
@@ -116,6 +143,21 @@ export async function saveSiteContentAction(formData: FormData) {
   const session = await requireAdminSession();
   const locale = getStringValue(formData, "locale") || defaultLocale;
   const result = siteContentSchema.safeParse({
+    themeCanvasStart: getStringValue(formData, "themeCanvasStart"),
+    themeCanvasMid: getStringValue(formData, "themeCanvasMid"),
+    themeCanvasEnd: getStringValue(formData, "themeCanvasEnd"),
+    themeSurface: getStringValue(formData, "themeSurface"),
+    themeSurfaceAlt: getStringValue(formData, "themeSurfaceAlt"),
+    themeSurfaceRaised: getStringValue(formData, "themeSurfaceRaised"),
+    themePrimary: getStringValue(formData, "themePrimary"),
+    themePrimaryStrong: getStringValue(formData, "themePrimaryStrong"),
+    themeAccent: getStringValue(formData, "themeAccent"),
+    themeText: getStringValue(formData, "themeText"),
+    themeHeading: getStringValue(formData, "themeHeading"),
+    themeMuted: getStringValue(formData, "themeMuted"),
+    themeBorder: getStringValue(formData, "themeBorder"),
+    themeFooterStart: getStringValue(formData, "themeFooterStart"),
+    themeFooterEnd: getStringValue(formData, "themeFooterEnd"),
     brandName: getStringValue(formData, "brandName"),
     logoMode: getStringValue(formData, "logoMode"),
     logoText: getStringValue(formData, "logoText"),
@@ -187,11 +229,13 @@ export async function saveSiteContentAction(formData: FormData) {
     throw new Error("Invalid site content form data");
   }
 
-  const [currentBaseSettings, currentSiteLocales] = await Promise.all([
+  const [currentBaseSettings, currentSiteLocales, currentThemePresets] = await Promise.all([
     getSiteContentSettings(),
     getSiteLocales(),
+    getSiteThemePresets(),
   ]);
   const siteLocales = parseSiteLocalesInput(formData, currentSiteLocales);
+  const themePresets = parseThemePresetsInput(formData, currentThemePresets);
   const allowedLocaleCodes = new Set(siteLocales.map((siteLocale) => siteLocale.code));
   const translatedContent = parseTranslatedSiteContentInput(formData, allowedLocaleCodes);
   const currentLocaleFields = pickSiteContentLocaleFields(result.data);
@@ -200,6 +244,21 @@ export async function saveSiteContentAction(formData: FormData) {
   await saveSiteContentBundle({
     settings: {
       ...currentBaseSettings,
+      themeCanvasStart: result.data.themeCanvasStart,
+      themeCanvasMid: result.data.themeCanvasMid,
+      themeCanvasEnd: result.data.themeCanvasEnd,
+      themeSurface: result.data.themeSurface,
+      themeSurfaceAlt: result.data.themeSurfaceAlt,
+      themeSurfaceRaised: result.data.themeSurfaceRaised,
+      themePrimary: result.data.themePrimary,
+      themePrimaryStrong: result.data.themePrimaryStrong,
+      themeAccent: result.data.themeAccent,
+      themeText: result.data.themeText,
+      themeHeading: result.data.themeHeading,
+      themeMuted: result.data.themeMuted,
+      themeBorder: result.data.themeBorder,
+      themeFooterStart: result.data.themeFooterStart,
+      themeFooterEnd: result.data.themeFooterEnd,
       brandName: result.data.brandName,
       logoMode: result.data.logoMode,
       logoText: result.data.logoText,
@@ -221,6 +280,7 @@ export async function saveSiteContentAction(formData: FormData) {
       ...(locale === defaultLocale ? currentLocaleFields : {}),
       ...(translatedDefaultLocale ?? {}),
       siteLocales,
+      siteThemePresets: themePresets,
     },
     translations: [
       {
@@ -259,6 +319,7 @@ export async function saveSiteContentAction(formData: FormData) {
     revalidatePath(`/${currentLocale}/admin/products`);
     revalidatePath(`/${currentLocale}/admin/media`);
     revalidatePath(`/${currentLocale}/admin/site`);
+    revalidatePath(`/${currentLocale}/admin/theme`);
   }
 
   redirect(getRedirectTarget(formData, locale, siteLocales));

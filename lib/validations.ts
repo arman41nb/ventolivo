@@ -78,7 +78,27 @@ export const productAdminSchema = z.object({
   featured: z.boolean().optional().default(false),
 });
 
+const themeColorSchema = z
+  .string()
+  .trim()
+  .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Theme colors must be valid hex codes");
+
 export const siteContentSchema = z.object({
+  themeCanvasStart: themeColorSchema,
+  themeCanvasMid: themeColorSchema,
+  themeCanvasEnd: themeColorSchema,
+  themeSurface: themeColorSchema,
+  themeSurfaceAlt: themeColorSchema,
+  themeSurfaceRaised: themeColorSchema,
+  themePrimary: themeColorSchema,
+  themePrimaryStrong: themeColorSchema,
+  themeAccent: themeColorSchema,
+  themeText: themeColorSchema,
+  themeHeading: themeColorSchema,
+  themeMuted: themeColorSchema,
+  themeBorder: themeColorSchema,
+  themeFooterStart: themeColorSchema,
+  themeFooterEnd: themeColorSchema,
   brandName: z.string().trim().min(1).max(80),
   logoMode: z.enum(["text", "image"]).default("text"),
   logoText: z.string().trim().min(1).max(80),
@@ -226,6 +246,34 @@ export const siteContentLocaleSchema = siteContentSchema.pick({
   footerCopyrightText: true,
 });
 
+export const storefrontThemeSettingsSchema = siteContentSchema.pick({
+  themeCanvasStart: true,
+  themeCanvasMid: true,
+  themeCanvasEnd: true,
+  themeSurface: true,
+  themeSurfaceAlt: true,
+  themeSurfaceRaised: true,
+  themePrimary: true,
+  themePrimaryStrong: true,
+  themeAccent: true,
+  themeText: true,
+  themeHeading: true,
+  themeMuted: true,
+  themeBorder: true,
+  themeFooterStart: true,
+  themeFooterEnd: true,
+});
+
+export const storefrontThemePresetSchema = z.object({
+  id: z.string().trim().min(1).max(80),
+  name: z.string().trim().min(1).max(80),
+  description: z.string().trim().max(240).default(""),
+  recipe: z.enum(["balanced", "soft", "bold"]).default("balanced"),
+  settings: storefrontThemeSettingsSchema,
+});
+
+export const storefrontThemePresetListSchema = z.array(storefrontThemePresetSchema).max(24);
+
 export const siteLocaleSchema = z.object({
   code: z
     .string()
@@ -268,16 +316,96 @@ export const mediaAssetSchema = z.object({
 });
 
 export const adminLoginSchema = z.object({
-  username: z.string().trim().min(1, "Username is required"),
+  identifier: z.string().trim().min(1, "Username or email is required"),
   password: z.string().min(1, "Password is required"),
   next: z.string().optional().default(""),
 });
+
+const adminPasswordSchema = z
+  .string()
+  .min(10, "Password must be at least 10 characters")
+  .max(128, "Password must be 128 characters or less")
+  .regex(/[a-z]/, "Password must contain a lowercase letter")
+  .regex(/[A-Z]/, "Password must contain an uppercase letter")
+  .regex(/\d/, "Password must contain a number");
+
+export const adminRegistrationSchema = z
+  .object({
+    displayName: z.string().trim().min(2, "Display name is required").max(80),
+    email: z.string().trim().email("Email must be valid").max(120),
+    username: z
+      .string()
+      .trim()
+      .min(3, "Username must be at least 3 characters")
+      .max(32, "Username must be 32 characters or less")
+      .regex(
+        /^[a-z0-9._-]+$/,
+        "Username can contain lowercase letters, numbers, dots, underscores, and hyphens",
+      ),
+    password: adminPasswordSchema,
+    confirmPassword: z.string().min(1, "Please confirm the password"),
+    setupToken: z.string().trim().max(120).optional().default(""),
+  })
+  .superRefine((value, context) => {
+    if (value.password !== value.confirmPassword) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["confirmPassword"],
+        message: "Passwords do not match",
+      });
+    }
+  });
+
+export const customerLoginSchema = z.object({
+  email: z.string().trim().email("Email must be valid").max(120),
+  password: z.string().min(1, "Password is required"),
+  next: z.string().optional().default(""),
+});
+
+const customerPasswordSchema = z
+  .string()
+  .min(10, "Password must be at least 10 characters")
+  .max(128, "Password must be 128 characters or less")
+  .regex(/[a-z]/, "Password must contain a lowercase letter")
+  .regex(/[A-Z]/, "Password must contain an uppercase letter")
+  .regex(/\d/, "Password must contain a number");
+
+export const customerRegistrationSchema = z
+  .object({
+    fullName: z.string().trim().min(2, "Full name is required").max(80),
+    email: z.string().trim().email("Email must be valid").max(120),
+    phone: z
+      .string()
+      .trim()
+      .max(30)
+      .optional()
+      .default("")
+      .refine(
+        (value) => value.length === 0 || /^\+?[\d\s-]{7,20}$/.test(value),
+        "Invalid phone number",
+      ),
+    password: customerPasswordSchema,
+    confirmPassword: z.string().min(1, "Please confirm the password"),
+    marketingConsent: z.boolean().optional().default(false),
+  })
+  .superRefine((value, context) => {
+    if (value.password !== value.confirmPassword) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["confirmPassword"],
+        message: "Passwords do not match",
+      });
+    }
+  });
 
 export type ProductQuery = z.infer<typeof productQuerySchema>;
 export type ProductFilter = z.infer<typeof productFilterSchema>;
 export type ContactForm = z.infer<typeof contactFormSchema>;
 export type ProductAdminForm = z.infer<typeof productAdminSchema>;
 export type AdminLoginForm = z.infer<typeof adminLoginSchema>;
+export type AdminRegistrationForm = z.infer<typeof adminRegistrationSchema>;
+export type CustomerLoginForm = z.infer<typeof customerLoginSchema>;
+export type CustomerRegistrationForm = z.infer<typeof customerRegistrationSchema>;
 export type SiteContentForm = z.infer<typeof siteContentSchema>;
 export type SiteContentLocaleForm = z.infer<typeof siteContentLocaleSchema>;
 export type MediaAssetForm = z.infer<typeof mediaAssetSchema>;

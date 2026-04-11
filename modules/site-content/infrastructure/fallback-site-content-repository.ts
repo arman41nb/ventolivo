@@ -26,6 +26,9 @@ export const fallbackSiteContentRepository: SiteContentRepository = {
   async getSiteLocales() {
     return cloneSiteLocales();
   },
+  async getSiteThemePresets() {
+    return [];
+  },
   async saveSiteContentBundle() {
     throw createPersistenceError();
   },

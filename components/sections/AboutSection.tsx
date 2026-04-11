@@ -15,7 +15,7 @@ export default function AboutSection({ siteSettings, content, preview }: AboutSe
     <section id="about" className="px-4 py-20 md:px-6">
       <div className="mx-auto grid max-w-[1380px] gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <ViewportReveal
-          className="relative min-h-[520px] overflow-hidden rounded-[32px] bg-[linear-gradient(135deg,#dbcdbd,#cbb89d)] shadow-[0_14px_36px_rgba(72,49,30,0.08)]"
+          className="relative min-h-[520px] overflow-hidden rounded-[32px] bg-[linear-gradient(135deg,var(--storefront-surface-alt),color-mix(in_srgb,var(--storefront-surface-alt)_72%,var(--storefront-primary)_28%))] shadow-[0_14px_36px_rgb(var(--storefront-primary-rgb)/0.08)]"
           distance={36}
           duration={560}
         >
@@ -37,7 +37,7 @@ export default function AboutSection({ siteSettings, content, preview }: AboutSe
                       className="h-full w-full object-cover transition-transform duration-[900ms] hover:scale-[1.04] hover:-translate-y-1"
                     />
                   ) : (
-                    <div className="relative h-full w-full bg-[linear-gradient(180deg,rgba(93,61,39,0.05),rgba(93,61,39,0.28)),radial-gradient(circle_at_top,rgba(255,255,255,0.25),transparent_28%),linear-gradient(135deg,#d9cab7_0%,#bea887_100%)]" />
+                    <div className="relative h-full w-full bg-[linear-gradient(180deg,rgb(var(--storefront-primary-strong-rgb)/0.05),rgb(var(--storefront-primary-strong-rgb)/0.28)),radial-gradient(circle_at_top,rgb(255_255_255/0.25),transparent_28%),linear-gradient(135deg,color-mix(in_srgb,var(--storefront-surface-alt)_76%,white_24%)_0%,color-mix(in_srgb,var(--storefront-surface-alt)_58%,var(--storefront-primary)_42%)_100%)]" />
                   )}
                 </div>
               </div>
@@ -58,7 +58,7 @@ export default function AboutSection({ siteSettings, content, preview }: AboutSe
                     className="h-full w-full object-cover transition-transform duration-[900ms] hover:scale-[1.04] hover:-translate-y-1"
                   />
                 ) : (
-                  <div className="relative h-full w-full bg-[linear-gradient(180deg,rgba(93,61,39,0.05),rgba(93,61,39,0.28)),radial-gradient(circle_at_top,rgba(255,255,255,0.25),transparent_28%),linear-gradient(135deg,#d9cab7_0%,#bea887_100%)]" />
+                  <div className="relative h-full w-full bg-[linear-gradient(180deg,rgb(var(--storefront-primary-strong-rgb)/0.05),rgb(var(--storefront-primary-strong-rgb)/0.28)),radial-gradient(circle_at_top,rgb(255_255_255/0.25),transparent_28%),linear-gradient(135deg,color-mix(in_srgb,var(--storefront-surface-alt)_76%,white_24%)_0%,color-mix(in_srgb,var(--storefront-surface-alt)_58%,var(--storefront-primary)_42%)_100%)]" />
                 )}
               </div>
             </div>
@@ -66,7 +66,7 @@ export default function AboutSection({ siteSettings, content, preview }: AboutSe
         </ViewportReveal>
 
         <ViewportReveal
-          className="relative flex flex-col justify-center rounded-[32px] border border-brown/8 bg-[linear-gradient(135deg,rgba(255,252,247,0.86),rgba(239,228,215,0.92))] p-8 shadow-[0_14px_36px_rgba(72,49,30,0.08)] md:p-12"
+          className="theme-panel-surface relative flex flex-col justify-center rounded-[32px] border border-brown/8 p-8 md:p-12"
           delay={90}
           distance={30}
           duration={560}
@@ -112,7 +112,7 @@ export default function AboutSection({ siteSettings, content, preview }: AboutSe
                   delay={160 + index * 70}
                   distance={14}
                   duration={420}
-                  className="rounded-full border border-brown/10 bg-white/65 px-4 py-3 text-[12px] uppercase tracking-[0.14em] text-[#5d3d27]"
+                  className="theme-soft-chip rounded-full border border-brown/10 px-4 py-3 text-[12px] uppercase tracking-[0.14em]"
                 >
                   {chip}
                 </ViewportReveal>

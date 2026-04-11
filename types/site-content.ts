@@ -1,6 +1,33 @@
 export type HeroForegroundMedia = "hero" | "accent";
+export type StorefrontThemeRecipe = "balanced" | "soft" | "bold";
 
-export interface SiteContentSettings {
+export interface StorefrontThemePreset {
+  id: string;
+  name: string;
+  description: string;
+  recipe: StorefrontThemeRecipe;
+  settings: StorefrontThemeSettings;
+}
+
+export interface StorefrontThemeSettings {
+  themeCanvasStart: string;
+  themeCanvasMid: string;
+  themeCanvasEnd: string;
+  themeSurface: string;
+  themeSurfaceAlt: string;
+  themeSurfaceRaised: string;
+  themePrimary: string;
+  themePrimaryStrong: string;
+  themeAccent: string;
+  themeText: string;
+  themeHeading: string;
+  themeMuted: string;
+  themeBorder: string;
+  themeFooterStart: string;
+  themeFooterEnd: string;
+}
+
+export interface SiteContentSettings extends StorefrontThemeSettings {
   brandName: string;
   logoMode: "text" | "image";
   logoText: string;
@@ -78,6 +105,7 @@ export interface SiteLocaleConfig {
 
 export interface SiteContentInput extends SiteContentSettings {
   siteLocales?: SiteLocaleConfig[];
+  siteThemePresets?: StorefrontThemePreset[];
 }
 
 export interface SiteContentBundleInput {

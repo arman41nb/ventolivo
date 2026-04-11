@@ -2,10 +2,12 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductDetail from "@/components/products/ProductDetail";
+import StorefrontThemeScope from "@/components/theme/StorefrontThemeScope";
 import { getProductBySlug } from "@/services/products";
 import type { Metadata } from "next";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { getStorefrontData } from "@/services/storefront";
+import { getCustomerSession } from "@/services/customer-auth";
 import { getPrimaryProductMedia } from "@/lib/utils";
 
 export async function generateMetadata({
@@ -40,9 +42,10 @@ export default async function ProductDetailPage({
   }
 
   const currentLocale = rawLocale as Locale;
-  const [{ content, siteSettings, supportedLocales }, product] = await Promise.all([
+  const [{ content, siteSettings, supportedLocales, dictionary }, product, customerSession] = await Promise.all([
     getStorefrontData(currentLocale),
     getProductBySlug(slug, currentLocale),
+    getCustomerSession(),
   ]);
 
   if (!product) {
@@ -50,7 +53,7 @@ export default async function ProductDetailPage({
   }
 
   return (
-    <div className="page-shell min-h-screen">
+    <StorefrontThemeScope settings={siteSettings} className="page-shell min-h-screen">
       <Navbar
         locale={currentLocale}
         brand={{
@@ -62,6 +65,15 @@ export default async function ProductDetailPage({
         }}
         content={content.navbar}
         supportedLocales={supportedLocales}
+        accountLabels={dictionary.account.nav}
+        customerSession={
+          customerSession
+            ? {
+                fullName: customerSession.user.fullName,
+                avatarUrl: customerSession.user.avatarUrl,
+              }
+            : undefined
+        }
       />
       <main className="px-4 py-10 md:px-6 md:py-14">
         <section className="mx-auto max-w-[1380px]">
@@ -69,10 +81,11 @@ export default async function ProductDetailPage({
             product={product}
             orderLabel={content.products.orderLabel}
             ingredientsLabel={content.products.ingredientsLabel}
+            locale={currentLocale}
           />
         </section>
       </main>
       <Footer brandName={content.brandName} content={content.footer} locale={currentLocale} />
-    </div>
+    </StorefrontThemeScope>
   );
 }

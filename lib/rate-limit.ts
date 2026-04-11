@@ -152,6 +152,18 @@ export async function enforceMediaUploadRateLimit(identifier: string): Promise<R
   return applyConfiguredRateLimit("media-upload", identifier, env.RATE_LIMIT_MAX_MEDIA_UPLOADS);
 }
 
+export async function enforceAdminAuthRateLimit(identifier: string): Promise<RateLimitResult> {
+  return applyConfiguredRateLimit("admin-auth", identifier, env.RATE_LIMIT_MAX_ADMIN_AUTH_ATTEMPTS);
+}
+
+export async function enforceCustomerAuthRateLimit(identifier: string): Promise<RateLimitResult> {
+  return applyConfiguredRateLimit(
+    "customer-auth",
+    identifier,
+    env.RATE_LIMIT_MAX_CUSTOMER_AUTH_ATTEMPTS,
+  );
+}
+
 export async function enforceTranslationRateLimit(identifier: string): Promise<RateLimitResult> {
   return applyConfiguredRateLimit(
     "translation",

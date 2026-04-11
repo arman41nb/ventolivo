@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import SceneImage from "@/components/media/SceneImage";
+import StorefrontThemeScope from "@/components/theme/StorefrontThemeScope";
 import { useState, type CSSProperties, type ReactNode } from "react";
 import HeroVisualStage from "@/components/sections/HeroVisualStage";
 import { useFormStatus } from "react-dom";
@@ -26,6 +27,11 @@ import {
   getHeroSceneMediaState,
   getHeroSceneTransforms,
   resolveStorefrontContent,
+  defaultSiteContentSettings,
+  generateStorefrontThemeFromSeed,
+  storefrontThemePresets,
+  type StorefrontThemePreset,
+  type StorefrontThemeRecipe,
 } from "@/modules/site-content";
 import type {
   EditableFieldId,
@@ -33,6 +39,7 @@ import type {
   Product,
   SiteContentSettings,
   SiteLocaleConfig,
+  StorefrontThemeSettings,
   StorefrontPreviewBindings,
 } from "@/types";
 
@@ -47,7 +54,7 @@ type EditableSectionId =
   | "cta"
   | "footer";
 
-type WorkspacePanelId = "translations" | "languages" | "workflow";
+type WorkspacePanelId = "translations" | "languages" | "workflow" | "theme";
 
 type AssetFieldKey = "logoImageUrl" | "heroImageUrl" | "heroAccentImageUrl" | "aboutImageUrl";
 type AssetAltFieldKey = "logoAltText" | "heroImageAlt" | "heroAccentImageAlt" | "aboutImageAlt";
@@ -80,10 +87,14 @@ export interface SiteContentStudioProps {
   locale: Locale;
   action: (formData: FormData) => void | Promise<void>;
   settings: SiteContentSettings;
+  themePresets: StorefrontThemePreset[];
   dictionary: Dictionary;
   mediaLibrary: MediaLibraryAsset[];
   featuredProducts: Product[];
   supportedLocales: SiteLocaleConfig[];
+  initialWorkspacePanel?: WorkspacePanelId;
+  redirectTo?: string;
+  studioMode?: "default" | "theme";
 }
 
 const sectionLabels: Record<EditableSectionId, string> = {
@@ -119,7 +130,68 @@ const workspacePanelMeta: Record<
     description:
       "This workspace keeps translation tools, language settings, and publishing context in one predictable place.",
   },
+  theme: {
+    label: "Theme",
+    title: "Control the storefront design tokens",
+    description:
+      "Update the global palette from one place. The live preview reflects every token immediately, so the whole storefront stays visually consistent.",
+  },
 };
+
+const themeFieldGroups: Array<{
+  title: string;
+  description: string;
+  fields: Array<{ key: keyof StorefrontThemeSettings; label: string; helper: string }>;
+}> = [
+  {
+    title: "Canvas",
+    description: "These colors define the global page background and the main section surfaces.",
+    fields: [
+      { key: "themeCanvasStart", label: "Canvas start", helper: "Top of the page background." },
+      { key: "themeCanvasMid", label: "Canvas middle", helper: "Middle transition color." },
+      { key: "themeCanvasEnd", label: "Canvas end", helper: "Bottom of the page background." },
+      { key: "themeSurface", label: "Main surface", helper: "Base panel and soft surface color." },
+      { key: "themeSurfaceAlt", label: "Alternate surface", helper: "Warmer contrast surface." },
+      { key: "themeSurfaceRaised", label: "Raised surface", helper: "Cards, overlays, and elevated panels." },
+    ],
+  },
+  {
+    title: "Brand",
+    description: "These tokens drive buttons, highlights, headings, accents, and footer treatment.",
+    fields: [
+      { key: "themePrimary", label: "Primary brand", helper: "Main brand color for actions and links." },
+      { key: "themePrimaryStrong", label: "Primary deep", helper: "Darker stop for gradients and depth." },
+      { key: "themeAccent", label: "Accent", helper: "Secondary highlight color used in badges and cues." },
+      { key: "themeFooterStart", label: "Footer start", helper: "Top of the footer gradient." },
+      { key: "themeFooterEnd", label: "Footer end", helper: "Bottom of the footer gradient." },
+    ],
+  },
+  {
+    title: "Typography",
+    description: "These tokens keep text contrast predictable across every section.",
+    fields: [
+      { key: "themeHeading", label: "Heading", helper: "Titles and strong emphasis." },
+      { key: "themeText", label: "Body text", helper: "Default readable text color." },
+      { key: "themeMuted", label: "Muted text", helper: "Secondary labels and supporting copy." },
+      { key: "themeBorder", label: "Border", helper: "Subtle outlines, separators, and chips." },
+    ],
+  },
+];
+
+const themeFieldKeys = themeFieldGroups.flatMap((group) => group.fields.map((field) => field.key));
+const MAX_THEME_PRESETS = 24;
+
+function createThemePresetId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `theme-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function isHexThemeColor(value: string) {
+  return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value.trim());
+}
 
 const editableFields: Record<EditableFieldId, EditableFieldMeta> = {
   brandName: {
@@ -652,6 +724,121 @@ function PanelTextArea({
         className="border border-brown/20 bg-white px-4 py-3 outline-none transition-colors focus:border-brown"
       />
     </label>
+  );
+}
+
+function ThemeColorInput({
+  label,
+  helper,
+  value,
+  onChange,
+}: {
+  label: string;
+  helper: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="grid gap-3 rounded-[22px] border border-brown/10 bg-white p-4 shadow-sm">
+      <div>
+        <p className="text-[12px] uppercase tracking-[0.18em] text-muted">{label}</p>
+        <p className="mt-2 text-sm text-text/75">{helper}</p>
+      </div>
+      <div className="grid grid-cols-[68px_minmax(0,1fr)] items-center gap-3">
+        <input
+          type="color"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-12 w-full cursor-pointer rounded-[14px] border border-brown/12 bg-transparent p-1"
+        />
+        <input
+          type="text"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="border border-brown/20 bg-cream px-4 py-3 font-mono text-sm uppercase text-dark outline-none transition-colors focus:border-brown"
+        />
+      </div>
+    </label>
+  );
+}
+
+function ThemePresetCard({
+  preset,
+  onApply,
+  applyLabel = "Apply preset",
+  secondaryActionLabel,
+  onSecondaryAction,
+}: {
+  preset: StorefrontThemePreset;
+  onApply: () => void;
+  applyLabel?: string;
+  secondaryActionLabel?: string;
+  onSecondaryAction?: () => void;
+}) {
+  const swatches = [
+    preset.settings.themePrimary,
+    preset.settings.themeAccent,
+    preset.settings.themeSurfaceAlt,
+    preset.settings.themeHeading,
+  ];
+
+  return (
+    <article className="rounded-[22px] border border-brown/10 bg-white p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[12px] uppercase tracking-[0.16em] text-muted">{preset.name}</p>
+          <p className="mt-2 text-sm text-text/75">{preset.description}</p>
+        </div>
+        <span className="rounded-full bg-cream px-3 py-1 text-[10px] uppercase tracking-[0.14em] text-brown">
+          {preset.recipe}
+        </span>
+      </div>
+      <div className="mt-4 flex items-center gap-2">
+        {swatches.map((swatch) => (
+          <span
+            key={`${preset.id}-${swatch}`}
+            className="h-9 w-9 rounded-full border border-brown/10 shadow-sm"
+            style={{ backgroundColor: swatch }}
+          />
+        ))}
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={onApply}
+          className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
+        >
+          {applyLabel}
+        </button>
+        {onSecondaryAction ? (
+          <button
+            type="button"
+            onClick={onSecondaryAction}
+            className="rounded-full border border-transparent bg-brown/8 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/12"
+          >
+            {secondaryActionLabel ?? "Delete"}
+          </button>
+        ) : null}
+      </div>
+    </article>
+  );
+}
+
+function ThemeStatCard({
+  label,
+  value,
+  note,
+}: {
+  label: string;
+  value: string;
+  note: string;
+}) {
+  return (
+    <article className="rounded-[22px] border border-brown/10 bg-white p-4 shadow-sm">
+      <p className="text-[11px] uppercase tracking-[0.18em] text-muted">{label}</p>
+      <p className="mt-3 font-serif text-3xl text-dark">{value}</p>
+      <p className="mt-2 text-sm text-text/70">{note}</p>
+    </article>
   );
 }
 
@@ -1727,23 +1914,55 @@ export default function SiteContentStudio({
   locale,
   action,
   settings,
+  themePresets,
   dictionary,
   mediaLibrary,
   featuredProducts,
   supportedLocales,
+  initialWorkspacePanel = "translations",
+  redirectTo,
+  studioMode = "default",
 }: SiteContentStudioProps) {
   const [selectedField, setSelectedField] = useState<EditableFieldId>("heroTitleLine1");
   const [activeWorkspacePanel, setActiveWorkspacePanel] =
-    useState<WorkspacePanelId>("translations");
+    useState<WorkspacePanelId>(initialWorkspacePanel);
   const [draft, setDraft] = useState<SiteContentSettings>(settings);
   const [assets, setAssets] = useState(mediaLibrary);
+  const [savedThemePresets, setSavedThemePresets] = useState(themePresets);
+  const [themeSeedColor, setThemeSeedColor] = useState(settings.themePrimary);
+  const [themeRecipe, setThemeRecipe] = useState<StorefrontThemeRecipe>("balanced");
+  const [themePresetName, setThemePresetName] = useState("");
+  const [themePresetDescription, setThemePresetDescription] = useState("");
+  const [themeJsonDraft, setThemeJsonDraft] = useState("");
+  const [themeJsonStatus, setThemeJsonStatus] = useState<{
+    tone: "idle" | "success" | "error";
+    message: string;
+  }>({
+    tone: "idle",
+    message: "",
+  });
   const selectedMeta = editableFields[selectedField];
   const relatedFields = Object.values(editableFields).filter(
     (field) => field.section === selectedMeta.section && field.id !== selectedField,
   );
   const imageAssets = assets.filter((asset) => asset.kind === "image");
   const activeWorkspace = workspacePanelMeta[activeWorkspacePanel];
+  const isThemeStudio = studioMode === "theme";
   const storefrontContent = resolveStorefrontContent(dictionary, draft);
+  const effectiveThemeSeedColor = isHexThemeColor(themeSeedColor)
+    ? themeSeedColor
+    : draft.themePrimary;
+  const generatedThemePreview = generateStorefrontThemeFromSeed(
+    effectiveThemeSeedColor,
+    themeRecipe,
+  );
+  const currentThemeSwatches = [
+    { label: "Primary", value: draft.themePrimary },
+    { label: "Accent", value: draft.themeAccent },
+    { label: "Surface", value: draft.themeSurface },
+    { label: "Heading", value: draft.themeHeading },
+    { label: "Footer", value: draft.themeFooterEnd },
+  ];
 
   function updateField<Key extends keyof SiteContentSettings>(
     key: Key,
@@ -1762,6 +1981,234 @@ export default function SiteContentStudio({
   function handleRestoreDraft() {
     setDraft(settings);
     setAssets(mediaLibrary);
+    setActiveWorkspacePanel(initialWorkspacePanel);
+    setSavedThemePresets(themePresets);
+    setThemeSeedColor(settings.themePrimary);
+    setThemeRecipe("balanced");
+    setThemePresetName("");
+    setThemePresetDescription("");
+    setThemeJsonDraft("");
+    setThemeJsonStatus({ tone: "idle", message: "" });
+  }
+
+  function handleResetTheme() {
+    setDraft((currentDraft) => {
+      const nextDraft = { ...currentDraft };
+
+      for (const key of themeFieldKeys) {
+        nextDraft[key] = defaultSiteContentSettings[key];
+      }
+
+      return nextDraft;
+    });
+    setThemeSeedColor(defaultSiteContentSettings.themePrimary);
+    setThemeRecipe("balanced");
+  }
+
+  function applyThemeSettings(themeSettings: StorefrontThemeSettings) {
+    setDraft((currentDraft) => ({
+      ...currentDraft,
+      ...themeSettings,
+    }));
+  }
+
+  function handleApplyPreset(preset: StorefrontThemePreset) {
+    applyThemeSettings(preset.settings);
+    setThemeSeedColor(preset.settings.themePrimary);
+    setThemeRecipe(preset.recipe);
+  }
+
+  function handleGenerateThemeFromSeed() {
+    applyThemeSettings(generatedThemePreview);
+  }
+
+  function createThemeSettingsSnapshot(source: SiteContentSettings): StorefrontThemeSettings {
+    const snapshot = {} as StorefrontThemeSettings;
+
+    for (const key of themeFieldKeys) {
+      snapshot[key] = source[key];
+    }
+
+    return snapshot;
+  }
+
+  function handleSaveCurrentThemePreset() {
+    const trimmedName = themePresetName.trim();
+
+    if (!trimmedName) {
+      setThemeJsonStatus({
+        tone: "error",
+        message: "Preset name is required before saving.",
+      });
+      return;
+    }
+
+    if (savedThemePresets.length >= MAX_THEME_PRESETS) {
+      setThemeJsonStatus({
+        tone: "error",
+        message: `You can store up to ${MAX_THEME_PRESETS} custom presets. Export or delete one before adding more.`,
+      });
+      return;
+    }
+
+    const nextPreset: StorefrontThemePreset = {
+      id: createThemePresetId(),
+      name: trimmedName,
+      description: themePresetDescription.trim(),
+      recipe: themeRecipe,
+      settings: createThemeSettingsSnapshot(draft),
+    };
+
+    setSavedThemePresets((currentPresets) => [nextPreset, ...currentPresets]);
+    setThemePresetName("");
+    setThemePresetDescription("");
+    setThemeJsonStatus({
+      tone: "success",
+      message: `Preset "${trimmedName}" is ready and will be saved when you save the page.`,
+    });
+  }
+
+  function handleDeleteThemePreset(presetId: string) {
+    setSavedThemePresets((currentPresets) =>
+      currentPresets.filter((preset) => preset.id !== presetId),
+    );
+    setThemeJsonStatus({
+      tone: "success",
+      message: "Preset removed from the current draft library.",
+    });
+  }
+
+  function handleExportCurrentTheme() {
+    setThemeJsonDraft(
+      JSON.stringify(
+        {
+          kind: "storefront-theme",
+          version: 1,
+          recipe: themeRecipe,
+          settings: createThemeSettingsSnapshot(draft),
+        },
+        null,
+        2,
+      ),
+    );
+    setThemeJsonStatus({
+      tone: "success",
+      message: "Current theme JSON is ready in the import/export box.",
+    });
+  }
+
+  function handleExportThemeLibrary() {
+    setThemeJsonDraft(
+      JSON.stringify(
+        {
+          kind: "storefront-theme-library",
+          version: 1,
+          currentTheme: {
+            recipe: themeRecipe,
+            settings: createThemeSettingsSnapshot(draft),
+          },
+          presets: savedThemePresets,
+        },
+        null,
+        2,
+      ),
+    );
+    setThemeJsonStatus({
+      tone: "success",
+      message: "Theme library JSON is ready in the import/export box.",
+    });
+  }
+
+  function isThemeSettingsCandidate(value: unknown): value is StorefrontThemeSettings {
+    if (!value || typeof value !== "object") {
+      return false;
+    }
+
+    return themeFieldKeys.every((key) => typeof (value as Record<string, unknown>)[key] === "string");
+  }
+
+  function isThemePresetCandidate(value: unknown): value is StorefrontThemePreset {
+    if (!value || typeof value !== "object") {
+      return false;
+    }
+
+    const candidate = value as Record<string, unknown>;
+
+    return (
+      typeof candidate.id === "string" &&
+      typeof candidate.name === "string" &&
+      typeof candidate.description === "string" &&
+      (candidate.recipe === "balanced" ||
+        candidate.recipe === "soft" ||
+        candidate.recipe === "bold") &&
+      isThemeSettingsCandidate(candidate.settings)
+    );
+  }
+
+  function handleImportThemeJson() {
+    try {
+      const parsed = JSON.parse(themeJsonDraft) as unknown;
+
+      if (!parsed || typeof parsed !== "object") {
+        throw new Error("Theme JSON must be an object.");
+      }
+
+      const candidate = parsed as Record<string, unknown>;
+
+      if (candidate.kind === "storefront-theme" && isThemeSettingsCandidate(candidate.settings)) {
+        applyThemeSettings(candidate.settings);
+        setThemeRecipe(
+          candidate.recipe === "soft" || candidate.recipe === "bold"
+            ? candidate.recipe
+            : "balanced",
+        );
+        setThemeSeedColor(candidate.settings.themePrimary);
+        setThemeJsonStatus({
+          tone: "success",
+          message: "Theme JSON imported into the live draft.",
+        });
+        return;
+      }
+
+      if (candidate.kind === "storefront-theme-library") {
+        const currentTheme = candidate.currentTheme as Record<string, unknown> | undefined;
+        const presets = Array.isArray(candidate.presets) ? candidate.presets : [];
+
+        if (
+          currentTheme &&
+          isThemeSettingsCandidate(currentTheme.settings) &&
+          (currentTheme.recipe === "balanced" ||
+            currentTheme.recipe === "soft" ||
+            currentTheme.recipe === "bold")
+        ) {
+          applyThemeSettings(currentTheme.settings);
+          setThemeRecipe(currentTheme.recipe);
+          setThemeSeedColor(currentTheme.settings.themePrimary);
+        }
+
+        if (!presets.every((preset) => isThemePresetCandidate(preset))) {
+          throw new Error("One or more presets are invalid.");
+        }
+
+        if (presets.length > MAX_THEME_PRESETS) {
+          throw new Error(`Theme libraries can include up to ${MAX_THEME_PRESETS} presets.`);
+        }
+
+        setSavedThemePresets(presets);
+        setThemeJsonStatus({
+          tone: "success",
+          message: "Theme library JSON imported into the live draft.",
+        });
+        return;
+      }
+
+      throw new Error("Unsupported theme JSON format.");
+    } catch (error) {
+      setThemeJsonStatus({
+        tone: "error",
+        message: error instanceof Error ? error.message : "Theme JSON import failed.",
+      });
+    }
   }
 
   const previewBindings: StorefrontPreviewBindings = {
@@ -2062,6 +2509,298 @@ export default function SiteContentStudio({
       );
     }
 
+    if (activeWorkspacePanel === "theme") {
+      return (
+        <section className="rounded-[32px] border border-brown/15 bg-white p-6 shadow-sm">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[12px] uppercase tracking-[0.24em] text-muted">Theme studio</p>
+              <h3 className="mt-2 font-serif text-2xl text-dark">
+                Drive the storefront palette from semantic tokens
+              </h3>
+              <p className="mt-3 text-sm text-text/75">
+                These tokens control the whole storefront system: page background, surfaces,
+                buttons, accents, typography, borders, and footer. Because the theme is centralized,
+                future presets and advanced modes can build on the same structure.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleResetTheme}
+              className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
+            >
+              Reset theme
+            </button>
+          </div>
+
+          <div className="mt-5 flex flex-wrap gap-2">
+            <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+              {themeFieldKeys.length} design tokens
+            </span>
+            <span className="rounded-full bg-olive/10 px-4 py-2 text-xs uppercase tracking-[0.16em] text-olive">
+              Live preview linked
+            </span>
+            <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+              {storefrontThemePresets.length} ready presets
+            </span>
+            <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+              {savedThemePresets.length} saved presets
+            </span>
+          </div>
+
+          {themeJsonStatus.tone !== "idle" ? (
+            <div
+              className={`mt-6 rounded-[22px] border px-4 py-3 text-sm ${
+                themeJsonStatus.tone === "success"
+                  ? "border-olive/20 bg-olive/10 text-olive"
+                  : "border-[#d96b5f]/20 bg-[#d96b5f]/10 text-[#9f3e33]"
+              }`}
+            >
+              {themeJsonStatus.message}
+            </div>
+          ) : null}
+
+          <div className="mt-6 grid gap-6">
+            <section className="rounded-[26px] border border-brown/10 bg-cream/35 p-5">
+              <p className="text-[12px] uppercase tracking-[0.2em] text-muted">Preset library</p>
+              <p className="mt-2 text-sm text-text/75">
+                Start from a professionally balanced palette, then fine-tune the tokens if you want
+                something more custom.
+              </p>
+              <div className="mt-5 grid gap-4 xl:grid-cols-2">
+                {storefrontThemePresets.map((preset) => (
+                  <ThemePresetCard
+                    key={preset.id}
+                    preset={preset}
+                    onApply={() => handleApplyPreset(preset)}
+                  />
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-[26px] border border-brown/10 bg-cream/35 p-5">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="text-[12px] uppercase tracking-[0.2em] text-muted">
+                    Saved custom presets
+                  </p>
+                  <p className="mt-2 text-sm text-text/75">
+                    Capture the current token set as a reusable preset for this storefront. These
+                    presets are saved together with the site settings when you save the page.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSaveCurrentThemePreset}
+                  className="rounded-full bg-brown px-4 py-2 text-xs uppercase tracking-[0.16em] text-white transition-colors hover:bg-dark"
+                >
+                  Save current as preset
+                </button>
+              </div>
+
+              <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+                <div className="grid gap-4">
+                  <PanelInput
+                    label="Preset name"
+                    value={themePresetName}
+                    placeholder="Olive Boutique"
+                    onChange={setThemePresetName}
+                  />
+                  <PanelTextArea
+                    label="Preset description"
+                    rows={4}
+                    value={themePresetDescription}
+                    placeholder="Warm olive and cream direction for spring launches."
+                    onChange={setThemePresetDescription}
+                  />
+                  <p className="text-sm text-text/70">
+                    Capacity: {savedThemePresets.length}/{MAX_THEME_PRESETS} custom presets.
+                  </p>
+                </div>
+
+                <div className="grid gap-4 xl:grid-cols-2">
+                  {savedThemePresets.length > 0 ? (
+                    savedThemePresets.map((preset) => (
+                      <ThemePresetCard
+                        key={preset.id}
+                        preset={preset}
+                        onApply={() => handleApplyPreset(preset)}
+                        applyLabel="Apply custom"
+                        secondaryActionLabel="Delete preset"
+                        onSecondaryAction={() => handleDeleteThemePreset(preset.id)}
+                      />
+                    ))
+                  ) : (
+                    <div className="rounded-[22px] border border-dashed border-brown/20 bg-white px-5 py-6 text-sm text-text/70 xl:col-span-2">
+                      No custom presets yet. Tune the current palette, name it, then save it here.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+
+            <section className="rounded-[26px] border border-brown/10 bg-cream/35 p-5">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="text-[12px] uppercase tracking-[0.2em] text-muted">
+                    Palette generator
+                  </p>
+                  <p className="mt-2 text-sm text-text/75">
+                    Pick one base color and let the studio generate the rest of the palette around
+                    it. This is useful when you already know the brand color but do not want to
+                    handcraft every surface and text token.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleGenerateThemeFromSeed}
+                  className="rounded-full bg-brown px-4 py-2 text-xs uppercase tracking-[0.16em] text-white transition-colors hover:bg-dark"
+                >
+                  Generate palette
+                </button>
+              </div>
+
+              <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+                <div className="grid gap-4">
+                  <ThemeColorInput
+                    label="Seed color"
+                    helper="The generator will use this as the main brand anchor."
+                    value={themeSeedColor}
+                    onChange={setThemeSeedColor}
+                  />
+                  <PanelSegmentedControl
+                    label="Palette mood"
+                    value={themeRecipe}
+                    onChange={(value) =>
+                      setThemeRecipe(
+                        value === "soft" || value === "bold" ? value : "balanced",
+                      )
+                    }
+                    options={[
+                      { label: "Balanced", value: "balanced" },
+                      { label: "Soft", value: "soft" },
+                      { label: "Bold", value: "bold" },
+                    ]}
+                  />
+                </div>
+
+                <div className="rounded-[22px] border border-brown/10 bg-white p-4 shadow-sm">
+                  <p className="text-[12px] uppercase tracking-[0.18em] text-muted">
+                    Generated preview
+                  </p>
+                  <div className="mt-4 grid gap-4">
+                    <div className="grid grid-cols-5 gap-3">
+                      {[
+                        themeSeedColor,
+                        generatedThemePreview.themeAccent,
+                        generatedThemePreview.themeSurface,
+                        generatedThemePreview.themeHeading,
+                        generatedThemePreview.themeFooterEnd,
+                      ].map((swatch, index) => (
+                        <div key={`${swatch}-${index}`} className="grid gap-2">
+                          <div
+                            className="h-12 rounded-[16px] border border-brown/10 shadow-sm"
+                            style={{ backgroundColor: swatch }}
+                          />
+                          <p className="truncate text-[10px] uppercase tracking-[0.14em] text-muted">
+                            {index === 0
+                              ? "Seed"
+                              : index === 1
+                                ? "Accent"
+                                : index === 2
+                                  ? "Surface"
+                                  : index === 3
+                                    ? "Heading"
+                                    : "Footer"}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-sm text-text/75">
+                      `Balanced` keeps the palette close to the seed, `Soft` creates a lighter
+                      boutique feel, and `Bold` pushes contrast for a stronger brand statement.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="rounded-[26px] border border-brown/10 bg-cream/35 p-5">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="text-[12px] uppercase tracking-[0.2em] text-muted">
+                    Import and export
+                  </p>
+                  <p className="mt-2 text-sm text-text/75">
+                    Export the active theme or the full preset library as JSON, or paste a JSON
+                    payload to import it back into the live draft.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={handleExportCurrentTheme}
+                    className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
+                  >
+                    Export theme
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleExportThemeLibrary}
+                    className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
+                  >
+                    Export library
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleImportThemeJson}
+                    className="rounded-full bg-brown px-4 py-2 text-xs uppercase tracking-[0.16em] text-white transition-colors hover:bg-dark"
+                  >
+                    Import JSON
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-4">
+                <PanelTextArea
+                  label="Theme JSON"
+                  rows={14}
+                  value={themeJsonDraft}
+                  placeholder='{\n  "kind": "storefront-theme",\n  "version": 1,\n  "recipe": "balanced",\n  "settings": { ... }\n}'
+                  onChange={setThemeJsonDraft}
+                />
+                <p className="text-sm text-text/70">
+                  Supported formats: `storefront-theme` for a single theme and
+                  `storefront-theme-library` for the active theme plus custom presets.
+                </p>
+              </div>
+            </section>
+
+            {themeFieldGroups.map((group) => (
+              <section
+                key={group.title}
+                className="rounded-[26px] border border-brown/10 bg-cream/35 p-5"
+              >
+                <p className="text-[12px] uppercase tracking-[0.2em] text-muted">{group.title}</p>
+                <p className="mt-2 text-sm text-text/75">{group.description}</p>
+                <div className="mt-5 grid gap-4 xl:grid-cols-2">
+                  {group.fields.map((field) => (
+                    <ThemeColorInput
+                      key={field.key}
+                      label={field.label}
+                      helper={field.helper}
+                      value={draft[field.key]}
+                      onChange={(value) => updateField(field.key, value)}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </section>
+      );
+    }
+
     return (
       <section className="rounded-[32px] border border-brown/15 bg-white p-6 shadow-sm">
         <p className="text-[12px] uppercase tracking-[0.24em] text-muted">Publishing flow</p>
@@ -2088,7 +2827,7 @@ export default function SiteContentStudio({
     );
   }
 
-  const editorPanel = (
+  const defaultEditorPanel = (
     <>
       <section className="sticky top-0 z-20 rounded-[24px] border border-brown/15 bg-[#f7f0e6]/96 p-3 backdrop-blur">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-brown/12 bg-white/92 px-4 py-3 shadow-sm">
@@ -2182,9 +2921,95 @@ export default function SiteContentStudio({
     </>
   );
 
+  const themeEditorPanel = (
+    <>
+      <section className="sticky top-0 z-20 rounded-[24px] border border-brown/15 bg-[#f7f0e6]/96 p-3 backdrop-blur">
+        <div className="rounded-[20px] border border-brown/12 bg-white/92 px-4 py-4 shadow-sm">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-muted">Theme console</p>
+          <h2 className="mt-2 font-serif text-3xl text-dark">Build a storefront identity</h2>
+          <p className="mt-2 text-sm text-text/70">
+            This page is dedicated to the visual system only: brand palette, reusable presets, and
+            import/export workflows for the whole storefront.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={handleRestoreDraft}
+              className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
+            >
+              Restore draft
+            </button>
+            <SubmitButton />
+            <Link
+              href={`/${locale}/admin/site`}
+              className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
+            >
+              Open content studio
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-1">
+        <ThemeStatCard
+          label="Design tokens"
+          value={String(themeFieldKeys.length)}
+          note="Semantic colors drive every shared surface, CTA, border, and text state."
+        />
+        <ThemeStatCard
+          label="Custom presets"
+          value={String(savedThemePresets.length)}
+          note="Saved brand directions you can reapply without rebuilding the palette."
+        />
+        <ThemeStatCard
+          label="Current recipe"
+          value={themeRecipe}
+          note="The active palette mood used by the seed-color generator."
+        />
+      </section>
+
+      <section className="rounded-[28px] border border-brown/15 bg-white p-6 shadow-sm">
+        <p className="text-[12px] uppercase tracking-[0.24em] text-muted">Current palette</p>
+        <h3 className="mt-2 font-serif text-2xl text-dark">Live brand snapshot</h3>
+        <p className="mt-3 text-sm text-text/75">
+          These are the key anchors currently shaping the storefront preview.
+        </p>
+        <div className="mt-5 grid grid-cols-5 gap-3">
+          {currentThemeSwatches.map((swatch) => (
+            <div key={swatch.label} className="grid gap-2">
+              <div
+                className="h-14 rounded-[16px] border border-brown/10 shadow-sm"
+                style={{ backgroundColor: swatch.value }}
+              />
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.14em] text-muted">
+                  {swatch.label}
+                </p>
+                <p className="mt-1 truncate font-mono text-xs text-text/75">{swatch.value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {renderWorkspacePanel()}
+    </>
+  );
+
+  const editorPanel = isThemeStudio ? themeEditorPanel : defaultEditorPanel;
+
   return (
-    <form action={action} className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_430px]">
+    <form
+      action={action}
+      className={`grid gap-6 ${
+        isThemeStudio
+          ? "xl:grid-cols-[minmax(0,1.08fr)_520px]"
+          : "xl:grid-cols-[minmax(0,1fr)_430px]"
+      }`}
+    >
       <input type="hidden" name="locale" value={locale} />
+      {redirectTo ? <input type="hidden" name="redirectTo" value={redirectTo} /> : null}
+      <input type="hidden" name="themePresetsJson" value={JSON.stringify(savedThemePresets)} />
       {(
         Object.entries(draft) as Array<
           [keyof SiteContentSettings, SiteContentSettings[keyof SiteContentSettings]]
@@ -2196,35 +3021,79 @@ export default function SiteContentStudio({
       <section className="rounded-[32px] border border-brown/15 bg-white/80 p-5 shadow-sm backdrop-blur">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-[12px] uppercase tracking-[0.24em] text-muted">Live preview</p>
+            <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
+              {isThemeStudio ? "Theme preview" : "Live preview"}
+            </p>
             <h2 className="mt-2 font-serif text-3xl text-dark">
-              Edit the homepage by clicking the exact element
+              {isThemeStudio
+                ? "See the whole storefront respond to the active palette"
+                : "Edit the homepage by clicking the exact element"}
             </h2>
             <p className="mt-2 max-w-2xl text-sm text-text/75">
-              The preview covers the full homepage flow. Click any text, image, or button and the
-              right side will jump straight to the matching field instead of making you hunt for it
-              manually.
+              {isThemeStudio
+                ? "Use the preview as a live brand review surface. Every token update, preset, and imported theme is reflected here immediately across navigation, hero, cards, and footer."
+                : "The preview covers the full homepage flow. Click any text, image, or button and the right side will jump straight to the matching field instead of making you hunt for it manually."}
             </p>
           </div>
-          <Link
-            href={`/${locale}/admin/media`}
-            className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
-          >
-            Open media library
-          </Link>
+          {isThemeStudio ? (
+            <div className="flex flex-wrap gap-2">
+              {currentThemeSwatches.map((swatch) => (
+                <span
+                  key={`header-${swatch.label}`}
+                  className="inline-flex items-center gap-2 rounded-full border border-brown/10 bg-white px-3 py-2 text-xs uppercase tracking-[0.14em] text-brown"
+                >
+                  <span
+                    className="h-3 w-3 rounded-full border border-brown/10"
+                    style={{ backgroundColor: swatch.value }}
+                  />
+                  {swatch.label}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <Link
+              href={`/${locale}/admin/media`}
+              className="rounded-full border border-brown/20 px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown transition-colors hover:bg-brown/5"
+            >
+              Open media library
+            </Link>
+          )}
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
-            Selected: {selectedMeta.title}
-          </span>
-          <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
-            Area: {sectionLabels[selectedMeta.section]}
-          </span>
-          <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
-            Locale: {locale}
-          </span>
-        </div>
+        {isThemeStudio ? (
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className="rounded-[20px] border border-brown/10 bg-cream/35 px-4 py-3">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-muted">Canvas system</p>
+              <p className="mt-2 text-sm text-text/75">
+                Background and section surfaces stay harmonized across the full page.
+              </p>
+            </div>
+            <div className="rounded-[20px] border border-brown/10 bg-cream/35 px-4 py-3">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-muted">Action system</p>
+              <p className="mt-2 text-sm text-text/75">
+                Primary actions, highlights, and accents inherit one connected brand direction.
+              </p>
+            </div>
+            <div className="rounded-[20px] border border-brown/10 bg-cream/35 px-4 py-3">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-muted">Type system</p>
+              <p className="mt-2 text-sm text-text/75">
+                Heading, body, and muted text keep readable contrast while following the palette.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+              Selected: {selectedMeta.title}
+            </span>
+            <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+              Area: {sectionLabels[selectedMeta.section]}
+            </span>
+            <span className="rounded-full bg-cream px-4 py-2 text-xs uppercase tracking-[0.16em] text-brown">
+              Locale: {locale}
+            </span>
+          </div>
+        )}
 
         <div className="mt-6 overflow-hidden rounded-[28px] border border-brown/10 bg-[#f5ede2]">
           <div className="flex items-center gap-2 border-b border-brown/10 bg-[#efe1ce] px-4 py-3">
@@ -2238,7 +3107,7 @@ export default function SiteContentStudio({
 
           <div className="max-h-[calc(100vh-260px)] overflow-auto bg-[#fbf7f1] p-4">
             <div className="mx-auto max-w-[1440px] overflow-hidden rounded-[30px] border border-brown/10 bg-[#f8f3ed] shadow-[0_22px_50px_rgba(71,49,30,0.08)]">
-              <div className="page-shell min-h-screen bg-transparent">
+              <StorefrontThemeScope settings={draft} className="page-shell min-h-screen bg-transparent">
                 <Navbar
                   locale={locale}
                   brand={{
@@ -2250,6 +3119,7 @@ export default function SiteContentStudio({
                   }}
                   content={storefrontContent.navbar}
                   supportedLocales={supportedLocales}
+                  accountLabels={dictionary.account.nav}
                   preview={previewBindings}
                 />
                 <main>
@@ -2293,7 +3163,7 @@ export default function SiteContentStudio({
                   locale={locale}
                   preview={previewBindings}
                 />
-              </div>
+              </StorefrontThemeScope>
             </div>
           </div>
         </div>

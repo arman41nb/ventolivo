@@ -59,14 +59,14 @@ export default function HeroVisualStage({
   return (
     <div className="relative min-h-[420px] sm:min-h-[500px] lg:min-h-[680px]">
       <div className="pointer-events-none absolute left-[8%] top-[15%] h-[34%] w-[66%] rounded-[999px] bg-[radial-gradient(circle,rgba(255,255,255,0.88),rgba(255,255,255,0.14)_62%,transparent_76%)] hero-stage-atmosphere hero-stage-atmosphere-delay-1 sm:left-[10%] sm:w-[56%]" />
-      <div className="pointer-events-none absolute right-[2%] top-[13%] h-[34%] w-[34%] rounded-[999px] bg-[radial-gradient(circle,rgba(233,214,195,0.62),rgba(233,214,195,0.12)_58%,transparent_74%)] hero-stage-atmosphere hero-stage-atmosphere-delay-2 sm:right-[4%] sm:w-[28%]" />
+      <div className="pointer-events-none absolute right-[2%] top-[13%] h-[34%] w-[34%] rounded-[999px] bg-[radial-gradient(circle,rgb(var(--storefront-surface-alt-rgb)/0.62),rgb(var(--storefront-surface-alt-rgb)/0.12)_58%,transparent_74%)] hero-stage-atmosphere hero-stage-atmosphere-delay-2 sm:right-[4%] sm:w-[28%]" />
       <div className="pointer-events-none absolute left-[14%] top-[19%] h-px w-[48%] bg-[linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.88),rgba(255,255,255,0))] hero-stage-line" />
       <div
-        className="absolute inset-x-[3%] top-[11%] bottom-[12%] rounded-[34px] border border-white/52 bg-[linear-gradient(180deg,rgba(255,255,255,0.54),rgba(246,237,228,0.3))] shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_24px_44px_rgba(109,82,58,0.08)] transition-transform duration-300 sm:inset-x-[5%] sm:bottom-[14%] sm:rounded-[48px] sm:shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_32px_62px_rgba(109,82,58,0.08)]"
+        className="absolute inset-x-[3%] top-[11%] bottom-[12%] rounded-[34px] border border-white/52 bg-[linear-gradient(180deg,rgb(255_255_255/0.54),rgb(var(--storefront-surface-alt-rgb)/0.3))] shadow-[inset_0_1px_0_rgb(255_255_255/0.82),0_24px_44px_rgb(var(--storefront-primary-strong-rgb)/0.08)] transition-transform duration-300 sm:inset-x-[5%] sm:bottom-[14%] sm:rounded-[48px] sm:shadow-[inset_0_1px_0_rgb(255_255_255/0.82),0_32px_62px_rgb(var(--storefront-primary-strong-rgb)/0.08)]"
         style={{ transform: transforms.stageTransform }}
       />
       <div
-        className="absolute right-[1%] top-[18%] h-[56%] w-[34%] rounded-[28px] border border-white/50 bg-[linear-gradient(180deg,rgba(255,250,246,0.7),rgba(246,236,230,0.36))] shadow-[inset_0_1px_0_rgba(255,255,255,0.76)] transition-transform duration-300 sm:right-[2%] sm:w-[30%] sm:rounded-[40px]"
+        className="absolute right-[1%] top-[18%] h-[56%] w-[34%] rounded-[28px] border border-white/50 bg-[linear-gradient(180deg,rgb(var(--storefront-surface-raised-rgb)/0.7),rgb(var(--storefront-surface-alt-rgb)/0.36))] shadow-[inset_0_1px_0_rgb(255_255_255/0.76)] transition-transform duration-300 sm:right-[2%] sm:w-[30%] sm:rounded-[40px]"
         style={{ transform: transforms.stageTransform }}
       />
       <div
@@ -78,7 +78,7 @@ export default function HeroVisualStage({
         style={{ transform: transforms.soapShadowTransform }}
       />
       <div
-        className="absolute bottom-[16%] right-[8%] z-[16] h-8 w-[34%] min-w-[120px] rounded-full bg-[radial-gradient(circle,rgba(164,119,141,0.2),rgba(164,119,141,0.08)_42%,transparent_74%)] blur-xl transition-transform duration-300 sm:right-[10%] sm:h-10 sm:w-[30%] sm:min-w-[160px]"
+        className="absolute bottom-[16%] right-[8%] z-[16] h-8 w-[34%] min-w-[120px] rounded-full bg-[radial-gradient(circle,rgb(var(--storefront-accent-rgb)/0.18),rgb(var(--storefront-accent-rgb)/0.08)_42%,transparent_74%)] blur-xl transition-transform duration-300 sm:right-[10%] sm:h-10 sm:w-[30%] sm:min-w-[160px]"
         style={{ transform: transforms.accentShadowTransform }}
       />
 
@@ -88,8 +88,8 @@ export default function HeroVisualStage({
           alt={media.heroAccentImageAlt}
           label="Accent image"
           hint="Use the framing controls to move and scale this layer."
-          imageClassName={`${accentImageMotionClassName} h-full w-full object-contain opacity-95 drop-shadow-[0_24px_36px_rgba(93,61,39,0.16)]`.trim()}
-          placeholderClassName="aspect-square drop-shadow-[0_24px_36px_rgba(93,61,39,0.12)]"
+          imageClassName={`${accentImageMotionClassName} h-full w-full object-contain opacity-95 drop-shadow-[0_24px_36px_rgb(var(--storefront-primary-strong-rgb)/0.16)]`.trim()}
+          placeholderClassName="aspect-square drop-shadow-[0_24px_36px_rgb(var(--storefront-primary-strong-rgb)/0.12)]"
         />,
         {
           className:
@@ -110,8 +110,8 @@ export default function HeroVisualStage({
           alt={media.heroImageAlt}
           label="Hero image"
           hint="Use the framing controls to move and scale this layer."
-          imageClassName={`${heroImageMotionClassName} w-full object-contain drop-shadow-[0_42px_60px_rgba(78,54,37,0.28)]`.trim()}
-          placeholderClassName="aspect-[4/3] w-full drop-shadow-[0_42px_60px_rgba(78,54,37,0.14)]"
+          imageClassName={`${heroImageMotionClassName} w-full object-contain drop-shadow-[0_42px_60px_rgb(var(--storefront-primary-strong-rgb)/0.28)]`.trim()}
+          placeholderClassName="aspect-[4/3] w-full drop-shadow-[0_42px_60px_rgb(var(--storefront-primary-strong-rgb)/0.14)]"
         />,
         {
           className:
@@ -127,7 +127,7 @@ export default function HeroVisualStage({
       )}
 
       {renderSlot(
-        <span className="rounded-full border border-white/62 bg-[rgba(255,252,247,0.88)] px-4 py-2 text-[10px] uppercase tracking-[0.22em] text-[#ab8a72] shadow-[0_14px_28px_rgba(105,81,61,0.06)] backdrop-blur-xl">
+        <span className="theme-soft-badge rounded-full border border-white/62 bg-[rgb(var(--storefront-surface-raised-rgb)/0.88)] px-4 py-2 text-[10px] uppercase tracking-[0.22em] shadow-[0_14px_28px_rgb(var(--storefront-primary-strong-rgb)/0.06)] backdrop-blur-xl">
           {brandName}
         </span>,
         {

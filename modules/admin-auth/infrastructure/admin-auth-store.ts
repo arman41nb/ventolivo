@@ -25,7 +25,24 @@ export async function getAdminUserRecordByUsername(username: string) {
   return dbGetAdminUserByUsername(username);
 }
 
-export async function createAdminUserRecord(input: { username: string; passwordHash: string }) {
+export async function getAdminUserRecordByEmail(email: string) {
+  const { dbGetAdminUserByEmail } = await import("@/db");
+  return dbGetAdminUserByEmail(email);
+}
+
+export async function getAdminUserRecordByIdentifier(identifier: string) {
+  const { dbGetAdminUserByIdentifier } = await import("@/db");
+  return dbGetAdminUserByIdentifier(identifier);
+}
+
+export async function createAdminUserRecord(input: {
+  username: string;
+  email?: string;
+  displayName?: string;
+  role: string;
+  status: string;
+  passwordHash: string;
+}) {
   const { dbCreateAdminUser } = await import("@/db");
   return dbCreateAdminUser(input);
 }

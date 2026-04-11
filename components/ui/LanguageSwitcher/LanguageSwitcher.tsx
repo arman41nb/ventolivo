@@ -50,7 +50,7 @@ export default function LanguageSwitcher({ locales }: LanguageSwitcherProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex cursor-pointer items-center gap-2 rounded-full border border-brown/8 bg-white/84 px-4 py-3 text-[12px] uppercase tracking-[0.16em] text-[#8f735d] shadow-[0_10px_22px_rgba(72,49,30,0.05)] transition-colors hover:bg-white"
+        className="theme-icon-button flex cursor-pointer items-center gap-2 rounded-full border border-brown/8 px-4 py-3 text-[12px] uppercase tracking-[0.16em] transition-colors hover:bg-white"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-label={currentLocaleEntry.label}
@@ -68,7 +68,7 @@ export default function LanguageSwitcher({ locales }: LanguageSwitcherProps) {
 
       {isOpen && (
         <div
-          className="absolute end-0 top-full z-50 mt-2 min-w-[170px] overflow-hidden rounded-[20px] border border-brown/8 bg-[rgba(255,253,249,0.97)] shadow-[0_18px_36px_rgba(107,79,58,0.1)] backdrop-blur"
+          className="absolute end-0 top-full z-50 mt-2 min-w-[170px] overflow-hidden rounded-[20px] border border-brown/8 bg-[rgb(var(--storefront-surface-raised-rgb)/0.97)] shadow-[0_18px_36px_rgb(var(--storefront-primary-rgb)/0.1)] backdrop-blur"
           role="listbox"
           aria-label={currentLocaleEntry.label}
         >

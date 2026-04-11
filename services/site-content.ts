@@ -17,18 +17,24 @@ export {
   normalizeSiteLocaleCode,
   normalizeSiteLocales,
   pickSiteContentLocaleFields,
+  SITE_THEME_PRESETS_KEY,
   siteContentTranslationKeys,
+  generateStorefrontThemeFromSeed,
+  storefrontThemePresets,
 } from "@/modules/site-content";
 export type {
   HeroSceneMediaState,
   HeroSceneTransforms,
   SiteContentTranslationKey,
   SiteLocalePreset,
+  StorefrontThemePreset,
+  StorefrontThemeRecipe,
 } from "@/modules/site-content";
 export {
   getSiteContentSettings,
   getSiteContentTranslation,
   getSiteLocales,
+  getSiteThemePresets,
   isSupportedSiteLocale,
   saveSiteContentBundle,
   updateSiteContentSettings,

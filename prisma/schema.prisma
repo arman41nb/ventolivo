@@ -25,6 +25,7 @@ model Product {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   mediaLinks            ProductMedia[]
+  buyerIntents          BuyerIntent[]
 
   @@index([tag])
   @@index([slug])
@@ -114,6 +115,10 @@ model SiteContentTranslation {
 model AdminUser {
   id           Int            @id @default(autoincrement())
   username     String         @unique
+  email        String?        @unique
+  displayName  String?
+  role         String         @default("owner")
+  status       String         @default("active")
   passwordHash String
   lastLoginAt  DateTime?
   createdAt    DateTime       @default(now())
@@ -150,6 +155,54 @@ model AuditLog {
   @@index([adminUserId])
   @@index([createdAt])
   @@index([action])
+}
+
+model CustomerUser {
+  id               Int               @id @default(autoincrement())
+  email            String            @unique
+  fullName         String
+  avatarUrl        String?
+  phone            String?
+  status           String            @default("active")
+  passwordHash     String
+  marketingConsent Boolean           @default(false)
+  lastLoginAt      DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  sessions         CustomerSession[]
+  buyerIntents     BuyerIntent[]
+}
+
+model CustomerSession {
+  id             String       @id @default(cuid())
+  customerUserId Int
+  tokenHash      String
+  ipAddress      String?
+  userAgent      String?
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  customerUser   CustomerUser @relation(fields: [customerUserId], references: [id], onDelete: Cascade)
+
+  @@index([customerUserId])
+  @@index([expiresAt])
+}
+
+model BuyerIntent {
+  id             String        @id @default(cuid())
+  customerUserId Int?
+  productId      Int?
+  locale         String
+  channel        String        @default("whatsapp")
+  source         String?
+  note           String?
+  createdAt      DateTime      @default(now())
+  customerUser   CustomerUser? @relation(fields: [customerUserId], references: [id], onDelete: SetNull)
+  product        Product?      @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([customerUserId])
+  @@index([productId])
+  @@index([createdAt])
+  @@index([locale])
 }
 
 model ContactMessage {

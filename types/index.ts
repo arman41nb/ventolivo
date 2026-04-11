@@ -1,4 +1,18 @@
-export type { AdminAuditLogEntry, AdminSessionIdentity, AdminUser } from "./admin";
+export type {
+  AdminAuditLogEntry,
+  AdminSessionIdentity,
+  AdminUser,
+  AdminUserRole,
+  AdminUserStatus,
+} from "./admin";
+export type {
+  BuyerIntentRecord,
+  CustomerAdminInsightUser,
+  CustomerAdminInsights,
+  CustomerSessionIdentity,
+  CustomerUser,
+  CustomerUserStatus,
+} from "./customer";
 export type {
   LocalizedFieldMap,
   LocalizedListFieldMap,
@@ -18,6 +32,9 @@ export type {
   SiteLocaleConfig,
   SiteLocaleDirection,
   SiteContentSettings,
+  StorefrontThemePreset,
+  StorefrontThemeRecipe,
+  StorefrontThemeSettings,
 } from "./site-content";
 export type {
   EditableFieldId,

@@ -35,12 +35,36 @@ export async function dbGetAdminUserByUsername(username: string) {
   });
 }
 
-export async function dbCreateAdminUser(input: { username: string; passwordHash: string }) {
+export async function dbGetAdminUserByEmail(email: string) {
+  return prisma.adminUser.findUnique({
+    where: { email },
+  });
+}
+
+export async function dbGetAdminUserByIdentifier(identifier: string) {
+  return prisma.adminUser.findFirst({
+    where: {
+      OR: [{ username: identifier }, { email: identifier }],
+    },
+  });
+}
+
+export async function dbCreateAdminUser(input: {
+  username: string;
+  email?: string;
+  displayName?: string;
+  role: string;
+  status: string;
+  passwordHash: string;
+}) {
   return prisma.adminUser.create({
     data: {
       username: input.username,
+      email: input.email ?? null,
+      displayName: input.displayName ?? null,
+      role: input.role,
+      status: input.status,
       passwordHash: input.passwordHash,
-      lastLoginAt: new Date(),
     },
   });
 }

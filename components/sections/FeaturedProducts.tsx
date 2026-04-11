@@ -27,7 +27,7 @@ export default function FeaturedProducts({
   return (
     <section className="px-4 py-20 md:px-6">
       <div className="mx-auto max-w-[1380px]">
-        <div className="relative overflow-hidden rounded-[34px] border border-brown/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.42),rgba(255,255,255,0.08))] p-6 md:p-8 luxe-panel-float luxe-panel-float-delay-3">
+        <div className="theme-card-surface relative overflow-hidden rounded-[34px] border border-brown/8 p-6 md:p-8 luxe-panel-float luxe-panel-float-delay-3">
           <span className="pointer-events-none absolute left-[-8%] top-[8%] h-52 w-52 rounded-full bg-white/24 blur-[70px] luxe-atmosphere luxe-atmosphere-delay-1" />
           <span className="pointer-events-none absolute right-[-6%] bottom-[6%] h-44 w-44 rounded-full bg-[#e6d7c4]/28 blur-[72px] luxe-atmosphere luxe-atmosphere-delay-2" />
           <span className="pointer-events-none absolute inset-x-[22%] top-[16%] h-px bg-[linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.78),rgba(255,255,255,0))] luxe-line-pulse" />

@@ -426,8 +426,7 @@ export default function ProductEditorWorkspace({
             />
           </div>
 
-          {activeWorkspaceTab === "library" ? (
-            <div className="mt-5 space-y-5">
+          <div className="mt-5 space-y-5" hidden={activeWorkspaceTab !== "library"}>
               <Field
                 label="Asset search"
                 hint="Search once and reuse the same filtered library for cover, gallery, and video."
@@ -593,10 +592,11 @@ export default function ProductEditorWorkspace({
                 </div>
               </div>
             </div>
-          ) : null}
 
-          {activeWorkspaceTab === "manual" ? (
-            <div className="mt-5 rounded-[24px] border border-brown/10 bg-cream/25 p-5">
+          <div
+            className="mt-5 rounded-[24px] border border-brown/10 bg-cream/25 p-5"
+            hidden={activeWorkspaceTab !== "manual"}
+          >
               <p className="text-[12px] uppercase tracking-[0.16em] text-muted">
                 {editorDictionary.manualMediaTitle}
               </p>
@@ -660,10 +660,11 @@ export default function ProductEditorWorkspace({
                 </Field>
               </div>
             </div>
-          ) : null}
 
-          {activeWorkspaceTab === "translations" ? (
-            <div className="mt-5 rounded-[24px] border border-brown/10 bg-cream/25 p-5">
+          <div
+            className="mt-5 rounded-[24px] border border-brown/10 bg-cream/25 p-5"
+            hidden={activeWorkspaceTab !== "translations"}
+          >
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <p className="text-[12px] uppercase tracking-[0.2em] text-muted">
@@ -809,7 +810,6 @@ export default function ProductEditorWorkspace({
                 })}
               </div>
             </div>
-          ) : null}
         </section>
       </section>
 

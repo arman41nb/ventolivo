@@ -6,7 +6,9 @@ import AboutSection from "@/components/sections/AboutSection";
 import FeaturesGrid from "@/components/sections/FeaturesGrid";
 import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
+import StorefrontThemeScope from "@/components/theme/StorefrontThemeScope";
 import { getFeaturedProducts } from "@/services/products";
+import { getCustomerSession } from "@/services/customer-auth";
 import { getStorefrontData } from "@/services/storefront";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { notFound } from "next/navigation";
@@ -21,13 +23,14 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   }
 
   const currentLocale = locale as Locale;
-  const [{ content, siteSettings, supportedLocales }, featured] = await Promise.all([
+  const [{ content, siteSettings, supportedLocales, dictionary }, featured, customerSession] = await Promise.all([
     getStorefrontData(currentLocale),
     getFeaturedProducts(4, currentLocale),
+    getCustomerSession(),
   ]);
 
   return (
-    <div className="page-shell min-h-screen">
+    <StorefrontThemeScope settings={siteSettings} className="page-shell min-h-screen">
       <Navbar
         locale={currentLocale}
         brand={{
@@ -39,6 +42,15 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         }}
         content={content.navbar}
         supportedLocales={supportedLocales}
+        accountLabels={dictionary.account.nav}
+        customerSession={
+          customerSession
+            ? {
+                fullName: customerSession.user.fullName,
+                avatarUrl: customerSession.user.avatarUrl,
+              }
+            : undefined
+        }
       />
       <main>
         <Hero locale={currentLocale} siteSettings={siteSettings} content={{ ...content.hero, ...content.features }} />
@@ -55,6 +67,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <CTASection content={content.cta} />
       </main>
       <Footer brandName={content.brandName} content={content.footer} locale={currentLocale} />
-    </div>
+    </StorefrontThemeScope>
   );
 }

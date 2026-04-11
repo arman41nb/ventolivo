@@ -97,6 +97,10 @@ export default async function AdminDashboardPage({
         href: `/${locale}/admin/products`,
         label: dictionary.admin.dashboard.productManager,
       }}
+      secondaryAction={{
+        href: `/${locale}/admin/register`,
+        label: dictionary.admin.dashboard.manageAccess,
+      }}
     >
       <section className="grid gap-5 xl:grid-cols-[minmax(0,1.22fr)_380px]">
         <article className="relative overflow-hidden rounded-[36px] border border-brown/10 bg-[linear-gradient(135deg,rgba(255,250,244,0.84),rgba(239,228,215,0.92)_56%,rgba(216,202,184,0.92)_100%)] p-7 shadow-[0_28px_64px_rgba(107,79,58,0.14)] md:p-8">

@@ -91,6 +91,10 @@ function isAdminLoginPath(pathname: string): boolean {
   return pathname.split("/")[2] === "admin" && pathname.split("/")[3] === "login";
 }
 
+function isAdminRegisterPath(pathname: string): boolean {
+  return pathname.split("/")[2] === "admin" && pathname.split("/")[3] === "register";
+}
+
 async function enforceAdminAuth(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const locale = pathname.split("/")[1] || defaultLocale;
@@ -104,6 +108,10 @@ async function enforceAdminAuth(request: NextRequest) {
       return withLocalePreference(NextResponse.redirect(redirectUrl), locale);
     }
 
+    return withLocalePreference(NextResponse.next(), locale);
+  }
+
+  if (isAdminRegisterPath(pathname)) {
     return withLocalePreference(NextResponse.next(), locale);
   }
 

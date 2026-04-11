@@ -6,13 +6,21 @@ import type { Dictionary } from "@/i18n/types";
 import { siteContentTranslationKeys } from "@/modules/site-content";
 import type { SiteContentLocaleFields, SiteLocaleConfig } from "@/types";
 
+type TranslationProvider = "libretranslate" | "google" | "mymemory";
+
 interface SiteContentTranslationAssistantProps {
   currentLocale: string;
   locales: SiteLocaleConfig[];
   dictionary: Dictionary["admin"]["siteTranslationAssistant"];
 }
 
-type TranslationProviders = Partial<Record<string, "libretranslate" | "mymemory">>;
+type TranslationProviders = Partial<Record<string, TranslationProvider>>;
+
+const translationProviderLabels: Record<TranslationProvider, string> = {
+  libretranslate: "LibreTranslate",
+  google: "Google Translate",
+  mymemory: "MyMemory",
+};
 
 export default function SiteContentTranslationAssistant({
   currentLocale,
@@ -44,6 +52,14 @@ export default function SiteContentTranslationAssistant({
         : [...currentLocales, locale],
     );
     setStatus("");
+  }
+
+  function formatErrorStatus(message: string, retryAfterSeconds?: string | null) {
+    if (!retryAfterSeconds?.trim()) {
+      return message;
+    }
+
+    return `${message} Retry after ${retryAfterSeconds} seconds.`;
   }
 
   async function handleTranslate(event: React.MouseEvent<HTMLButtonElement>) {
@@ -97,7 +113,9 @@ export default function SiteContentTranslationAssistant({
       };
 
       if (!response.ok || !result.translations) {
-        throw new Error(result.error || "Translation failed");
+        throw new Error(
+          formatErrorStatus(result.error || "Translation failed", response.headers.get("retry-after")),
+        );
       }
 
       setTranslations((currentTranslations) => {
@@ -122,14 +140,24 @@ export default function SiteContentTranslationAssistant({
       });
 
       const providers = result.providers
-        ? Array.from(new Set(Object.values(result.providers)))
+        ? Array.from(
+            new Set(
+              Object.values(result.providers).filter(
+                (provider): provider is TranslationProvider => Boolean(provider),
+              ),
+            ),
+          )
         : [];
       const providerLabel =
-        providers.length > 0 ? ` ${dictionary.providerPrefix}: ${providers.join(", ")}.` : "";
+        providers.length > 0
+          ? ` ${dictionary.providerPrefix}: ${providers
+              .map((provider) => translationProviderLabels[provider])
+              .join(", ")}.`
+          : "";
 
       setStatus(`${dictionary.ready}${providerLabel}`);
-    } catch {
-      setStatus(dictionary.unavailable);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : dictionary.unavailable);
     } finally {
       setLoading(false);
     }

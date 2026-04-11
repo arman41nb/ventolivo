@@ -1,6 +1,14 @@
 version: "3.8"
 
 services:
+  libretranslate:
+    image: libretranslate/libretranslate
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - libretranslate-data:/home/libretranslate/.local
+    restart: unless-stopped
+
   app:
     build:
       context: .
@@ -15,6 +23,7 @@ services:
       - MEDIA_STORAGE_DRIVER=local
       - MEDIA_LOCAL_UPLOAD_DIR=public/uploads/media
       - MEDIA_PUBLIC_BASE_PATH=/uploads/media
+      - LIBRETRANSLATE_URL=http://libretranslate:5000
       - RATE_LIMIT_DRIVER=database
       - RATE_LIMIT_WINDOW_MS=60000
       - RATE_LIMIT_MAX_MEDIA_UPLOADS=10
@@ -27,3 +36,4 @@ services:
 volumes:
   db-data:
   media-data:
+  libretranslate-data:

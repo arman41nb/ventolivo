@@ -1,20 +1,24 @@
+import Link from "next/link";
 import ProductMediaGallery from "@/components/products/ProductMediaGallery";
+import type { Locale } from "@/i18n/config";
+import { localePath } from "@/i18n/paths";
 import type { Product } from "@/types";
-import { buildWhatsAppLink, buildProductWhatsAppMessage, formatPrice } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 
 interface ProductDetailProps {
   product: Product;
   orderLabel?: string;
   ingredientsLabel?: string;
+  locale?: Locale;
 }
 
 export default function ProductDetail({
   product,
   orderLabel,
   ingredientsLabel,
+  locale,
 }: ProductDetailProps) {
-  const message = buildProductWhatsAppMessage(product.name, product.price);
-  const whatsappLink = buildWhatsAppLink(message);
+  const buyHref = locale ? localePath(locale, `/buy/${product.slug}?source=detail`) : `/buy/${product.slug}?source=detail`;
 
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_0.92fr]">
@@ -23,7 +27,7 @@ export default function ProductDetail({
         productName={product.name}
         color={product.color}
       />
-      <div className="animate-rise animate-rise-delay-2 mesh-bg relative overflow-hidden rounded-[34px] border border-brown/8 p-8 shadow-[0_20px_48px_rgba(72,49,30,0.08)] md:p-10">
+      <div className="animate-rise animate-rise-delay-2 mesh-bg relative overflow-hidden rounded-[34px] border border-brown/8 p-8 shadow-[0_20px_48px_rgb(var(--storefront-primary-rgb)/0.08)] md:p-10">
         <span className="ambient-orb right-10 top-8 h-20 w-20 bg-white/28" />
         <span className="ambient-orb bottom-10 left-8 h-16 w-16 bg-olive/12 [animation-delay:1.4s]" />
         <div className="relative flex flex-col justify-center">
@@ -57,14 +61,12 @@ export default function ProductDetail({
           ) : null}
           <p className="mb-6 font-serif text-[2.6rem] text-brown">{formatPrice(product.price)}</p>
           {orderLabel ? (
-            <a
-              href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex w-fit items-center gap-[10px] rounded-full bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] px-7 py-4 text-[13px] font-medium uppercase tracking-[0.16em] text-white shadow-[0_16px_30px_rgba(93,61,39,0.18)] transition-transform hover:-translate-y-0.5 no-underline"
+            <Link
+              href={buyHref}
+              className="theme-primary-button inline-flex w-fit items-center gap-[10px] rounded-full px-7 py-4 text-[13px] font-medium uppercase tracking-[0.16em] text-white transition-transform hover:-translate-y-0.5 no-underline"
             >
               {orderLabel}
-            </a>
+            </Link>
           ) : null}
         </div>
       </div>

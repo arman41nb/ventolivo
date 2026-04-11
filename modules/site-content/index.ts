@@ -21,6 +21,12 @@ export {
   getHeroSceneTransforms,
 } from "./domain/hero-scene";
 export type { HeroSceneMediaState, HeroSceneTransforms } from "./domain/hero-scene";
+export {
+  generateStorefrontThemeFromSeed,
+  SITE_THEME_PRESETS_KEY,
+  storefrontThemePresets,
+} from "./domain/theme";
+export type { StorefrontThemePreset, StorefrontThemeRecipe } from "@/types";
 export { resolveStorefrontContent } from "./domain/storefront";
 export type { StorefrontContent } from "./domain/storefront";
 export { pickSiteContentLocaleFields, siteContentTranslationKeys } from "./domain/translation";

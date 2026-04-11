@@ -23,6 +23,17 @@ interface NavbarProps {
   };
   content: StorefrontContent["navbar"];
   supportedLocales: SiteLocaleConfig[];
+  accountLabels: {
+    signIn: string;
+    register: string;
+    signInRegister: string;
+    account: string;
+    signOut: string;
+  };
+  customerSession?: {
+    fullName: string;
+    avatarUrl?: string;
+  };
   preview?: StorefrontPreviewBindings;
 }
 
@@ -46,12 +57,18 @@ export default function Navbar({
   brand,
   content,
   supportedLocales,
+  accountLabels,
+  customerSession,
   preview,
 }: NavbarProps) {
   const isPreview = Boolean(preview);
   const pathname = usePathname();
   const [mobileMenuState, setMobileMenuState] = useState({ pathname, open: false });
   const prefix = (path: string) => localePath(locale, path);
+  const accountLink = prefix("/account");
+  const loginLink = prefix("/account/login");
+  const accountLabel = customerSession?.fullName?.trim() || accountLabels.account;
+  const accountInitial = accountLabel.slice(0, 1).toUpperCase();
   const isMobileMenuOpen =
     mobileMenuState.pathname === pathname ? mobileMenuState.open : false;
   const navLinks = [
@@ -74,7 +91,7 @@ export default function Navbar({
   if (!preview) {
     return (
       <header className="sticky top-0 z-40">
-        <div className="bg-[linear-gradient(180deg,#694733_0%,#5d3d27_100%)] px-4 py-2.5 text-center text-[10px] uppercase tracking-[0.24em] text-cream/88 md:px-6">
+        <div className="theme-topbar px-4 py-2.5 text-center text-[10px] uppercase tracking-[0.24em] text-cream/88 md:px-6">
           <div className="mx-auto flex max-w-[1380px] flex-wrap items-center justify-center gap-x-8 gap-y-2">
             {content.stripItems.map((item, index) => (
               <ViewportReveal key={item} as="span" delay={index * 55} distance={12} duration={420}>
@@ -85,7 +102,7 @@ export default function Navbar({
         </div>
 
         <nav
-          className="border-b border-brown/8 bg-[rgba(249,244,238,0.9)] px-4 py-4 backdrop-blur-xl md:px-6"
+          className="theme-nav-shell border-b border-brown/8 px-4 py-4 backdrop-blur-xl md:px-6"
           role="navigation"
           aria-label={brand.name}
         >
@@ -93,7 +110,7 @@ export default function Navbar({
             <ViewportReveal delay={40} distance={18} duration={460}>
               <Link
                 href={`/${locale}`}
-                className="font-serif text-[2rem] tracking-[0.06em] text-[#8f735d] no-underline"
+                className="theme-logo-text font-serif text-[2rem] tracking-[0.06em] no-underline"
                 aria-label={brand.name}
               >
                 {brand.logoMode === "image" && brand.logoImageUrl ? (
@@ -119,7 +136,7 @@ export default function Navbar({
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="relative pb-1 text-[12px] uppercase tracking-[0.2em] text-[#9f8976] no-underline transition-colors after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-brown/70 after:transition-all hover:text-brown hover:after:w-full"
+                  className="theme-nav-link relative pb-1 text-[12px] uppercase tracking-[0.2em] no-underline transition-colors after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-brown/70 after:transition-all hover:text-brown hover:after:w-full"
                   role="menuitem"
                 >
                   {link.label}
@@ -133,10 +150,36 @@ export default function Navbar({
               distance={18}
               duration={500}
             >
+              {customerSession ? (
+                <Link
+                  href={accountLink}
+                  className="inline-flex items-center gap-2 rounded-full border border-brown/10 bg-white/74 px-3 py-2 text-[11px] uppercase tracking-[0.14em] text-brown transition-colors hover:bg-brown hover:text-white no-underline"
+                >
+                  {customerSession.avatarUrl ? (
+                    <img
+                      src={customerSession.avatarUrl}
+                      alt={accountLabel}
+                      className="h-7 w-7 rounded-full border border-white/70 object-cover"
+                    />
+                  ) : (
+                    <span className="grid h-7 w-7 place-items-center rounded-full bg-brown text-[10px] font-semibold text-white">
+                      {accountInitial}
+                    </span>
+                  )}
+                  {accountLabel}
+                </Link>
+              ) : (
+                <Link
+                  href={loginLink}
+                  className="rounded-full border border-brown/10 bg-white/74 px-4 py-2 text-[11px] uppercase tracking-[0.14em] text-brown transition-colors hover:bg-brown hover:text-white no-underline"
+                >
+                  {accountLabels.signInRegister}
+                </Link>
+              )}
               <LanguageSwitcher locales={supportedLocales} />
               <Link
                 href={prefix("/#contact")}
-                className="rounded-full bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] px-6 py-3 text-[12px] font-medium uppercase tracking-[0.16em] text-white shadow-[0_14px_28px_rgba(93,61,39,0.16)] transition-transform hover:-translate-y-0.5 no-underline"
+                className="theme-primary-button rounded-full px-6 py-3 text-[12px] font-medium uppercase tracking-[0.16em] text-white transition-transform hover:-translate-y-0.5 no-underline"
                 aria-label={content.ctaLabel}
               >
                 {content.ctaLabel}
@@ -150,7 +193,7 @@ export default function Navbar({
 
   return (
     <header className={isPreview ? "relative z-10" : "sticky top-0 z-40"}>
-      <div className="bg-[linear-gradient(180deg,#694733_0%,#5d3d27_100%)] px-4 py-2.5 text-center text-[10px] uppercase tracking-[0.24em] text-cream/88 md:px-6">
+      <div className="theme-topbar px-4 py-2.5 text-center text-[10px] uppercase tracking-[0.24em] text-cream/88 md:px-6">
         <div className="mx-auto flex max-w-[1380px] flex-wrap items-center justify-center gap-x-8 gap-y-2">
           {content.stripItems.map((item, index) => (
             <ViewportReveal key={item} as="span" delay={index * 55} distance={12} duration={420}>
@@ -167,7 +210,7 @@ export default function Navbar({
       </div>
 
       <nav
-        className="border-b border-brown/8 bg-[rgba(249,244,238,0.9)] px-4 py-3.5 backdrop-blur-xl md:px-6 md:py-4"
+        className="theme-nav-shell border-b border-brown/8 px-4 py-3.5 backdrop-blur-xl md:px-6 md:py-4"
         role="navigation"
         aria-label={brand.name}
       >
@@ -185,7 +228,7 @@ export default function Navbar({
                     className="h-11 w-auto object-contain"
                   />
                 ) : (
-                  <span className="font-serif text-[2rem] tracking-[0.06em] text-[#8f735d]">
+                  <span className="theme-logo-text font-serif text-[2rem] tracking-[0.06em]">
                     {brand.logoText}
                   </span>
                 ),
@@ -194,7 +237,7 @@ export default function Navbar({
             ) : (
               <Link
                 href={`/${locale}`}
-                className="font-serif text-[2rem] tracking-[0.06em] text-[#8f735d] no-underline"
+                className="theme-logo-text font-serif text-[2rem] tracking-[0.06em] no-underline"
                 aria-label={brand.name}
               >
                 {brand.logoMode === "image" && brand.logoImageUrl ? (
@@ -219,7 +262,7 @@ export default function Navbar({
                     open: current.pathname === pathname ? !current.open : true,
                   }))
                 }
-                className="grid h-12 w-12 place-items-center rounded-full border border-brown/8 bg-white/84 text-[#8f735d] shadow-[0_10px_22px_rgba(72,49,30,0.05)] transition-colors hover:bg-white"
+                className="theme-icon-button grid h-12 w-12 place-items-center rounded-full border border-brown/8 transition-colors hover:bg-white"
                 aria-expanded={isMobileMenuOpen}
                 aria-controls="mobile-navigation-menu"
                 aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -256,7 +299,7 @@ export default function Navbar({
               isMobileMenuOpen ? "mt-4 max-h-[420px] opacity-100" : "max-h-0 opacity-0",
             )}
           >
-            <div className="rounded-[28px] border border-white/70 bg-[linear-gradient(180deg,rgba(255,252,247,0.92),rgba(242,233,224,0.9))] p-4 shadow-[0_18px_38px_rgba(72,49,30,0.08)]">
+            <div className="theme-mobile-panel rounded-[28px] border border-white/70 p-4">
               <div className="grid gap-2">
                 {navLinks.map((link) => (
                   <span key={link.href}>
@@ -264,7 +307,7 @@ export default function Navbar({
                       preview,
                       link.fieldId,
                       "Mobile nav link",
-                      <span className="rounded-[20px] border border-brown/6 bg-white/58 px-4 py-3 text-[12px] uppercase tracking-[0.18em] text-[#7e6652] transition-colors hover:bg-white hover:text-brown">
+                      <span className="theme-soft-chip rounded-[20px] border border-brown/6 px-4 py-3 text-[12px] uppercase tracking-[0.18em] transition-colors hover:bg-white hover:text-brown">
                         {link.label}
                       </span>,
                       "block w-full",
@@ -276,11 +319,30 @@ export default function Navbar({
                 preview,
                 "navbarCtaLabel",
                 "Header CTA",
-                <span className="mt-4 inline-flex min-h-[3.25rem] w-full items-center justify-center rounded-full bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] px-6 py-3.5 text-[12px] font-medium uppercase tracking-[0.16em] text-white shadow-[0_14px_28px_rgba(93,61,39,0.16)] transition-transform hover:-translate-y-0.5">
+                <span className="theme-primary-button mt-4 inline-flex min-h-[3.25rem] w-full items-center justify-center rounded-full px-6 py-3.5 text-[12px] font-medium uppercase tracking-[0.16em] text-white transition-transform hover:-translate-y-0.5">
                   {content.ctaLabel}
                 </span>,
                 "block w-full",
               )}
+              <div className="mt-3 grid gap-2">
+                <Link
+                  href={customerSession ? accountLink : loginLink}
+                  className="theme-soft-chip inline-flex items-center justify-center gap-2 rounded-[20px] border border-brown/8 px-4 py-3 text-center text-[11px] uppercase tracking-[0.16em] text-brown no-underline transition-colors hover:bg-white hover:text-dark"
+                >
+                  {customerSession?.avatarUrl ? (
+                    <img
+                      src={customerSession.avatarUrl}
+                      alt={accountLabel}
+                      className="h-6 w-6 rounded-full border border-white/70 object-cover"
+                    />
+                  ) : customerSession ? (
+                    <span className="grid h-6 w-6 place-items-center rounded-full bg-brown text-[10px] font-semibold text-white">
+                      {accountInitial}
+                    </span>
+                  ) : null}
+                  {customerSession ? accountLabel : accountLabels.signInRegister}
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -298,7 +360,7 @@ export default function Navbar({
                       className="h-11 w-auto object-contain"
                     />
                   ) : (
-                    <span className="font-serif text-[2rem] tracking-[0.06em] text-[#8f735d]">
+                    <span className="theme-logo-text font-serif text-[2rem] tracking-[0.06em]">
                       {brand.logoText}
                     </span>
                   ),
@@ -307,7 +369,7 @@ export default function Navbar({
               ) : (
                 <Link
                   href={`/${locale}`}
-                  className="font-serif text-[2rem] tracking-[0.06em] text-[#8f735d] no-underline"
+                  className="theme-logo-text font-serif text-[2rem] tracking-[0.06em] no-underline"
                   aria-label={brand.name}
                 >
                   {brand.logoMode === "image" && brand.logoImageUrl ? (
@@ -336,7 +398,7 @@ export default function Navbar({
                     preview,
                     link.fieldId,
                     "Header link",
-                    <span className="relative pb-1 text-[12px] uppercase tracking-[0.2em] text-[#9f8976] transition-colors after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-brown/70 after:transition-all hover:text-brown hover:after:w-full">
+                    <span className="theme-nav-link relative pb-1 text-[12px] uppercase tracking-[0.2em] transition-colors after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-brown/70 after:transition-all hover:text-brown hover:after:w-full">
                       {link.label}
                     </span>,
                     "w-fit",
@@ -351,12 +413,38 @@ export default function Navbar({
               distance={18}
               duration={500}
             >
+              {customerSession ? (
+                <Link
+                  href={accountLink}
+                  className="inline-flex items-center gap-2 rounded-full border border-brown/10 bg-white/74 px-3 py-2 text-[11px] uppercase tracking-[0.14em] text-brown transition-colors hover:bg-brown hover:text-white no-underline"
+                >
+                  {customerSession.avatarUrl ? (
+                    <img
+                      src={customerSession.avatarUrl}
+                      alt={accountLabel}
+                      className="h-7 w-7 rounded-full border border-white/70 object-cover"
+                    />
+                  ) : (
+                    <span className="grid h-7 w-7 place-items-center rounded-full bg-brown text-[10px] font-semibold text-white">
+                      {accountInitial}
+                    </span>
+                  )}
+                  {accountLabel}
+                </Link>
+              ) : (
+                <Link
+                  href={loginLink}
+                  className="rounded-full border border-brown/10 bg-white/74 px-4 py-2 text-[11px] uppercase tracking-[0.14em] text-brown transition-colors hover:bg-brown hover:text-white no-underline"
+                >
+                  {accountLabels.signInRegister}
+                </Link>
+              )}
               <LanguageSwitcher locales={supportedLocales} />
               {renderEditable(
                 preview,
                 "navbarCtaLabel",
                 "Header CTA",
-                <span className="rounded-full bg-[linear-gradient(135deg,#7a5638_0%,#5d3d27_100%)] px-6 py-3 text-[12px] font-medium uppercase tracking-[0.16em] text-white shadow-[0_14px_28px_rgba(93,61,39,0.16)] transition-transform hover:-translate-y-0.5">
+                <span className="theme-primary-button rounded-full px-6 py-3 text-[12px] font-medium uppercase tracking-[0.16em] text-white transition-transform hover:-translate-y-0.5">
                   {content.ctaLabel}
                 </span>,
                 "w-fit",

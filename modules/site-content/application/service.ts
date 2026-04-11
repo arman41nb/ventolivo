@@ -8,6 +8,7 @@ import type {
   SiteContentLocaleInput,
   SiteLocaleConfig,
   SiteContentSettings,
+  StorefrontThemePreset,
 } from "@/types";
 import { getSiteContentRepository } from "../infrastructure/get-site-content-repository";
 
@@ -24,6 +25,11 @@ export async function getSiteContentSettings(locale?: string): Promise<SiteConte
 export async function getSiteLocales(): Promise<SiteLocaleConfig[]> {
   noStore();
   return getSiteContentRepository().getSiteLocales();
+}
+
+export async function getSiteThemePresets(): Promise<StorefrontThemePreset[]> {
+  noStore();
+  return getSiteContentRepository().getSiteThemePresets();
 }
 
 export async function getSiteContentTranslation(

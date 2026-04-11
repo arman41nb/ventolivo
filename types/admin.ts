@@ -1,6 +1,13 @@
+export type AdminUserRole = "owner" | "manager";
+export type AdminUserStatus = "active" | "disabled";
+
 export interface AdminUser {
   id: number;
   username: string;
+  email?: string;
+  displayName?: string;
+  role: AdminUserRole;
+  status: AdminUserStatus;
   createdAt: Date;
   updatedAt: Date;
   lastLoginAt?: Date;

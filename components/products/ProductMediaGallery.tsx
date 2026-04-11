@@ -20,7 +20,7 @@ export default function ProductMediaGallery({
 
   return (
     <div className="animate-rise flex flex-col gap-4">
-      <div className="mesh-bg overflow-hidden rounded-[30px] border border-brown/8 p-3 shadow-[0_16px_36px_rgba(72,49,30,0.08)]">
+      <div className="mesh-bg overflow-hidden rounded-[30px] border border-brown/8 p-3 shadow-[0_16px_36px_rgb(var(--storefront-primary-rgb)/0.08)]">
         {selectedItem ? (
           selectedItem.type === "video" ? (
             <video
@@ -57,7 +57,7 @@ export default function ProductMediaGallery({
               onClick={() => setSelectedIndex(index)}
               className={`overflow-hidden rounded-[20px] border bg-white/70 p-1 transition-all ${
                 selectedIndex === index
-                  ? "border-brown shadow-[0_10px_20px_rgba(72,49,30,0.08)]"
+                  ? "border-brown shadow-[0_10px_20px_rgb(var(--storefront-primary-rgb)/0.08)]"
                   : "border-brown/10 hover:-translate-y-0.5 hover:border-brown/30"
               }`}
             >

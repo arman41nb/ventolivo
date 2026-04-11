@@ -86,6 +86,62 @@ export interface Dictionary {
       orderVia: string;
     };
   };
+  account: {
+    badge: string;
+    nav: {
+      signIn: string;
+      register: string;
+      signInRegister: string;
+      account: string;
+      signOut: string;
+    };
+    login: {
+      title: string;
+      description: string;
+      email: string;
+      password: string;
+      submit: string;
+      invalidCredentials: string;
+      rateLimited: string;
+      accountDisabled: string;
+      loggedOut: string;
+      continueWithGoogle: string;
+      googleUnavailable: string;
+      googleDenied: string;
+      googleFailed: string;
+      registerPrompt: string;
+      registerLinkLabel: string;
+    };
+    register: {
+      title: string;
+      description: string;
+      fullName: string;
+      email: string;
+      phone: string;
+      password: string;
+      confirmPassword: string;
+      marketingConsent: string;
+      submit: string;
+      invalidForm: string;
+      emailTaken: string;
+      rateLimited: string;
+      loginPrompt: string;
+      loginLinkLabel: string;
+      passwordHint: string;
+    };
+    dashboard: {
+      title: string;
+      description: string;
+      fullName: string;
+      email: string;
+      intentCount: string;
+      browseProducts: string;
+      intentHistoryBadge: string;
+      intentHistoryTitle: string;
+      noIntents: string;
+      unknownProduct: string;
+    };
+  };
   admin: {
     badge: string;
     title: string;
@@ -97,8 +153,10 @@ export interface Dictionary {
       dashboard: string;
       translations: string;
       products: string;
+      customers: string;
       media: string;
       siteContent: string;
+      theme: string;
     };
     shell: {
       localeSwitcher: string;
@@ -106,6 +164,7 @@ export interface Dictionary {
     dashboard: {
       logout: string;
       productManager: string;
+      manageAccess: string;
       sessionExpires: string;
       stats: {
         products: string;
@@ -122,12 +181,58 @@ export interface Dictionary {
       title: string;
       description: string;
       kicker: string;
-      username: string;
+      identifier: string;
       password: string;
       submit: string;
       invalidCredentials: string;
+      rateLimited: string;
+      accountDisabled: string;
       loggedOut: string;
       bootstrapHint: string;
+      setupNotice: string;
+      registerLinkLabel: string;
+    };
+    register: {
+      title: string;
+      description: string;
+      kicker: string;
+      displayName: string;
+      email: string;
+      username: string;
+      password: string;
+      confirmPassword: string;
+      setupToken: string;
+      submit: string;
+      created: string;
+      invalidForm: string;
+      usernameTaken: string;
+      emailTaken: string;
+      registrationClosed: string;
+      insufficientPermissions: string;
+      setupTokenRequired: string;
+      setupTokenInvalid: string;
+      rateLimited: string;
+      signInLinkLabel: string;
+      dashboardLinkLabel: string;
+      firstAdminHint: string;
+      teamHint: string;
+      setupTokenHint: string;
+    };
+    customers: {
+      title: string;
+      description: string;
+      usersBadge: string;
+      intentsBadge: string;
+      intentsWindow: string;
+      activeBuyersWindow: string;
+      recentUsersTitle: string;
+      recentIntentsTitle: string;
+      anonymousCustomer: string;
+      unknownProduct: string;
+      marketingConsent: string;
+      noMarketingConsent: string;
+      noRecentUsers: string;
+      noRecentIntents: string;
     };
     mediaLibrary: {
       title: string;
@@ -135,6 +240,11 @@ export interface Dictionary {
       updated: string;
     };
     siteStudio: {
+      title: string;
+      description: string;
+      updated: string;
+    };
+    themeStudio: {
       title: string;
       description: string;
       updated: string;

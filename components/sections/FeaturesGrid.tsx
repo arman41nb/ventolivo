@@ -41,7 +41,7 @@ export default function FeaturesGrid({ content, preview }: FeaturesGridProps) {
           {features.map((feature, index) => (
             <ViewportReveal
               key={feature.key}
-              className={`group relative overflow-hidden rounded-[26px] border border-brown/8 bg-[rgba(255,253,249,0.7)] p-5 shadow-[0_12px_28px_rgba(72,49,30,0.06)] transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_18px_34px_rgba(72,49,30,0.09)] sm:p-6 ${
+              className={`theme-card-surface group relative overflow-hidden rounded-[26px] border border-brown/8 p-5 transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_18px_34px_rgb(var(--storefront-primary-rgb)/0.09)] sm:p-6 ${
                 index === 1 ? "xl:translate-y-8" : ""
               }`}
               delay={index * 90}
@@ -50,7 +50,7 @@ export default function FeaturesGrid({ content, preview }: FeaturesGridProps) {
             >
               <span className="pointer-events-none absolute right-[-10%] top-[-6%] h-32 w-32 rounded-full bg-white/26 blur-[56px] luxe-atmosphere" />
               <span className="pointer-events-none absolute inset-x-[22%] top-[18%] h-px bg-[linear-gradient(90deg,rgba(124,140,94,0),rgba(124,140,94,0.62),rgba(124,140,94,0))] luxe-line-pulse" />
-              <div className="mb-4 grid h-[54px] w-[54px] place-items-center rounded-[18px] bg-[linear-gradient(135deg,#dfe5d4,#eef2e8)] text-olive transition-transform duration-300 group-hover:scale-105 luxe-icon-float">
+              <div className="mb-4 grid h-[54px] w-[54px] place-items-center rounded-[18px] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--storefront-accent)_18%,white_82%),color-mix(in_srgb,var(--storefront-accent)_10%,white_90%))] text-olive transition-transform duration-300 group-hover:scale-105 luxe-icon-float">
                 {feature.icon}
               </div>
               <p className="mb-2 font-serif text-[1.6rem] text-dark luxe-heading-glide">

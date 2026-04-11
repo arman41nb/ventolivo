@@ -34,7 +34,7 @@ export default function Footer({ brandName, content, locale, preview }: FooterPr
   if (!preview) {
     return (
       <footer
-        className="mt-8 bg-[linear-gradient(180deg,rgba(93,61,39,0.96),rgba(72,46,28,1))] px-4 py-10 text-cream md:px-6"
+        className="theme-footer-shell mt-8 px-4 py-10 text-cream md:px-6"
         role="contentinfo"
       >
         <div className="mx-auto max-w-[1380px]">
@@ -120,7 +120,7 @@ export default function Footer({ brandName, content, locale, preview }: FooterPr
 
   return (
     <footer
-      className="mt-8 bg-[linear-gradient(180deg,rgba(93,61,39,0.96),rgba(72,46,28,1))] px-4 py-10 text-cream md:px-6"
+      className="theme-footer-shell mt-8 px-4 py-10 text-cream md:px-6"
       role="contentinfo"
     >
       <div className="mx-auto max-w-[1380px]">

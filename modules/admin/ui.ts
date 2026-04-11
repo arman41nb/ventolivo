@@ -1,13 +1,22 @@
 import type { Locale } from "@/i18n/config";
 
-export type AdminSectionKey = "dashboard" | "translations" | "products" | "media" | "siteContent";
+export type AdminSectionKey =
+  | "dashboard"
+  | "translations"
+  | "products"
+  | "customers"
+  | "media"
+  | "siteContent"
+  | "theme";
 
 export interface AdminNavigationLabels {
   dashboard: string;
   translations: string;
   products: string;
+  customers: string;
   media: string;
   siteContent: string;
+  theme: string;
 }
 
 export function getAdminNavItems(
@@ -32,6 +41,11 @@ export function getAdminNavItems(
       active: activeSection === "products",
     },
     {
+      href: `/${locale}/admin/customers`,
+      label: labels.customers,
+      active: activeSection === "customers",
+    },
+    {
       href: `/${locale}/admin/media`,
       label: labels.media,
       active: activeSection === "media",
@@ -40,6 +54,11 @@ export function getAdminNavItems(
       href: `/${locale}/admin/site`,
       label: labels.siteContent,
       active: activeSection === "siteContent",
+    },
+    {
+      href: `/${locale}/admin/theme`,
+      label: labels.theme,
+      active: activeSection === "theme",
     },
   ];
 }

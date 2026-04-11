@@ -1,6 +1,7 @@
 import { prisma } from "./client";
 import {
   SITE_LOCALE_CONTENT_KEY,
+  SITE_THEME_PRESETS_KEY,
   defaultSiteContentSettings,
   defaultSiteLocales,
   normalizeSiteLocales,
@@ -12,6 +13,7 @@ import type {
   SiteContentLocaleInput,
   SiteLocaleConfig,
   SiteContentSettings,
+  StorefrontThemePreset,
 } from "@/types";
 
 type SiteContentDbClient = Pick<
@@ -20,6 +22,21 @@ type SiteContentDbClient = Pick<
 >;
 
 const sharedJsonKeys = [
+  "themeCanvasStart",
+  "themeCanvasMid",
+  "themeCanvasEnd",
+  "themeSurface",
+  "themeSurfaceAlt",
+  "themeSurfaceRaised",
+  "themePrimary",
+  "themePrimaryStrong",
+  "themeAccent",
+  "themeText",
+  "themeHeading",
+  "themeMuted",
+  "themeBorder",
+  "themeFooterStart",
+  "themeFooterEnd",
   "aboutImageUrl",
   "aboutImageAlt",
   "heroAccentImageUrl",
@@ -31,6 +48,24 @@ const sharedJsonKeys = [
   "heroImageOffsetX",
   "heroImageOffsetY",
   "heroImageScale",
+] as const;
+
+const themeJsonKeys = [
+  "themeCanvasStart",
+  "themeCanvasMid",
+  "themeCanvasEnd",
+  "themeSurface",
+  "themeSurfaceAlt",
+  "themeSurfaceRaised",
+  "themePrimary",
+  "themePrimaryStrong",
+  "themeAccent",
+  "themeText",
+  "themeHeading",
+  "themeMuted",
+  "themeBorder",
+  "themeFooterStart",
+  "themeFooterEnd",
 ] as const;
 
 const localizedJsonKeys = [
@@ -87,7 +122,9 @@ function parseContentJson(value: string | null | undefined): Partial<SiteContent
   const rawContent = parseRawContentJson(value);
 
   return Object.fromEntries(
-    Object.entries(rawContent).filter(([key]) => key !== SITE_LOCALE_CONTENT_KEY),
+    Object.entries(rawContent).filter(
+      ([key]) => key !== SITE_LOCALE_CONTENT_KEY && key !== SITE_THEME_PRESETS_KEY,
+    ),
   ) as Partial<SiteContentSettings>;
 }
 
@@ -114,6 +151,47 @@ function parseSiteLocales(value: string | null | undefined): SiteLocaleConfig[] 
   );
 }
 
+function parseSiteThemePresets(value: string | null | undefined): StorefrontThemePreset[] {
+  const rawContent = parseRawContentJson(value);
+  const rawPresets = rawContent[SITE_THEME_PRESETS_KEY];
+
+  if (!Array.isArray(rawPresets)) {
+    return [];
+  }
+
+  return rawPresets
+    .map((preset) => {
+      if (!preset || typeof preset !== "object") {
+        return null;
+      }
+
+      const candidate = preset as Record<string, unknown>;
+      const settings = candidate.settings;
+
+      if (!settings || typeof settings !== "object") {
+        return null;
+      }
+
+      return {
+        id: typeof candidate.id === "string" ? candidate.id : "",
+        name: typeof candidate.name === "string" ? candidate.name : "",
+        description: typeof candidate.description === "string" ? candidate.description : "",
+        recipe:
+          candidate.recipe === "soft" || candidate.recipe === "bold"
+            ? candidate.recipe
+            : "balanced",
+        settings: pickThemeSettings({
+          ...defaultSiteContentSettings,
+          ...(settings as Partial<SiteContentSettings>),
+        }),
+      } satisfies StorefrontThemePreset;
+    })
+    .filter(
+      (preset): preset is StorefrontThemePreset =>
+        Boolean(preset?.id.trim()) && Boolean(preset?.name.trim()),
+    );
+}
+
 function pickContentValues(
   input: Partial<SiteContentSettings>,
   keys: readonly (keyof SiteContentSettings)[],
@@ -130,13 +208,25 @@ function serializeContentValues(
   return JSON.stringify(pickContentValues(input, keys));
 }
 
+function pickThemeSettings(input: Partial<SiteContentSettings>): StorefrontThemePreset["settings"] {
+  const settings = {} as StorefrontThemePreset["settings"];
+
+  for (const key of themeJsonKeys) {
+    settings[key] = (input[key] ?? defaultSiteContentSettings[key]) as string;
+  }
+
+  return settings;
+}
+
 function serializeSiteContentConfig(
   input: Partial<SiteContentSettings>,
   siteLocales: SiteLocaleConfig[] | undefined,
+  siteThemePresets?: StorefrontThemePreset[],
 ) {
   return JSON.stringify({
     ...pickContentValues(input, sharedJsonKeys),
     [SITE_LOCALE_CONTENT_KEY]: normalizeSiteLocales(siteLocales),
+    [SITE_THEME_PRESETS_KEY]: siteThemePresets ?? [],
   });
 }
 
@@ -248,6 +338,17 @@ export async function dbGetSiteLocales(): Promise<SiteLocaleConfig[]> {
   return parseSiteLocales(settings?.contentJson);
 }
 
+export async function dbGetSiteThemePresets(): Promise<StorefrontThemePreset[]> {
+  const settings = await prisma.siteContentSettings.findUnique({
+    where: { id: 1 },
+    select: {
+      contentJson: true,
+    },
+  });
+
+  return parseSiteThemePresets(settings?.contentJson);
+}
+
 export async function dbGetSiteContentTranslation(
   locale: string,
 ): Promise<Partial<SiteContentLocaleFields> | undefined> {
@@ -297,12 +398,12 @@ async function upsertSiteContentSettingsRecord(client: SiteContentDbClient, inpu
     where: { id: 1 },
     update: {
       ...getBaseColumnValues(input),
-      contentJson: serializeSiteContentConfig(input, input.siteLocales),
+      contentJson: serializeSiteContentConfig(input, input.siteLocales, input.siteThemePresets),
     },
     create: {
       id: 1,
       ...getBaseColumnValues(input),
-      contentJson: serializeSiteContentConfig(input, input.siteLocales),
+      contentJson: serializeSiteContentConfig(input, input.siteLocales, input.siteThemePresets),
     },
   });
 }
@@ -361,7 +462,11 @@ async function upsertSiteContentTranslationRecord(
     create: {
       id: 1,
       ...getBaseColumnValues(defaultSiteContentSettings),
-      contentJson: serializeSiteContentConfig(defaultSiteContentSettings, defaultSiteLocales),
+      contentJson: serializeSiteContentConfig(
+        defaultSiteContentSettings,
+        defaultSiteLocales,
+        [],
+      ),
     },
   });
 

@@ -6,7 +6,11 @@ import { isValidLocale, type Locale } from "@/i18n/config";
 import { getAdminSession, getAdminSessionRecoveryPath } from "@/services/admin-auth";
 import { getAdminNavItems } from "@/services/admin";
 import { getAllMediaAssets } from "@/services/media";
-import { getSiteContentSettings, getSiteLocales } from "@/services/site-content";
+import {
+  getSiteContentSettings,
+  getSiteLocales,
+  getSiteThemePresets,
+} from "@/services/site-content";
 import { getFeaturedProducts } from "@/services/products";
 import { saveSiteContentAction } from "./actions";
 
@@ -39,11 +43,13 @@ export default async function AdminSiteContentPage({
     );
   }
 
-  const [settings, mediaLibrary, featuredProducts, supportedLocales] = await Promise.all([
+  const [settings, mediaLibrary, featuredProducts, supportedLocales, themePresets] =
+    await Promise.all([
     getSiteContentSettings(locale),
     getAllMediaAssets(),
     getFeaturedProducts(4, locale),
     getSiteLocales(),
+    getSiteThemePresets(),
   ]);
 
   return (
@@ -72,10 +78,12 @@ export default async function AdminSiteContentPage({
         locale={locale}
         action={saveSiteContentAction}
         settings={settings}
+        themePresets={themePresets}
         dictionary={dictionary}
         mediaLibrary={mediaLibrary}
         featuredProducts={featuredProducts}
         supportedLocales={supportedLocales}
+        redirectTo={`/${locale}/admin/site`}
       />
     </AdminShell>
   );

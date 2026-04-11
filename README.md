@@ -91,13 +91,22 @@ ADMIN_USERNAME=
 ADMIN_PASSWORD=
 ADMIN_SESSION_SECRET=
 
-LIBRETRANSLATE_URL=
+LIBRETRANSLATE_URL=http://127.0.0.1:5000
 LIBRETRANSLATE_API_KEY=
 RATE_LIMIT_DRIVER=database
 RATE_LIMIT_WINDOW_MS=60000
 RATE_LIMIT_MAX_MEDIA_UPLOADS=10
 RATE_LIMIT_MAX_TRANSLATION_REQUESTS=20
 ```
+
+## Translation Providers
+
+- Translation now falls back in this order: configured LibreTranslate instance -> Google Translate -> MyMemory.
+- The public `https://libretranslate.com` endpoint requires a valid API key for application use.
+- Avoid pointing `LIBRETRANSLATE_URL` at `https://libretranslate.com` unless you also provide `LIBRETRANSLATE_API_KEY`.
+- The MyMemory fallback has a shared free quota and can return `429` when that daily limit is exhausted.
+- For reliable local development, run a self-hosted LibreTranslate instance and point `LIBRETRANSLATE_URL` to `http://127.0.0.1:5000`.
+- The included `docker-compose.yml` now starts a `libretranslate` service alongside the app, and the app container is wired to use `http://libretranslate:5000`.
 
 ## Quality Gates
 
