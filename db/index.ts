@@ -41,6 +41,16 @@ export {
   dbUpdateProduct,
 } from "./products";
 export {
+  dbCreateBlogPost,
+  dbDeleteBlogPost,
+  dbGetAllBlogPosts,
+  dbGetBlogPostById,
+  dbGetBlogPostBySlug,
+  dbGetPublishedBlogPostBySlug,
+  dbGetPublishedBlogPosts,
+  dbUpdateBlogPost,
+} from "./blog";
+export {
   dbCountBuyerIntents,
   dbCountBuyerIntentsSince,
   dbCountCustomerUsers,

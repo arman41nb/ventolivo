@@ -47,6 +47,19 @@ export const productFilterSchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).optional(),
 });
 
+export const blogPostQuerySchema = z.object({
+  slug: z
+    .string()
+    .min(1)
+    .max(160)
+    .regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
+});
+
+export const blogPostFilterSchema = z.object({
+  tag: z.string().trim().min(1).max(60).optional(),
+  limit: z.coerce.number().int().min(1).max(50).optional(),
+});
+
 export const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
   email: z.string().email("Invalid email address").optional(),
@@ -76,6 +89,25 @@ export const productAdminSchema = z.object({
   ingredients: z.string().optional().default(""),
   weight: z.string().trim().max(30).optional().default(""),
   featured: z.boolean().optional().default(false),
+});
+
+export const blogAdminSchema = z.object({
+  slug: z
+    .string()
+    .trim()
+    .min(1, "Slug is required")
+    .max(160, "Slug is too long")
+    .regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
+  title: z.string().trim().min(4, "Title is too short").max(160, "Title is too long"),
+  summary: z.string().trim().min(20, "Summary is too short").max(320, "Summary is too long"),
+  content: z.string().trim().min(1, "Content is required"),
+  tags: z.string().trim().max(500).optional().default(""),
+  coverImage: assetPathSchema,
+  coverAlt: z.string().trim().max(160).optional().default(""),
+  seoTitle: z.string().trim().max(70).optional().default(""),
+  seoDescription: z.string().trim().max(160).optional().default(""),
+  status: z.enum(["draft", "published"]).default("draft"),
+  publishedAt: z.string().trim().optional().default(""),
 });
 
 const themeColorSchema = z
@@ -400,8 +432,11 @@ export const customerRegistrationSchema = z
 
 export type ProductQuery = z.infer<typeof productQuerySchema>;
 export type ProductFilter = z.infer<typeof productFilterSchema>;
+export type BlogPostQuery = z.infer<typeof blogPostQuerySchema>;
+export type BlogPostFilter = z.infer<typeof blogPostFilterSchema>;
 export type ContactForm = z.infer<typeof contactFormSchema>;
 export type ProductAdminForm = z.infer<typeof productAdminSchema>;
+export type BlogAdminForm = z.infer<typeof blogAdminSchema>;
 export type AdminLoginForm = z.infer<typeof adminLoginSchema>;
 export type AdminRegistrationForm = z.infer<typeof adminRegistrationSchema>;
 export type CustomerLoginForm = z.infer<typeof customerLoginSchema>;

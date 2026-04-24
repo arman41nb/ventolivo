@@ -2,6 +2,7 @@ export interface Dictionary {
   navbar: {
     links: {
       products: string;
+      blog?: string;
       about: string;
       contact: string;
     };
@@ -153,6 +154,7 @@ export interface Dictionary {
       dashboard: string;
       translations: string;
       products: string;
+      blog?: string;
       customers: string;
       media: string;
       siteContent: string;

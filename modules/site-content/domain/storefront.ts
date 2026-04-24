@@ -7,6 +7,7 @@ export interface StorefrontContent {
     stripItems: [string, string, string, string];
     links: {
       products: string;
+      blog: string;
       about: string;
       contact: string;
     };
@@ -65,6 +66,7 @@ export interface StorefrontContent {
     copyright: string;
     links: {
       products: string;
+      blog: string;
       about: string;
       contact: string;
     };
@@ -100,6 +102,7 @@ export function resolveStorefrontContent(
       siteSettings.navbarLinkProducts,
       dictionary.navbar.links.products,
     ),
+    blog: dictionary.navbar.links.blog ?? "Blog",
     about: resolveText("navbarLinkAbout", siteSettings.navbarLinkAbout, dictionary.navbar.links.about),
     contact: resolveText(
       "navbarLinkContact",

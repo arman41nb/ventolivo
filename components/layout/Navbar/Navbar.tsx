@@ -71,10 +71,15 @@ export default function Navbar({
   const accountInitial = accountLabel.slice(0, 1).toUpperCase();
   const isMobileMenuOpen =
     mobileMenuState.pathname === pathname ? mobileMenuState.open : false;
+  type EditableNavField = Extract<
+    Parameters<StorefrontPreviewBindings["renderEditable"]>[0]["fieldId"],
+    "navbarLinkProducts" | "navbarLinkAbout" | "navbarLinkContact"
+  >;
   const navLinks = [
-    { fieldId: "navbarLinkProducts" as const, label: content.links.products, href: prefix("/products") },
-    { fieldId: "navbarLinkAbout" as const, label: content.links.about, href: prefix("/#about") },
-    { fieldId: "navbarLinkContact" as const, label: content.links.contact, href: prefix("/#contact") },
+    { fieldId: "navbarLinkProducts" as EditableNavField, label: content.links.products, href: prefix("/products") },
+    { label: content.links.blog, href: prefix("/blog") },
+    { fieldId: "navbarLinkAbout" as EditableNavField, label: content.links.about, href: prefix("/#about") },
+    { fieldId: "navbarLinkContact" as EditableNavField, label: content.links.contact, href: prefix("/#contact") },
   ];
 
   useEffect(() => {
@@ -303,15 +308,21 @@ export default function Navbar({
               <div className="grid gap-2">
                 {navLinks.map((link) => (
                   <span key={link.href}>
-                    {renderEditable(
-                      preview,
-                      link.fieldId,
-                      "Mobile nav link",
-                      <span className="theme-soft-chip rounded-[20px] border border-brown/6 px-4 py-3 text-[12px] uppercase tracking-[0.18em] transition-colors hover:bg-white hover:text-brown">
-                        {link.label}
-                      </span>,
-                      "block w-full",
-                    )}
+                    {link.fieldId
+                      ? renderEditable(
+                          preview,
+                          link.fieldId,
+                          "Mobile nav link",
+                          <span className="theme-soft-chip rounded-[20px] border border-brown/6 px-4 py-3 text-[12px] uppercase tracking-[0.18em] transition-colors hover:bg-white hover:text-brown">
+                            {link.label}
+                          </span>,
+                          "block w-full",
+                        )
+                      : (
+                          <span className="theme-soft-chip rounded-[20px] border border-brown/6 px-4 py-3 text-[12px] uppercase tracking-[0.18em] transition-colors hover:bg-white hover:text-brown">
+                            {link.label}
+                          </span>
+                        )}
                   </span>
                 ))}
               </div>
@@ -394,15 +405,21 @@ export default function Navbar({
             >
               {navLinks.map((link) => (
                 <span key={link.href} role="menuitem">
-                  {renderEditable(
-                    preview,
-                    link.fieldId,
-                    "Header link",
-                    <span className="theme-nav-link relative pb-1 text-[12px] uppercase tracking-[0.2em] transition-colors after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-brown/70 after:transition-all hover:text-brown hover:after:w-full">
-                      {link.label}
-                    </span>,
-                    "w-fit",
-                  )}
+                  {link.fieldId
+                    ? renderEditable(
+                        preview,
+                        link.fieldId,
+                        "Header link",
+                        <span className="theme-nav-link relative pb-1 text-[12px] uppercase tracking-[0.2em] transition-colors after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-brown/70 after:transition-all hover:text-brown hover:after:w-full">
+                          {link.label}
+                        </span>,
+                        "w-fit",
+                      )
+                    : (
+                        <span className="theme-nav-link relative pb-1 text-[12px] uppercase tracking-[0.2em] transition-colors after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-brown/70 after:transition-all hover:text-brown hover:after:w-full">
+                          {link.label}
+                        </span>
+                      )}
                 </span>
               ))}
             </ViewportReveal>

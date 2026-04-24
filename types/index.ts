@@ -42,3 +42,4 @@ export type {
   StorefrontPreviewRenderInput,
 } from "./site-preview";
 export type { NavLink, Feature, SocialLink, SEOData } from "./common";
+export type { BlogPost, BlogPostFilter, BlogPostInput, BlogPostStatus } from "./blog";

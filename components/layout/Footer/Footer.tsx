@@ -63,6 +63,9 @@ export default function Footer({ brandName, content, locale, preview }: FooterPr
                 >
                   {content.links.products}
                 </Link>
+                <Link href={`/${locale}/blog`} className="no-underline hover:text-white">
+                  {content.links.blog}
+                </Link>
                 <Link href={`${homeHref}#about`} className="no-underline hover:text-white">
                   {content.links.about}
                 </Link>
@@ -165,6 +168,7 @@ export default function Footer({ brandName, content, locale, preview }: FooterPr
                 "Footer products link",
                 <span>{content.links.products}</span>,
               )}
+              <span>{content.links.blog}</span>
               {renderEditable(
                 preview,
                 "navbarLinkAbout",

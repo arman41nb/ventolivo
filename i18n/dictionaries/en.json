@@ -2,6 +2,7 @@
   "navbar": {
     "links": {
       "products": "Products",
+      "blog": "Blog",
       "about": "About",
       "contact": "Contact"
     },
@@ -153,6 +154,7 @@
       "dashboard": "Dashboard",
       "translations": "Translations",
       "products": "Products",
+      "blog": "Blog",
       "customers": "Customers",
       "media": "Library",
       "siteContent": "Site content",

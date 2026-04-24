@@ -4,6 +4,7 @@ export type AdminSectionKey =
   | "dashboard"
   | "translations"
   | "products"
+  | "blog"
   | "customers"
   | "media"
   | "siteContent"
@@ -13,6 +14,7 @@ export interface AdminNavigationLabels {
   dashboard: string;
   translations: string;
   products: string;
+  blog?: string;
   customers: string;
   media: string;
   siteContent: string;
@@ -39,6 +41,11 @@ export function getAdminNavItems(
       href: `/${locale}/admin/products`,
       label: labels.products,
       active: activeSection === "products",
+    },
+    {
+      href: `/${locale}/admin/blog`,
+      label: labels.blog ?? "Blog",
+      active: activeSection === "blog",
     },
     {
       href: `/${locale}/admin/customers`,

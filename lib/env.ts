@@ -7,6 +7,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
   DATABASE_URL: z.string().optional(),
   PRODUCTS_DATA_SOURCE: z.enum(["mock", "database"]).default("mock"),
+  BLOG_DATA_SOURCE: z.enum(["mock", "database"]).default("mock"),
   MEDIA_STORAGE_DRIVER: z.enum(["local", "s3"]).default("local"),
   MEDIA_LOCAL_UPLOAD_DIR: z.string().trim().min(1).default("public/uploads/media"),
   MEDIA_PUBLIC_BASE_PATH: z
@@ -47,6 +48,7 @@ function validateEnv() {
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     DATABASE_URL: process.env.DATABASE_URL,
     PRODUCTS_DATA_SOURCE: process.env.PRODUCTS_DATA_SOURCE,
+    BLOG_DATA_SOURCE: process.env.BLOG_DATA_SOURCE,
     MEDIA_STORAGE_DRIVER: process.env.MEDIA_STORAGE_DRIVER,
     MEDIA_LOCAL_UPLOAD_DIR: process.env.MEDIA_LOCAL_UPLOAD_DIR,
     MEDIA_PUBLIC_BASE_PATH: process.env.MEDIA_PUBLIC_BASE_PATH,
@@ -83,6 +85,10 @@ function validateEnv() {
 
   if (parsed.data.PRODUCTS_DATA_SOURCE === "database" && !parsed.data.DATABASE_URL) {
     throw new Error("DATABASE_URL is required when PRODUCTS_DATA_SOURCE=database");
+  }
+
+  if (parsed.data.BLOG_DATA_SOURCE === "database" && !parsed.data.DATABASE_URL) {
+    throw new Error("DATABASE_URL is required when BLOG_DATA_SOURCE=database");
   }
 
   if (parsed.data.RATE_LIMIT_DRIVER === "database" && !parsed.data.DATABASE_URL) {

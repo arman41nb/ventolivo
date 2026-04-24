@@ -231,3 +231,24 @@ model RateLimitBucket {
   @@unique([scope, identifier])
   @@index([resetAt])
 }
+
+model BlogPost {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  title       String
+  summary     String
+  content     String
+  tags        String?
+  coverImage  String?
+  coverAlt    String?
+  seoTitle    String?
+  seoDescription String?
+  status      String   @default("draft")
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@index([status, publishedAt])
+  @@index([createdAt])
+}
